@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+.EnvironmentPage{
+    background-color: black;
+    min-width: 100%;
+    height: 100%;
+    margin-left: -10px;
+    
+}
+
+.Environment__img{
+    width: 100%;
+    img{
+        width: 100%;
+        height: 70dvh;
+    }
+}
+
+.Environment__body{
+    background-color: rgb(255, 255, 255);
+    width: 100%;
+    height: auto;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    h1{
+        color: rgb(207, 4, 4);
+        font-size: 50px;
+        font-weight: 500;
+        font-family: gowun patang;
+    }
+}
+
+
+   .Environment__infor{
+        display: flex;
+        gap: 100px;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+
+        .divider{
+            background-color: white;
+            width: 2px;
+            height: 400px;
+            
+        }
+        .Environment__left{
+            background-color: #ede9e69d;
+            width: 420px;
+            height: 800px;
+            border-radius: 25px;
+            img{
+                width: 380px;
+                height: 300px;
+                border-radius: 25px;
+                margin-top: 18px;
+            }
+        }
+        
+        .Environment__right{
+            background-color: white;
+            width: 420px;
+            height: 800px;
+            border-radius: 25px;
+        }
+   } 
+
+   .Environment__form{
+        .ant-btn{
+            margin-bottom: 25px;
+        }
+   }
+
+   .Environment__form1 .ant-input  {
+    width: 80%; 
+    max-width: 300px; 
+  }
+    
+  
+  .Environment__form1 .ant-select {
+    width: 80%; 
+    max-width: 300px; 
+  }
+  
+  .Environment__form1{
+    .ant-form-item-label{
+        margin-left: 20px;
+    }
+  }
+  
+
+  .Addpage__Link{
+    a{
+        background-color:rgb(207, 4, 4) ;
+        color: white;
+        width: 250px;
+        height: 40px;
+        font-size: 25px;
+        font-weight: 600;
+        justify-content: center;
+        text-align: center;
+        align-items: center;
+        border-radius: 15px;
+        position: relative;
+        bottom: 0px;
+        font-family: gowun patang;
+    }
+    
+}
+
+.Environment__form__container{
+    background-color: #ede9e69d;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    img{
+        margin-top: 5px;
+        width: 100%;
+        height: 300px;
+        border-radius: 10px;
+        object-fit: cover;
+    }
+    .save_all{
+        background-color:rgb(207, 4, 4) ;
+    color: white;
+    width: 250px;
+    height: 40px;
+    font-size: 25px;
+    font-weight: 600;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    border-radius: 15px;
+    position: relative;
+    bottom: 15px;
+    font-family: gowun patang;
+    }
+}
+
+.Environment__form2 .ant-input  {
+    width: 80%; 
+    max-width: 300px;
+  }
+    
+  .Environment__but{
+    background-color:rgb(207, 4, 4) ;
+    color: white;
+    width: 250px;
+    height: 40px;
+    font-size: 25px;
+    font-weight: 600;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    border-radius: 15px;
+    position: relative;
+    bottom: 0px;
+    font-family: gowun patang;
+  }
+  
+  .Environment__form2 .ant-select {
+    width: 80%; 
+    max-width: 300px; 
+  }
+  
+  .Environment__form2{
+    margin-top: 70px;
+    .ant-form-item-label{
+        margin-left: 20px;
+    }
+    p{
+        font-size: 20px;
+        font-weight: 600;
+        padding: 5px 10px;
+        border: 1px solid rgb(169, 169, 169);
+        width: 270px;
+        border-radius: 7px;
+        position: relative;
+        left: 60px;
+    }
+  }
