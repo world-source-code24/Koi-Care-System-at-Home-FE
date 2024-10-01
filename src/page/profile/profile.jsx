@@ -2,11 +2,21 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import "./profile.scss";
 import axios from "axios";
-import { Button, Image, Input, Layout, Menu, message, Modal, Radio, Upload } from "antd";
+import {
+  Button,
+  Image,
+  Input,
+  Layout,
+  Menu,
+  message,
+  Modal,
+  Radio,
+  Upload,
+} from "antd";
 import { Form, useNavigate } from "react-router-dom";
 
 import { UploadOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Profile() {
   const { Sider, Content } = Layout;
@@ -17,6 +27,68 @@ function Profile() {
   const [previewImage, setPreviewImage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
+
+  const [userInfo, setUserInfo] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get("");
+        setUserInfo(response.data);
+      } catch (error) {
+        message.error("Failed to fetch user information");
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  const handleEditToggle = () => {
+    if (isEditing) {
+      handleSave();
+    } else {
+      setIsEditing(true);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("fullName", userInfo.fullName);
+      formData.append("phone", userInfo.phone);
+      formData.append("address", userInfo.address);
+      if (image) {
+        formData.append("", image); // name tên trong API
+      }
+
+      await axios.put("API_URL", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setSuccessMessage("Update Successfully !!!");
+      setIsEditing(false);
+    } catch (error) {
+      message.error("Failed to update information");
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -32,7 +104,8 @@ function Profile() {
   };
 
   const handleImageUpload = (file) => {
-    setImage(URL.createObjectURL(file));
+    // setImage(URL.createObjectURL(file));
+    setImage(file);
     return false;
   };
 
@@ -50,12 +123,6 @@ function Profile() {
     }
   };
 
-  //     <button className="avatar_upload_button" type="button">
-  //       <PlusOutlined className="upload_icon" />
-  //       <div className="upload_text">Upload</div>
-  //     </button>
-  //   );
-
   return (
     <>
       <div>
@@ -65,7 +132,7 @@ function Profile() {
         <div className="profile_container">
           {/* Sider */}
           <Layout style={{ width: "100%", minHeight: "500px" }}>
-            <Sider className="profile_sider" width={300} theme="light">
+            <Sider className="profile_sider" width={250} theme="light">
               <Menu
                 mode="vertical"
                 defaultSelectedKeys={[1]}
@@ -83,7 +150,11 @@ function Profile() {
 
             <Content className="profile_content">
               <h5>Account Settings</h5>
-              <Button type="primary" onClick={showModal}>
+              <Button
+                type="primary"
+                onClick={showModal}
+                className="membership-button"
+              >
                 Membership
               </Button>
 
@@ -149,24 +220,64 @@ function Profile() {
 
                 <Form name="fullName">
                   <div className="title">Full Name: </div>
-                  <Input placeholder="Full Name" />
+                  <Input
+                    name="fullName"
+                    placeholder="Full Name"
+                    value={userInfo.fullName}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    style={{ backgroundColor: isEditing ? "white" : "#f0f0f0" }}
+                  />
                 </Form>
 
                 <Form name="phone">
                   <div className="title">Phone: </div>
-                  <Input placeholder="Number Phone" />
+                  <Input
+                    placeholder="Number Phone"
+                    name="phone"
+                    value={userInfo.phone}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    style={{ backgroundColor: isEditing ? "white" : "#f0f0f0" }}
+                  />
                 </Form>
 
                 <Form name="email">
                   <div className="title">Email: </div>
-                  <Input placeholder="Email" />
+                  <Input
+                    placeholder="Email"
+                    name="email"
+                    value={userInfo.email}
+                    onChange={handleInputChange}
+                    disabled // Email không cho phép chỉnh sửa
+                    style={{ backgroundColor: "#f0f0f0" }}
+                  />
                 </Form>
 
                 <Form name="address">
                   <div className="title">Address: </div>
-                  <Input placeholder="Address: 445/12 Tan Hoa Dong Str, ..." />
+                  <Input
+                    placeholder="Address: 445/12 Tan Hoa Dong Str, ..."
+                    name="address"
+                    value={userInfo.address}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    style={{ backgroundColor: isEditing ? "white" : "#f0f0f0" }}
+                  />
                 </Form>
               </div>
+
+              {/* Edit*/}
+              <Button
+                className="edit_button"
+                onClick={handleEditToggle}
+                style={{ marginBottom: "15px" }}
+              >
+                {isEditing ? "Save" : "Edit"}
+              </Button>
+              {successMessage && (
+                <div className="success_message">{successMessage}</div>
+              )}
             </Content>
           </Layout>
           {previewImage && (
