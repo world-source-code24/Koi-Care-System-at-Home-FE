@@ -14,33 +14,37 @@ export const Products=[
     {
         Id:'1',
         Image:pr1,
-        Name:'Product1',
+        Name:'King UV germicidal lamp',
         Origin:'',
         Category:'',
+        Price: '300.000 đ'
     },
 
     {
         Id:'2',
         Image:pr2,
-        Name:'Product2',
+        Name:'King UV germicidal lamp',
         Origin:'',
         Category:'',
+        Price: '300.000 đ'
     },
 
     {
         Id:'3',
         Image:pr3,
-        Name:'Product3',
+        Name:'King UV germicidal lamp',
         Origin:'',
         Category:'',
+        Price: '300.000 đ'
     },
 
     {
         Id:'4',
         Image:pr4,
-        Name:'Product4',
+        Name:'King UV germicidal lamp',
         Origin:'',
         Category:'',
+        Price: '300.000 đ'
     },
 
     // {

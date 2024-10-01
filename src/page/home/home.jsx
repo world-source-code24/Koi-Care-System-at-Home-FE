@@ -1,31 +1,63 @@
-/* eslint-disable react/jsx-key */
+
 import Carousel from "../../components/carousel/carousel";
 import Header from "../../components/header/header";
 import './home.scss';
 import { Button, Modal } from "antd";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Products } from "../../share/product";
 import Footer from "../../components/footer/footer";
 import cakoi from "../../img/cakoi.png.jpg"
 
-
 function HomePage() {
-  const[pro,setPro]=useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+
+    const storedCart = localStorage.getItem("cartItems");
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
+
+  useEffect(() => {
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const addToCart = () => {
+    const productToAdd = {...pro,quantity: num};
+      setCartItems([...cartItems, productToAdd]); 
+      setVisible(false); 
+  };
 
   const [visible, setVisible]=useState(false);
-  const handleOpen=(values)=>{
-    setPro(values);
-      setVisible(true);
-  }
 
-  const handleOk=()=>{
-    setVisible(false);
-  }
+  
+  const [pro,setPro]=useState([]);
+    const [num,setNum]=useState(1);
 
-  const handleCancel=()=>{
-    setVisible(false);
-  }
+    const handleOpen=(values)=>{
+        setVisible(true);
+        setPro(values);
+    }
+
+    const Ok =()=>{
+        setVisible(false);
+    }
+    
+    const handleCancle =()=>{
+        setVisible(false);
+    }
+    
+    const handleNumbePlus=()=>{
+        setNum(num+1);
+    }
+
+    const handleNumbeMinus=()=>{
+        
+        if(num<=1){
+            setNum(1);
+        }
+        else{
+            setNum(num-1);
+        }
+    }
 
   return (
     <div>
@@ -66,9 +98,6 @@ function HomePage() {
               <div className="col-md-3 koi">
               <img src={product.Image} alt="" />
               <br />
-              {/* <Link type="secondary">
-                View detail
-              </Link> */}
               <Button type="secondary" onClick={()=>handleOpen(product)}>
                 View product
               </Button>
@@ -78,28 +107,39 @@ function HomePage() {
         </div>
 
         <div className="HomePage__viewmore">
-          <Link  to="">View More [+]</Link>
+          <Link  to="/viewproduct">View More [+]</Link>
         </div>
 
-        <Modal
-            title="Information of Product"
-            open={visible}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            footer={[
-              <Button key="ok" type="secondary" onClick={handleOk} size="small">
-                OK
-              </Button>,
-            ]}
-        >
-            <div className='modal__img'>
-              <img src={pro.Image} alt="" />
+        <Modal open={visible} onCancel={handleCancle} onOk={Ok} footer={null}>
+    <div className="modal-content">
+        <div className="modal-image">
+            <img src={pro.Image} alt={pro.Name} />
+        </div>
+        <div className="modal-details">
+            <h3>{pro.Name}</h3>
+            <span className="modal-sku">Product code: {pro.Id}</span>
+            <span className="modal-stock">Status:in stock {pro.StockStatus}</span>
+            <h5 className="modal-price">Price: {pro.Price}</h5>
+            <div className="modal-promotions">
+                <h4>Promotion:sale 20%</h4>
+                <ul>
+                    <li>Genuine product commitment</li>
+                    <li>Cash on Delivery</li>
+                </ul>
             </div>
-            <p> <strong>Id: {pro.Id}</strong> </p>
-            <p> <strong>Name: {pro.Name}</strong> </p>
-            <p> <strong>Origin: {pro.Origin}</strong> </p>
-            <p> <strong>Category: {pro.Category}</strong> </p>
-        </Modal>
+            <div className='Viewproduct__buy'>
+                <h5>Quantity: </h5>
+                <Button className='Viewproduct__minus' onClick={handleNumbeMinus}>-</Button>
+                <input type="text" value={num} readOnly />
+                <Button className='Viewproduct__plus' onClick={handleNumbePlus}>+</Button>
+            </div>
+            <div className="modal-actions">
+                <Button className="modal-buy-now">BUY NOW</Button>
+                <Button className="modal-add-cart" onClick={addToCart}>ADD TO CART</Button>
+            </div>
+        </div>
+    </div>
+</Modal>
       </div>
       <Footer/>
     </div>

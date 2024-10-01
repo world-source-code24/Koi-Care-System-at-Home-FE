@@ -1,85 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+// font-family: gowun patang;
 
-h2{
-        font-size: 80px;
-        font-weight: 600;
-        text-align: center;
-        color: rgb(223, 0, 0);
-        margin-top: 5px;
-        margin-bottom: 5px;
-        font-family: gowun patang;
-
-}
-
-.HomePage{
-    overflow: hidden;
-}
-
-.HomePage__Introduce{
-
-    .HomPage__left{
-        text-align: center;
+.Viewproduct__img{
+    width: 100%;
+    img{
+        height: 70dvh;
+        width: 100%;
     }
+}
 
-    .HomPage__right{
-        position: relative;
-        left: 0px;
-        p{
-            font-size: 25px;
+.Viewproduct__title{
+    h3{
+        color: rgb(208, 0, 0);
             font-family: gowun patang;
-            font-weight: 400;
-        }
-        h1{
-            font-family: gowun patang;
-            color: red;
-            font-weight: 600;
-        }
-        .border{
-            position: relative;
-            background-color: rgb(0, 0, 0);
-            width: 150px;
-            height: 3px;
-        }
+            font-size: 50px;
+            text-align: center  ;
     }
 }
 
-.HomePage__divider{
-    width: 300px;
-    height: 2px;
-    background-color: rgb(0, 0, 0);
-    margin: 0 auto;
-    margin-bottom: 25px;
-}
-.HomePage{
-    background-color: rgb(255, 255, 255);
-}
-
-.HomePage__body__product{
-    h1{
-        font-family: gowun patang;
-        text-align: center;
-        color: red;
-        font-size: 45px;
-        font-weight: 600;
-    }
-}
-
-
-.HomePage__body__footer{
-    text-decoration: none;
-    font-size: 30px;
-    font-weight: 500;
-
-}
-
-.HomePage__body{    
+.Viewproduct__product{
+    background-color: #ede9e69d;
+    width: 100%;
+    height: auto;
+    margin:0 auto ;
     margin-bottom: 20px;
     justify-content: center;
-    display: flex;
-    column-gap: 30px; 
-    background-color: #ede9e69d;
-    margin-left: 2px;
-    .koi{
+    .product{
         margin-top: 25px;
         background-color: white;
         padding: 10px;
@@ -98,20 +44,20 @@ h2{
           height: 300px; 
           border-radius: 10px;
         }
-
-        .ant-btn{
-            background-color:rgb(207, 4, 4) ;
-            color: white;
-            width: 310px;
-            height: 45px;
-            border-radius: 10px;
-            font-size: 20px;
-            position: relative;
-            bottom: px;
-            font-family: gowun patang;
-        }
+    }
+    .ant-btn{
+        background-color:rgb(207, 4, 4) ;
+        color: white;
+        width: 310px;
+        height: 45px;
+        border-radius: 10px;
+        font-size: 20px;
+        position: relative;
+        bottom: px;
+        font-family: gowun patang;
     }
 }
+
 .modal-content {
     display: flex;
     padding: 20px;
@@ -237,26 +183,6 @@ h2{
                 background-color: orange;
             }
         }
-    }
-}
-
-.HomePage__viewmore{
-    margin-top: 50px;
-    margin-bottom: 50px;
-    text-align: center;
-    a{
-        text-decoration: none;
-        font-size: 25px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        padding-left: 35px;
-        padding-right: 35px;
-        border-radius: 15px;
-        background-color:rgb(207, 4, 4) ;
-        color: white;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        font-family: gowun patang;
     }
 }
 

@@ -54,7 +54,7 @@ function Header() {
         <a href="#">Recommendations</a>
         <a href="#">Advice</a>
         <a href="#">Blogs and News</a>
-        <a href="/profile">Profile</a>
+        <a href="/cart">Cart</a>
         <a href="#">Logout</a>
       </div>
 
