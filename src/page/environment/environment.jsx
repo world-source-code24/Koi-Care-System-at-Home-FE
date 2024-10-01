@@ -7,7 +7,7 @@ import Footer from '../../components/footer/footer';
 import { UploadOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import ho from '../../img/hoca.jpg';
-//tststststststststst
+
 function Environment() {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [environmentForm] = Form.useForm();  
