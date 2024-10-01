@@ -23,7 +23,7 @@ function Footer() {
       </div>
     </div>
     <div className='footer'>
-        <h3>©2004-2024 by Cali Koi & Koi Froggy</h3>
+        <h3>©2024 by Royal Koi</h3>
     </div>
     </>
   )

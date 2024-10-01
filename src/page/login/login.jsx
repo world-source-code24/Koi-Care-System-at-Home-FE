@@ -3,8 +3,7 @@ import koi from "../../img/koi.jpg";
 import logo from "../../img/logo.png.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Input, Button } from "antd";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../../config/firebase";
+
 import axios from "axios";
 import { useState } from "react";
 
@@ -17,7 +16,7 @@ function Login() {
     const { email, password } = values;
 
     try {
-      const response = await axios.post("", {
+      const response = await axios.post("https://localhost:5001/api/Login", {
         email,
         password,
       });
@@ -36,16 +35,8 @@ function Login() {
     }
   };
 
-  const handleLoginGoogle = () => {
-    signInWithPopup(auth, googleProvider)
-      .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        console.log(credential);
-        navigate("/");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const handleLoginGoogle = async () => {
+    window.location.href = "https://localhost:5001/api/Login/signin-google";
   };
 
   return (
@@ -100,7 +91,7 @@ function Login() {
             <b>Forgot password?</b>
             <div className="signup">
               <h3>New member?</h3>
-              <Link>Sign Up Now!</Link>
+              <Link to={"/register"}>Sign Up Now!</Link>
             </div>
             <div className="divider"></div>
             <button className="login__google" onClick={handleLoginGoogle}>
