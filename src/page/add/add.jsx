@@ -33,7 +33,6 @@ function AddPage() {
   };
 
   const handleFinish = (values) => {
-    // Xử lý dữ liệu form tại đây
     console.log('Form values:', values);
   };
   
@@ -106,7 +105,7 @@ function AddPage() {
           </div>
   
           <div className='Addpage__Link'>
-            <Link className='Addpage__but1' to="/food">Food Calculator</Link>
+            <Button className='Addpage__but1' type="secondary" >Food Calculator</Button>
             <Button className='Addpage__but2' type="secondary" htmlType="submit">
               Add New Fish
             </Button>

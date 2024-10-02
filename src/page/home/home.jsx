@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 
 import Carousel from "../../components/carousel/carousel";
 import Header from "../../components/header/header";
@@ -111,35 +112,34 @@ function HomePage() {
         </div>
 
         <Modal open={visible} onCancel={handleCancle} onOk={Ok} footer={null}>
-    <div className="modal-content">
-        <div className="modal-image">
-            <img src={pro.Image} alt={pro.Name} />
-        </div>
-        <div className="modal-details">
-            <h3>{pro.Name}</h3>
-            <span className="modal-sku">Product code: {pro.Id}</span>
-            <span className="modal-stock">Status:in stock {pro.StockStatus}</span>
-            <h5 className="modal-price">Price: {pro.Price}</h5>
-            <div className="modal-promotions">
-                <h4>Promotion:sale 20%</h4>
-                <ul>
-                    <li>Genuine product commitment</li>
-                    <li>Cash on Delivery</li>
-                </ul>
-            </div>
-            <div className='Viewproduct__buy'>
-                <h5>Quantity: </h5>
-                <Button className='Viewproduct__minus' onClick={handleNumbeMinus}>-</Button>
-                <input type="text" value={num} readOnly />
-                <Button className='Viewproduct__plus' onClick={handleNumbePlus}>+</Button>
-            </div>
-            <div className="modal-actions">
-                <Button className="modal-buy-now">BUY NOW</Button>
-                <Button className="modal-add-cart" onClick={addToCart}>ADD TO CART</Button>
-            </div>
-        </div>
-    </div>
-</Modal>
+          <div className="modal-content">
+              <div className="modal-image">
+                  <img src={pro.Image} alt={pro.Name} />
+              </div>
+              <div className="modal-details">
+                  <h3>{pro.Name}</h3>
+                  <span className="modal-sku">Product code: {pro.Id}</span>
+                  <span className="modal-stock">Status:in stock {pro.StockStatus}</span>
+                  <h5 className="modal-price">Price: {pro.Price}</h5>
+                  <div className="modal-promotions">
+                      <h4>Promotion:sale 20%</h4>
+                      <ul>
+                          <li>Genuine product commitment</li>
+                          <li>Cash on Delivery</li>
+                      </ul>
+                  </div>
+                  <div className='Viewproduct__buy'>
+                      <h5>Quantity: </h5>
+                      <Button className='Viewproduct__minus' onClick={handleNumbeMinus}>-</Button>
+                      <input type="text" value={num} readOnly />
+                      <Button className='Viewproduct__plus' onClick={handleNumbePlus}>+</Button>
+                  </div>
+                  <div className="modal-actions">
+                      <Button className="modal-add-cart" onClick={addToCart}>ADD TO CART</Button>
+                  </div>
+              </div>
+          </div>
+      </Modal>
       </div>
       <Footer/>
     </div>

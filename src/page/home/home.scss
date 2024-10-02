@@ -215,9 +215,6 @@ h2{
 
         .modal-actions {
             display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            .modal-buy-now,
             .modal-add-cart {
                 background-color: red;
                 color: white;
@@ -227,7 +224,7 @@ h2{
                 cursor: pointer;
                 font-family: gowun patang;
                 transition: background-color 0.3s ease;
-
+                margin: 0 auto;
                 &:hover {
                     background-color: darkred;
                 }
