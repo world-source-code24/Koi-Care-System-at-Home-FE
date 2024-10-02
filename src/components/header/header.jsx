@@ -1,26 +1,41 @@
 import './header.scss';
 import { Link } from 'react-router-dom';
 import koi from '../../img/logo.png.jpg';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 
-
 function Header() {
   const [visible, setVisible] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Kiểm tra xem token đã được lưu trong localStorage hay chưa
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true); // Đã đăng nhập
+    } else {
+      setIsLoggedIn(false); // Chưa đăng nhập
+    }
+  }, []);
 
   const handleMenu = () => {
     setVisible(true);
   };
 
-
   const handleClose = () => {
     setVisible(false);
   };
 
+  const handleLogout = () => {
+    // Xóa token và thông tin người dùng khỏi localStorage khi logout
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+  };
+
   return (
     <>
-
       <div className='header'> 
         <div className='header__logo'>
           <img className='' src={koi} alt="Koi" width={80}/>
@@ -29,8 +44,16 @@ function Header() {
         
         <div className='header__nav'>
           <Link to="/" className='nav__news'>Home</Link>
-          <Link to="/login" className='nav__login'>Login</Link>
-          <Link to="" className='nav__profile'>Profile</Link>
+          
+          {isLoggedIn ? (
+            <>
+              <Link to="/profile" className='nav__profile'>Profile</Link>
+              <Button onClick={handleLogout} className='nav__logout'>Logout</Button>
+            </>
+          ) : (
+            <Link to="/login" className='nav__login'>Login</Link>
+          )}
+
           <Link to="https://www.usnews.com/news/business/articles/2023-11-10/koi-emerges-as-new-source-of-souring-relations-between-japan-and-china" className='nav__news'>Blog and News</Link>
           
           <span className="nav__menu">
@@ -40,7 +63,6 @@ function Header() {
           </span>
         </div>
       </div>
-
 
       {visible && <div className="overlay" onClick={handleClose}></div>}
 
@@ -55,9 +77,8 @@ function Header() {
         <a href="#">Advice</a>
         <a href="#">Blogs and News</a>
         <a href="/cart">Cart</a>
-        <a href="#">Logout</a>
+        <a href="#" onClick={handleLogout}>Logout</a>
       </div>
-
     </>
   );
 }

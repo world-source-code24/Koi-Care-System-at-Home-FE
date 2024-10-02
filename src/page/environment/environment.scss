@@ -13,7 +13,7 @@
     text-align: center;
     .search{
         display: flex;
-        margin-left: 450px;
+        margin-left: 160px;
         .ant-input{
             width: 200px;
             height: 30px;
@@ -40,7 +40,7 @@
             font-weight: 400;
             position: relative;
             bottom: 52px;
-            left: 180px;
+            right: 150px;
         }
     }
 
@@ -50,7 +50,7 @@
             font-family: gowun patang;
             font-size: 50px;
             position: relative;
-            bottom: 40px;
+            top: 20px;
         }
     }
 
@@ -96,6 +96,10 @@
 
 }
 
+.ant-modal-footer{
+    display: flex;
+}
+
 
   .uploaded__pond__info__right {
     text-align: left;
@@ -108,7 +112,7 @@
         text-decoration: none;
         font-family: gowun patang;
         font-size: 20px;
-        padding: 5px 70px;
+        padding: 5px 50px;
         color: white;
         border-radius: 10px;
         background-color:rgb(207, 4, 4) ;
@@ -123,8 +127,8 @@
         border-radius: 10px;
         background-color:rgb(207, 4, 4) ;
         position: relative;
-        width:190px;
-        margin-left: 110px;
+        width:100px;
+        margin-left: 50px;
     }
   }
   
