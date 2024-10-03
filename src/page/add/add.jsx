@@ -7,20 +7,20 @@ import { useState } from 'react';
 import { Form, Input, Button } from 'antd';
 import Footer from '../../components/footer/footer';
 function AddPage() {
-  const [formData, setFormData] = useState({
-    name__fish: '',
-    length__fish: '',
-    variety__fish: '',
-    breed__fish: '',
-    physique__fish: '',
-    weight__fish: '',
-    pond__fish: '',
-    purchase__fish: '',
-    age__fish: '',
-    sex__fish: '',
-    pond__since__fish: '',
-    number__fish: ''
-  });
+  // const [formData, setFormData] = useState({
+  //   name__fish: '',
+  //   length__fish: '',
+  //   variety__fish: '',
+  //   breed__fish: '',
+  //   physique__fish: '',
+  //   weight__fish: '',
+  //   pond__fish: '',
+  //   purchase__fish: '',
+  //   age__fish: '',
+  //   sex__fish: '',
+  //   pond__since__fish: '',
+  //   number__fish: ''
+  // });
 
 //   const navigate = useNavigate();
 

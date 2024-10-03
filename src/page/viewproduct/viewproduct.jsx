@@ -10,6 +10,7 @@ function Viewproduct() {
     const [visible, setVisible] = useState(false);
     const [pro, setPro] = useState({});
     const [num, setNum] = useState(1);
+
     const [cartItems, setCartItems] = useState(() => {
         const storedCart = localStorage.getItem("cartItems");
         return storedCart ? JSON.parse(storedCart) : [];
@@ -48,7 +49,7 @@ function Viewproduct() {
         if (existingItem) {
             // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng
             const updatedCartItems = cartItems.map(item =>
-                item.Id === pro.Id ? { ...item, quantity: item.quantity + num } : item
+                item.Id === pro.Id ? { quantity: item.quantity + num } : item
             );
             setCartItems(updatedCartItems);
         } else {

@@ -4,6 +4,12 @@ import img3 from '../img/3.jpg';
 import img4 from '../img/4.jpg';
 import img5 from '../img/5.jpg';
 import img6 from '../img/6.jpg';
+// import ca6 from '../img/ca6.jpg';
+// import ca7 from '../img/ca7.jpg';
+// import ca8 from '../img/ca8.jpg';
+// import ca9 from '../img/ca9.jpg';
+
+
 
 export const Flowers=[
     {
@@ -30,4 +36,5 @@ export const Flowers=[
         Id:'6',
         Image:img6,
     },
+
 ]

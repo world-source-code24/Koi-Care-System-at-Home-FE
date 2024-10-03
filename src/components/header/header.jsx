@@ -75,7 +75,7 @@ function Header() {
         <a href="#">Statistics Table</a>
         <a href="#">Recommendations</a>
         <a href="#">Advice</a>
-        <a href="#">Blogs and News</a>
+        <a href="contact">Contact Us</a>
         <a href="/cart">Cart</a>
         <a href="#" onClick={handleLogout}>Logout</a>
       </div>

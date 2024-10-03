@@ -7,6 +7,8 @@ import Environment from "./page/environment/environment";
 import Viewpond from "./page/view/viewpond";
 import Viewproduct from "./page/viewproduct/viewproduct";
 import Cart from "./page/cart/cart";
+import Contact from "./page/contact/contact";
+
 
 function Koi() {
 
@@ -42,6 +44,10 @@ function Koi() {
     {
       path: "/cart",
       element: <Cart/>,
+    },
+    {
+      path: "/contact",
+      element: <Contact/>,
     },
   ]);
 
