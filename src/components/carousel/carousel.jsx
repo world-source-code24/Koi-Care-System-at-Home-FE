@@ -7,7 +7,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { Autoplay } from 'swiper/modules';
 import { Pagination } from 'swiper/modules';
-import { Flowers } from '../../share/share';
+import { FishBG } from '../../share/share';
 
 export default function Carousel({numberOfSlide =1, autoplay=false}) {
 
@@ -24,12 +24,15 @@ export default function Carousel({numberOfSlide =1, autoplay=false}) {
             className={`carousel ${numberOfSlide > 1 ? 'multi-items' : ''}`}
           >
             {
-              Flowers.map((flower)=>(
-                <SwiperSlide>
+              FishBG.map((fish)=>(
+                <div className='slide'>
+  `              <SwiperSlide >
                   <img 
-                  src={flower.Image} 
+                  src={fish.Image} 
                   alt="" />
                 </SwiperSlide>
+                </div>
+                
               ))
             }
           </Swiper>

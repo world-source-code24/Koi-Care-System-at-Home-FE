@@ -1,10 +1,12 @@
 .carousel{
-    img{
+    .slide{
         width: 100%;
-        height: 80dvh;
-        object-fit: cover;
-        object-position: top;
-    }
+        img{
+          width: 100%;             // Chiều rộng luôn full
+          height: 500px;           // Chiều dài ngắn hơn, có thể điều chỉnh giá trị này theo ý muốn
+        }
+      }
+
     &.multi-items{
         img{
             height: 200px;
