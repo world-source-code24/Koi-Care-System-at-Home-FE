@@ -41,7 +41,7 @@ function Profile() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get("");
+        const response = await axios.get(""); 
         setUserInfo(response.data);
       } catch (error) {
         message.error("Failed to fetch user information");
@@ -69,7 +69,7 @@ function Profile() {
         formData.append("", image); // name tên trong API
       }
 
-      await axios.put("API_URL", formData, {
+      await axios.put("", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -104,8 +104,8 @@ function Profile() {
   };
 
   const handleImageUpload = (file) => {
-    // setImage(URL.createObjectURL(file));
-    setImage(file);
+     setImage(URL.createObjectURL(file));
+    // setImage(file);
     return false;
   };
 
@@ -150,13 +150,15 @@ function Profile() {
 
             <Content className="profile_content">
               <h5>Account Settings</h5>
-              <Button
+              {/* <Button
                 type="primary"
                 onClick={showModal}
                 className="membership-button"
               >
                 Membership
-              </Button>
+              </Button> */}
+
+              <p onClick={showModal} className="membership-button">Membership</p>
 
               {/*Divider */}
               <div className="profile_divider"></div>
