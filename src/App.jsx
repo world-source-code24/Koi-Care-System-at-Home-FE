@@ -9,6 +9,7 @@ import Viewproduct from "./page/viewproduct/viewproduct";
 import Cart from "./page/cart/cart";
 import Profile from "./page/profile/profile";
 import Mykoi from "./page/mykoi/mykoi";
+import List from "./page/list/list";
 
 function Koi() {
 
@@ -52,6 +53,10 @@ function Koi() {
     {
       path: "/mykoi",
       element: <Mykoi/>,
+    },
+    {
+      path: "/list",
+      element: <List/>,
     },
   ]);
 

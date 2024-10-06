@@ -57,7 +57,7 @@ function Header() {
         </a>
         <a href="/add">Add New Koi</a>
         <a href="/mykoi">My Koi Fish</a>
-        <a href="#">My Schedule Tasks</a>
+        <a href="/list">List of Koi</a>
         <a href="/environment">Environment Monitor</a>
         <a href="#">Statistics Table</a>
         <a href="#">Recommendations</a>
