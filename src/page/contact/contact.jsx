@@ -46,7 +46,7 @@ function Contact() {
                     <h5>Contact Information</h5>
                     <p className='p1'>contact@gmail.com</p>
                     <p className='p2'>+1 (555) 123 4567</p>
-                    <p className='p3'>123 Example Street City, Country</p>
+                    <p className='p3'>123 Example Street City, Country...</p>
                 </div>
                 <div className='ContactPage__bottom'>
                     <h5>Our Location</h5>

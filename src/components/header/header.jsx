@@ -70,13 +70,10 @@ function Header() {
         <a href="#" className="closebtn" onClick={handleClose}>×</a>
         <a href="/add">Add New Koi</a>
         <a href="#">My Koi Fish</a>
-        <a href="#">My Schedule Tasks</a>
         <a href="/environment">Environment Monitor</a>
-        <a href="#">Statistics Table</a>
-        <a href="#">Recommendations</a>
-        <a href="#">Advice</a>
         <a href="contact">Contact Us</a>
         <a href="/cart">Cart</a>
+        <a href="#">Blog and News</a>
         <a href="#" onClick={handleLogout}>Logout</a>
       </div>
     </>
