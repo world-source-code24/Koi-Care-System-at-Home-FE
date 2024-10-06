@@ -54,7 +54,7 @@ function Header() {
             <Link to="/login" className='nav__login'>Login</Link>
           )}
 
-          <Link to="https://www.usnews.com/news/business/articles/2023-11-10/koi-emerges-as-new-source-of-souring-relations-between-japan-and-china" className='nav__news'>Blog and News</Link>
+          <Link to="/news" className='nav__news'>Blog and News</Link>
           
           <span className="nav__menu">
             <Button onClick={handleMenu}>
@@ -73,7 +73,6 @@ function Header() {
         <a href="/environment">Environment Monitor</a>
         <a href="contact">Contact Us</a>
         <a href="/cart">Cart</a>
-        <a href="#">Blog and News</a>
         <a href="#" onClick={handleLogout}>Logout</a>
       </div>
     </>

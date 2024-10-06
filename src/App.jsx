@@ -8,6 +8,7 @@ import Viewpond from "./page/view/viewpond";
 import Viewproduct from "./page/viewproduct/viewproduct";
 import Cart from "./page/cart/cart";
 import Contact from "./page/contact/contact";
+import News from "./page/news/news";
 
 
 function Koi() {
@@ -48,6 +49,10 @@ function Koi() {
     {
       path: "/contact",
       element: <Contact/>,
+    },
+    {
+      path: "/news",
+      element: <News/>,
     },
   ]);
 
