@@ -21,7 +21,11 @@ function Cart() {
     };
 
     const getTotalPrice = () => {
-        return cartItems.reduce((acc, item) => acc + item.Price * item.quantity, 0);
+        return cartItems.reduce((acc, item) => {
+            // Kiểm tra nếu item.Price là số trước khi tính toán
+            const price = typeof item.Price === 'number' ? item.Price : parseFloat(item.Price);
+            return acc + price * (item.quantity || 1); // Nếu không có quantity, mặc định là 1
+        }, 0);
     };
 
     return (
@@ -29,7 +33,7 @@ function Cart() {
             <Header />
 
             <div className="Cart__img">
-                <img src={bg} alt="" />
+                <img src={bg} alt="Background" />
             </div>
 
             <div className="cart__container">
@@ -45,8 +49,8 @@ function Cart() {
                                     <div className="cart__item__details">
                                         <h4>{item.Name}</h4>
                                         <p>Product code: {item.Id}</p>
-                                        <p>Quantity: {item.quantity}</p>
-                                        <p>Price: {item.Price}</p>
+                                        <p>Quantity: {item.quantity || 1}</p>
+                                        <p>Price: {item.Price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>
                                     </div>
                                     <button onClick={() => handleRemove(item.Id)}>✖</button>
                                 </div>
@@ -55,7 +59,7 @@ function Cart() {
                         
                         <div className="cart__summary">
                             <span>Total:</span>
-                            <span>{getTotalPrice()} VND</span>
+                            <span>{getTotalPrice().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}.000 VND</span>
                         </div>
 
                         <div className="cart__checkout">
@@ -69,6 +73,5 @@ function Cart() {
         </>
     );
 }
-
 
 export default Cart;

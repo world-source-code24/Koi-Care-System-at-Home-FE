@@ -2,14 +2,15 @@
 /* eslint-disable react/jsx-key */
 import React from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react';
-import './carousel.scss'
+import './carouselContact.scss'
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Autoplay } from 'swiper/modules';
 import { Pagination } from 'swiper/modules';
-import { FishBG } from '../../share/share';
+import { Fish } from '../../share/fish';
 
-export default function Carousel({numberOfSlide =1, autoplay=false}) {
+
+export default function CarouselContact({numberOfSlide =1, autoplay=false}) {
 
   return (
     <div className='CarouselPage'>
@@ -24,15 +25,12 @@ export default function Carousel({numberOfSlide =1, autoplay=false}) {
             className={`carousel ${numberOfSlide > 1 ? 'multi-items' : ''}`}
           >
             {
-              FishBG.map((fish)=>(
-                <div className='slide'>
-  `              <SwiperSlide >
+              Fish.map((fish)=>(
+                <SwiperSlide>
                   <img 
                   src={fish.Image} 
                   alt="" />
                 </SwiperSlide>
-                </div>
-                
               ))
             }
           </Swiper>

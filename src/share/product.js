@@ -17,7 +17,7 @@ export const Products=[
         Name:'King UV germicidal lamp',
         Origin:'',
         Category:'',
-        Price: '300.000 đ'
+        Price: '300.000 VND'
     },
 
     {
@@ -26,7 +26,7 @@ export const Products=[
         Name:'King UV germicidal lamp',
         Origin:'',
         Category:'',
-        Price: '300.000 đ'
+        Price: '300.000 VND'
     },
 
     {
@@ -35,7 +35,7 @@ export const Products=[
         Name:'King UV germicidal lamp',
         Origin:'',
         Category:'',
-        Price: '300.000 đ'
+        Price: '300.000 VND'
     },
 
     {
@@ -44,7 +44,7 @@ export const Products=[
         Name:'King UV germicidal lamp',
         Origin:'',
         Category:'',
-        Price: '300.000 đ'
+        Price: '300.000 VND'
     },
 
     // {

@@ -7,9 +7,15 @@ import Environment from "./page/environment/environment";
 import Viewpond from "./page/view/viewpond";
 import Viewproduct from "./page/viewproduct/viewproduct";
 import Cart from "./page/cart/cart";
+
+import Contact from "./page/contact/contact";
+import News from "./page/news/news";
+
+
 import Profile from "./page/profile/profile";
 import Mykoi from "./page/mykoi/mykoi";
 import List from "./page/list/list";
+
 
 function Koi() {
 
@@ -47,6 +53,14 @@ function Koi() {
       element: <Cart/>,
     },
     {
+
+      path: "/contact",
+      element: <Contact/>,
+    },
+    {
+      path: "/news",
+      element: <News/>,
+
       path: "/profile",
       element: <Profile/>,
     },
@@ -57,6 +71,7 @@ function Koi() {
     {
       path: "/list",
       element: <List/>,
+
     },
   ]);
 

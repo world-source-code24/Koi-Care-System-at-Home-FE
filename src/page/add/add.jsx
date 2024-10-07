@@ -1,26 +1,26 @@
 import './add.scss';
 import koi from '../../img/background.jpg';
 import Header from '../../components/header/header';
-import ca from '../../img/ca.jpg';
+import ca from '../../img/news.jpg';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Form, Input, Button } from 'antd';
 import Footer from '../../components/footer/footer';
 function AddPage() {
-  const [formData, setFormData] = useState({
-    name__fish: '',
-    length__fish: '',
-    variety__fish: '',
-    breed__fish: '',
-    physique__fish: '',
-    weight__fish: '',
-    pond__fish: '',
-    purchase__fish: '',
-    age__fish: '',
-    sex__fish: '',
-    pond__since__fish: '',
-    number__fish: ''
-  });
+  // const [formData, setFormData] = useState({
+  //   name__fish: '',
+  //   length__fish: '',
+  //   variety__fish: '',
+  //   breed__fish: '',
+  //   physique__fish: '',
+  //   weight__fish: '',
+  //   pond__fish: '',
+  //   purchase__fish: '',
+  //   age__fish: '',
+  //   sex__fish: '',
+  //   pond__since__fish: '',
+  //   number__fish: ''
+  // });
 
 //   const navigate = useNavigate();
 
@@ -33,7 +33,6 @@ function AddPage() {
   };
 
   const handleFinish = (values) => {
-    // Xử lý dữ liệu form tại đây
     console.log('Form values:', values);
   };
   
@@ -42,7 +41,7 @@ function AddPage() {
       <Header />
       <div className='Addpage__body'>
         <div className='Addpage__background'>
-          <img src={koi} alt="" width="30%" />
+          <img src={ca} alt="" width="30%" />
         </div>
   
         <div className='Addpage__Title'>
@@ -106,7 +105,7 @@ function AddPage() {
           </div>
   
           <div className='Addpage__Link'>
-            <Link className='Addpage__but1' to="/food">Food Calculator</Link>
+            <Button className='Addpage__but1' type="secondary" >Food Calculator</Button>
             <Button className='Addpage__but2' type="secondary" htmlType="submit">
               Add New Fish
             </Button>

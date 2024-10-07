@@ -1,18 +1,22 @@
 import axios from "axios";
-const baseUrl = "http://localhost:8080/api";
+
+const baseUrl = "http://localhost:5000/api/Login";
 
 const config = {
-  baseUrl: baseUrl,
+  baseURL: baseUrl, // Fix: It should be "baseURL", not "baseUrl" for axios config.
 };
 
 const api = axios.create(config);
 
-api.defaults.baseURL = baseUrl;
+api.defaults.baseURL = baseUrl; // This line is redundant since you already set `baseURL` in the `config` object.
 
-// handle before call API
+// Handle before API call
 const handleBefore = (config) => {
-  const token = localStorage.getItem("token")?.replaceAll('"', "");
-  config.headers["Authorization"] = Bearer ${token};
+  // Retrieve the token and attach it to the request
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
   return config;
 };
 

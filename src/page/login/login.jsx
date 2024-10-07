@@ -6,6 +6,7 @@ import { Form, Input, Button } from "antd";
 
 import axios from "axios";
 import { useState } from "react";
+import api from "../../config/axios";
 
 function Login() {
   const navigate = useNavigate();
@@ -14,27 +15,27 @@ function Login() {
 
   const handleLogin = async (values) => {
     const { email, password } = values;
-
+  
     try {
-      const response = await axios.post("https://localhost:5001/api/Login", {
-        email,
-        password,
-      });
-
+      const response = await api.post("/", { email, password });
+      console.log(response);  // Kiểm tra dữ liệu trả về từ API
+  
       if (response.data.success) {
-        navigate("/");
+        // Save the token and user information in localStorage
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user)); // Giả sử thông tin user nằm trong `response.data.user`
+
+        navigate("/"); 
       }
     } catch (error) {
       if (error.response && error.response.data) {
-        setError(
-          error.response.data.message || "Email or password is incorrect"
-        );
+        setError(error.response.data.message || "Email or password is incorrect");
       } else {
         setError("An error occurred. Please try again.");
       }
     }
   };
-
+  
   const handleLoginGoogle = async () => {
     window.location.href = "https://localhost:5001/api/Login/signin-google";
   };

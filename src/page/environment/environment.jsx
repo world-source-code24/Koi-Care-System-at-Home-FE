@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '../../components/header/header';
 import './environment.scss';
-import koi from '../../img/background.jpg';
+import koi from '../../img/news.jpg';
 import { Form, Input, Button, Modal, Upload, Row, Col } from "antd";
 import Footer from '../../components/footer/footer';
 import { UploadOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import ho from '../../img/hoca.jpg';
+import debounce from 'lodash/debounce';
 
 function Environment() {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -15,6 +16,20 @@ function Environment() {
     const [originalPondDataList, setOriginalPondDataList] = useState([]); 
     const [image, setImage] = useState(null);
     const [searchText, setSearchText] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingIndex, setEditingIndex] = useState(null);
+
+    // Lấy dữ liệu từ localStorage khi trang tải lần đầu
+    useEffect(() => {
+        const storedPondData = JSON.parse(localStorage.getItem('pondDataList')) || [];
+        setPondDataList(storedPondData);
+        setOriginalPondDataList(storedPondData);
+    }, []);
+
+    // Lưu dữ liệu vào localStorage mỗi khi pondDataList thay đổi
+    useEffect(() => {
+        localStorage.setItem('pondDataList', JSON.stringify(pondDataList));
+    }, [pondDataList]);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -23,32 +38,53 @@ function Environment() {
     const handleDeletePond = (index) => {
         const updatedPondDataList = pondDataList.filter((_, pondIndex) => pondIndex !== index);
         setPondDataList(updatedPondDataList);
+        setOriginalPondDataList(updatedPondDataList);
     };
     
-
-
+    const handleEditPond = (index) => {
+        const pondToEdit = pondDataList[index];
+        environmentForm.setFieldsValue(pondToEdit); 
+        setImage(pondToEdit.image); 
+        setEditingIndex(index);
+        setIsEditing(true);
+        setIsModalVisible(true);
+    };
+    
     const handleOk = () => {
         const formData = environmentForm.getFieldsValue();
         const newPondData = { ...formData, image };
-        const updatedPondDataList = [...pondDataList, newPondData];
-
-        setPondDataList(updatedPondDataList); 
-        setOriginalPondDataList(updatedPondDataList); 
+    
+        if (isEditing) {
+            const updatedPondDataList = [...pondDataList];
+            updatedPondDataList[editingIndex] = newPondData;
+            setPondDataList(updatedPondDataList);
+            setOriginalPondDataList(updatedPondDataList); 
+        } else {
+            const updatedPondDataList = [...pondDataList, newPondData];
+            setPondDataList(updatedPondDataList);
+            setOriginalPondDataList(updatedPondDataList);
+        }
+    
         setIsModalVisible(false);
-        environmentForm.resetFields(); 
-        setImage(null); 
+        environmentForm.resetFields();
+        setImage(null);
+        setIsEditing(false); 
     };
-
+    
     const handleCancel = () => {
         setIsModalVisible(false);
+        environmentForm.resetFields();
+        setImage(null);
+        setIsEditing(false); 
     };
-
+    
     const handleImageUpload = (file) => {
         setImage(URL.createObjectURL(file));
         return false; 
     };
 
-    const handleSearch = () => {
+    // Sử dụng debounce để tối ưu tìm kiếm
+    const handleSearch = debounce(() => {
         if (searchText.trim() === '') {
             setPondDataList(originalPondDataList); 
         } else {
@@ -58,7 +94,7 @@ function Environment() {
             setPondDataList(filteredPonds); 
         }
         setSearchText(''); 
-    };
+    }, 300); // Thực hiện tìm kiếm sau 300ms khi người dùng ngừng nhập
 
     return (
         <div className='EnvironmentPage'>
@@ -68,12 +104,15 @@ function Environment() {
             </div>
 
             <div className='Environment__body'>
-
+            <div className='title'>
+                    <h3>Environment monitor</h3>
+                </div>
                 <div className="search">
                     <Input 
                         placeholder="Search Pond" 
                         value={searchText} 
-                        onChange={(e) => setSearchText(e.target.value)} // Cập nhật giá trị input
+                        onChange={(e) => setSearchText(e.target.value)} 
+                        onPressEnter={handleSearch} // Cho phép nhấn Enter để tìm kiếm
                     />
                     <Button type="secondary" onClick={handleSearch}>Search</Button>                  
                 </div>
@@ -83,13 +122,42 @@ function Environment() {
                 </div>
                 <br />
 
-                <div className='title'>
-                    <h3>Environment monitor</h3>
-                </div>
+
+
+                <div  className='uploaded__pond__info'>
+                                <h3>Pond sample</h3>
+                                <Row gutter={16}>
+                                    <Col md={12} xs={24} className='uploaded__pond__info__left'>
+                                        <img src={ho} alt="Uploaded" style={{ width: '90%' }} />
+                                    </Col>
+                                    <Col md={12} xs={24} className='uploaded__pond__info__right'>
+                                        <Row gutter={16}>
+                                            <Col span={12} className='pond__infor'>
+                                                <p><strong>Name: Koi's pond</strong> </p>
+                                                <p><strong>Drain Count:2</strong></p>
+                                            </Col>
+                                            <Col span={12} className='pond__infor'>
+                                                <p><strong>Skimmer Count:1</strong> </p>
+                                                <p><strong>Volume:16m3</strong></p>
+                                            </Col>
+                                            <Col span={12} className='pond__infor'>
+                                                <p><strong>Depth:1m</strong> </p>
+                                                <p><strong>Pumping Capacity:25</strong></p>
+                                            </Col>
+                                            <Col span={12} className='pond__infor'>
+                                                <p><strong>Additional Info:No</strong></p>
+                                            </Col>
+                                        </Row>
+                                        <Link to={'/view'}>View</Link>
+                                        <Button type='secondary'>Edit</Button>
+                                        <Button type='secondary'>Delete</Button>
+                                    </Col>
+                                </Row>
+                                <br />
+                            </div>
                 
                 <div className='Environment__infor'>
                     <div className='Environment__form__container'>
-
                         <Modal title="Add Pond" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
                             <Upload beforeUpload={handleImageUpload}>
                                 <Button icon={<UploadOutlined />}>Upload Image</Button>
@@ -125,37 +193,6 @@ function Environment() {
                             </Form>
                         </Modal>
 
-                        <div  className='uploaded__pond__info'>
-                                <h3>Pond sample</h3>
-                                <Row gutter={16}>
-                                    <Col md={12} xs={24} className='uploaded__pond__info__left'>
-                                        <img src={ho} alt="Uploaded" style={{ width: '90%' }} />
-                                    </Col>
-                                    <Col md={12} xs={24} className='uploaded__pond__info__right'>
-                                        <Row gutter={16}>
-                                            <Col span={12} className='pond__infor'>
-                                                <p><strong>Name: Koi's pond</strong> </p>
-                                                <p><strong>Drain Count:2</strong></p>
-                                            </Col>
-                                            <Col span={12} className='pond__infor'>
-                                                <p><strong>Skimmer Count:1</strong> </p>
-                                                <p><strong>Volume:16m3</strong></p>
-                                            </Col>
-                                            <Col span={12} className='pond__infor'>
-                                                <p><strong>Depth:1m</strong> </p>
-                                                <p><strong>Pumping Capacity:25</strong></p>
-                                            </Col>
-                                            <Col span={12} className='pond__infor'>
-                                                <p><strong>Additional Info:No</strong></p>
-                                            </Col>
-                                        </Row>
-                                        <Link to={'/view'}>View</Link>
-                                        <Button type='secondary'>Edit</Button>
-                                    </Col>
-                                </Row>
-                                <br />
-                            </div>
-
                         {pondDataList.map((pondData, index) => (
                             <div key={index} className='uploaded__pond__info'>
                                 <h3>Pond {index + 1}</h3>
@@ -182,6 +219,7 @@ function Environment() {
                                             </Col>
                                         </Row>
                                         <Link to={'/view'}>View</Link>
+                                        <Button type='secondary' onClick={() => handleEditPond(index)}>Update</Button>
                                         <Button type='secondary' onClick={() => handleDeletePond(index)}>Delete</Button>
                                     </Col>
                                 </Row>
@@ -197,3 +235,5 @@ function Environment() {
 }
 
 export default Environment;
+
+                           
