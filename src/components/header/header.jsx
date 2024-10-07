@@ -48,7 +48,7 @@ function Header() {
           {isLoggedIn ? (
             <>
               <Link to="/profile" className='nav__profile'>Profile</Link>
-              <Button onClick={handleLogout} className='nav__logout'>Logout</Button>
+              <Link classNames="nav__logout" onClick={handleLogout} className='nav__logout'>Logout</Link>
             </>
           ) : (
             <Link to="/login" className='nav__login'>Login</Link>

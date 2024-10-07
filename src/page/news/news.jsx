@@ -95,7 +95,9 @@ function News() {
                     </p>
             </div>
         </div>
+        <div className="NewsPage__cr">
         <CarouselNews numberOfSlide={4} autoplay={true}/>
+        </div>
         <br />
     <Footer/>
     </>

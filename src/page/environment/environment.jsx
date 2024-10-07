@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Header from '../../components/header/header';
 import './environment.scss';
-import koi from '../../img/background.jpg';
+import koi from '../../img/news.jpg';
 import { Form, Input, Button, Modal, Upload, Row, Col } from "antd";
 import Footer from '../../components/footer/footer';
 import { UploadOutlined } from '@ant-design/icons';

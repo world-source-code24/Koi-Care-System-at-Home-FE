@@ -1,7 +1,7 @@
 import './add.scss';
 import koi from '../../img/background.jpg';
 import Header from '../../components/header/header';
-import ca from '../../img/ca.jpg';
+import ca from '../../img/news.jpg';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Form, Input, Button } from 'antd';
@@ -41,7 +41,7 @@ function AddPage() {
       <Header />
       <div className='Addpage__body'>
         <div className='Addpage__background'>
-          <img src={koi} alt="" width="30%" />
+          <img src={ca} alt="" width="30%" />
         </div>
   
         <div className='Addpage__Title'>
