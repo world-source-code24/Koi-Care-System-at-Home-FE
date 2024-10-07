@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './viewproduct.scss';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import bg from '../../img/background.jpg';
 import { Listproduct } from '../../share/listproduct';
-import { Button, Modal } from 'antd';
+import { Button, Input, Modal } from 'antd';
 
 function Viewproduct() {
     const [visible, setVisible] = useState(false);
     const [pro, setPro] = useState({});
     const [num, setNum] = useState(1);
-
+    const [search, setSearch]=useState('');
+    const [store,setStore]=useState([]);
     const [cartItems, setCartItems] = useState(() => {
         const storedCart = localStorage.getItem("cartItems");
         return storedCart ? JSON.parse(storedCart) : [];
@@ -25,13 +26,13 @@ function Viewproduct() {
         setPro(product);
     };
 
-    const Ok = () => {
-        setVisible(false);
-    };
+    // const Ok = () => {
+    //     setVisible(false);
+    // };
 
     const handleCancle = () => {
         setVisible(false);
-        setNum(1); // Reset quantity when modal is closed
+        setNum(1); 
     };
 
     const handleNumbePlus = () => {
@@ -43,6 +44,24 @@ function Viewproduct() {
             setNum(num - 1);
         }
     };
+
+    const handleSearch =() =>{
+        if(search.trim()===''){
+            setStore(Listproduct);
+        }
+        else{
+            const filter=Listproduct.filter(pro=>(
+                pro.Name.toLowerCase()===(search.toLowerCase())
+            ))
+            setStore(filter);
+        }
+        setSearch('');
+    }
+
+    useEffect(() => {
+        setStore(Listproduct); // Hiển thị toàn bộ danh sách sản phẩm khi component được render lần đầu
+    }, []);
+    
 
     const addToCart = () => {
         const existingItem = cartItems.find(item => item.Id === pro.Id);
@@ -67,6 +86,7 @@ function Viewproduct() {
     return (
         <>
             <Header />
+
             <div className='Viewproduct__img'>
                 <img src={bg} alt="" />
             </div>
@@ -74,8 +94,19 @@ function Viewproduct() {
             <div className='Viewproduct__title'>
                 <h3>List of Product</h3>
             </div>
+
+            
+            <div className='Viewproduct__search'>
+                <Input 
+                placeholder='Search Product'
+                value={search}
+                onChange={(e)=>setSearch(e.target.value)}
+                ></Input>
+                <Button type='secondary' onClick={handleSearch}>Search</Button>
+            </div>
+
             <div className='row Viewproduct__product'>
-                {Listproduct.map(product => (
+                {store.map(product => (
                     <div className='col-md-3 product' key={product.Id}>
                         <img src={product.Image} alt="" />
                         <Button type="secondary" onClick={() => handleOpen(product)}>

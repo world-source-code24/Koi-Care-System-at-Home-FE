@@ -112,7 +112,7 @@ function Environment() {
                         placeholder="Search Pond" 
                         value={searchText} 
                         onChange={(e) => setSearchText(e.target.value)} 
-                        onPressEnter={handleSearch} // Cho phép nhấn Enter để tìm kiếm
+                        // onPressEnter={handleSearch} // Cho phép nhấn Enter để tìm kiếm
                     />
                     <Button type="secondary" onClick={handleSearch}>Search</Button>                  
                 </div>
