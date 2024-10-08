@@ -18,6 +18,26 @@
     }
 }
 
+.Viewproduct__search{
+    display: flex;
+    margin-left: 100px;
+    .ant-input{
+        width: 300px;
+        height: 30px;
+    }
+    .ant-btn{
+        padding: 5px 10px;
+        background-color: rgb(208, 0, 0);
+        width: 100px;
+        font-family: gowun patang; 
+        color: white;
+        font-size: 20px;
+        position: relative;
+        bottom: 20px;
+        left: 20px;
+    }
+}
+
 .Viewproduct__product{
     background-color: #ede9e69d;
     width: 100%;
