@@ -21,6 +21,20 @@ function Viewproduct() {
         localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }, [cartItems]);
 
+    // useEffect(() => {
+    //     const fetchProducts = async () => {
+    //         try {
+    //             const response = await fetch('api'); 
+    //             const data = await response.json();
+    //             setStore(data);
+    //         } catch (error) {
+    //             console.error('Error fetching products:', error);
+    //         }
+    //     };
+
+    //     fetchProducts();
+    // }, []);
+
     const handleOpen = (product) => {
         setVisible(true);
         setPro(product);

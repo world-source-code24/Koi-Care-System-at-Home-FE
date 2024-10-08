@@ -60,12 +60,12 @@ function Koi() {
     {
       path: "/news",
       element: <News/>,
-<<<<<<< HEAD
-=======
+    },
 
+    {
       path: "/profile",
       element: <Profile/>,
->>>>>>> ff8a571c10acfe3dd98fa37507ee8b063b1b3021
+
     },
     {
       path: "/mykoi",
@@ -74,14 +74,14 @@ function Koi() {
     {
       path: "/list",
       element: <List/>,
-<<<<<<< HEAD
+
     },
     {
       path: "/profile",
       element: <Profile/>,
-=======
 
->>>>>>> ff8a571c10acfe3dd98fa37507ee8b063b1b3021
+
+
     },
   ]);
 

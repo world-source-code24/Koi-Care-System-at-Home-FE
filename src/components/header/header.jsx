@@ -6,11 +6,6 @@ import { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> ff8a571c10acfe3dd98fa37507ee8b063b1b3021
 
 function Header() {
   const [visible, setVisible] = useState(false);
@@ -43,31 +38,7 @@ function Header() {
 
   return (
     <>
-
-<<<<<<< HEAD
-=======
-      <div className='header'> 
-        <div className='header__logo'>
-          <img className='' src={koi} alt="Koi" width={80}/>
-          <h2>Royal Koi</h2>
-        </div>
-        
-        <div className='header__nav'>
-          <Link to="/" className='nav__news'>Home</Link>
           
-          {isLoggedIn ? (
-            <>
-              <Link to="/profile" className='nav__profile'>Profile</Link>
-              <Link classNames="nav__logout" onClick={handleLogout} className='nav__logout'>Logout</Link>
-            </>
-          ) : (
-            <Link to="/login" className='nav__login'>Login</Link>
-          )}
-
-          <Link to="/news" className='nav__news'>Blog and News</Link>
-          
-
->>>>>>> ff8a571c10acfe3dd98fa37507ee8b063b1b3021
       <div className="header">
         <div className="header__logo">
           <img className="" src={koi} alt="Koi" width={80} />
@@ -91,10 +62,9 @@ function Header() {
             Blog and News
           </Link>
 
-<<<<<<< HEAD
 
-=======
->>>>>>> ff8a571c10acfe3dd98fa37507ee8b063b1b3021
+
+
           <span className="nav__menu">
             <Button onClick={handleMenu}>
               <MenuOutlined className="" />
