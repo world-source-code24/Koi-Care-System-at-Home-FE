@@ -39,17 +39,17 @@ function Profile() {
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(""); 
-        setUserInfo(response.data);
-      } catch (error) {
-        message.error("Failed to fetch user information");
+    const fetchUserInfo = () => {
+      const user = JSON.parse(localStorage.getItem("user")); // Lấy thông tin từ localStorage
+      if (user) {
+        setUserInfo(user); // Thiết lập thông tin người dùng vào trạng thái
+      } else {
+        navigate("/login"); // chuyển sang trang login khi ko có thông tin user
       }
     };
 
     fetchUserInfo();
-  }, []);
+  }, [navigate]);
 
   const handleEditToggle = () => {
     if (isEditing) {
@@ -69,7 +69,7 @@ function Profile() {
         formData.append("", image); // name tên trong API
       }
 
-      await axios.put("", formData, {
+      await axios.put("", formData, { //API
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -150,13 +150,6 @@ function Profile() {
 
             <Content className="profile_content">
               <h5>Account Settings</h5>
-              {/* <Button
-                type="primary"
-                onClick={showModal}
-                className="membership-button"
-              >
-                Membership
-              </Button> */}
 
               <p onClick={showModal} className="membership-button">Membership</p>
 
