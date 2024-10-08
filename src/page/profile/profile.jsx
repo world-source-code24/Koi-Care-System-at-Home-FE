@@ -39,12 +39,39 @@ function Profile() {
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
-    const fetchUserInfo = () => {
-      const user = JSON.parse(localStorage.getItem("user")); // Lấy thông tin từ localStorage
-      if (user) {
-        setUserInfo(user); // Thiết lập thông tin người dùng vào trạng thái
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
+
+      if (token) {
+        try {
+          const response = await axios.get(
+            "https://localhost:5001/api/Account/Profile",
+            {
+              // Gọi API để lấy thông tin người dùng
+              headers: {
+                Authorization: `Bearer ${token}`, // Gửi Access Token
+              },
+            }
+          );
+
+          setUserInfo({
+            fullName: response.data.name || "",
+            email: response.data.email || "",
+            phone: response.data.phone || "",
+            address: response.data.address || "",
+          }); // Thiết lập thông tin người dùng vào trạng thái
+          console.log(userInfo);
+        } catch (error) {
+          console.error("Error fetching user info:", error);
+          if (error.response && error.response.status === 401) {
+            // Nếu token không hợp lệ hoặc hết hạn
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            navigate("/login"); // Chuyển hướng về trang đăng nhập
+          }
+        }
       } else {
-        navigate("/login"); // chuyển sang trang login khi ko có thông tin user
+        navigate("/login"); // Chuyển hướng về trang đăng nhập khi không có token
       }
     };
 
@@ -69,7 +96,8 @@ function Profile() {
         formData.append("", image); // name tên trong API
       }
 
-      await axios.put("", formData, { //API
+      await axios.put("https://localhost:5001/api/Account/Profile", formData, {
+        //API
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -104,7 +132,7 @@ function Profile() {
   };
 
   const handleImageUpload = (file) => {
-     setImage(URL.createObjectURL(file));
+    setImage(URL.createObjectURL(file));
     // setImage(file);
     return false;
   };
@@ -151,7 +179,9 @@ function Profile() {
             <Content className="profile_content">
               <h5>Account Settings</h5>
 
-              <p onClick={showModal} className="membership-button">Membership</p>
+              <p onClick={showModal} className="membership-button">
+                Membership
+              </p>
 
               {/*Divider */}
               <div className="profile_divider"></div>
