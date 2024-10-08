@@ -21,9 +21,9 @@ function Login() {
       console.log(response);  // Kiểm tra dữ liệu trả về từ API
   
       if (response.data.success) {
-        // Save the token and user information in localStorage
+
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // Giả sử thông tin user nằm trong `response.data.user`
+        localStorage.setItem("user", JSON.stringify(response.data.user)); // Giả sử thông tin user nằm trong response.data.user
 
         navigate("/"); 
       }

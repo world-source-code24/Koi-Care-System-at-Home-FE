@@ -94,7 +94,7 @@ function Environment() {
             setPondDataList(filteredPonds); 
         }
         setSearchText(''); 
-    }, 300); // Thực hiện tìm kiếm sau 300ms khi người dùng ngừng nhập
+    });
 
     return (
         <div className='EnvironmentPage'>
