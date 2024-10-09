@@ -11,6 +11,8 @@ import Footer from "../../components/footer/footer";
 import cakoi from "../../img/cakoi.png.jpg"
 
 function HomePage() {
+
+  const [notification, setNotification] = useState(false);
   const [cartItems, setCartItems] = useState(() => {
 
     const storedCart = localStorage.getItem("cartItems");
@@ -25,6 +27,11 @@ function HomePage() {
     const productToAdd = {...pro,quantity: num};
       setCartItems([...cartItems, productToAdd]); 
       setVisible(false); 
+      setNotification(true);
+
+        setTimeout(() => {
+            setNotification(false);
+        }, 3000);
   };
 
   const [visible, setVisible]=useState(false);
@@ -110,6 +117,12 @@ function HomePage() {
         <div className="HomePage__viewmore">
           <Link  to="/viewproduct">View More [+]</Link>
         </div>
+
+        {notification && (
+            <div className="notification">
+                Add successfully!
+            </div>
+            )}
 
         <Modal open={visible} onCancel={handleCancle} onOk={Ok} footer={null}>
           <div className="modal-content">

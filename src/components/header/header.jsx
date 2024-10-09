@@ -56,12 +56,16 @@ function Header() {
           ) : (
             <>
               <Link to="/login" className='nav__login'>Profile</Link>
-              <Link to="/login" className='nav__login'>Login</Link>
+              {/* <Link to="/login" className='nav__login'>Login</Link> */}
             </>
           )}
 
           <Link to="/news" className="nav__news">
             Blog and News
+          </Link>
+
+          <Link to="/cart" className="nav__news">
+            Cart
           </Link>
 
           <span className="nav__menu">
@@ -93,10 +97,7 @@ function Header() {
         <Link to="/contact" className="nav__news">
           Contact Us
         </Link>
-        <Link to="/cart" className="nav__news">
-          Cart
-        </Link>
-        <Link onClick={handleLogout}>Logout</Link>
+
 
       </div>
     </>

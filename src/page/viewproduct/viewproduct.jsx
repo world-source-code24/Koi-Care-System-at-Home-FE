@@ -12,6 +12,9 @@ function Viewproduct() {
     const [num, setNum] = useState(1);
     const [search, setSearch]=useState('');
     const [store,setStore]=useState([]);
+    const [notification, setNotification] = useState(false);
+
+
     const [cartItems, setCartItems] = useState(() => {
         const storedCart = localStorage.getItem("cartItems");
         return storedCart ? JSON.parse(storedCart) : [];
@@ -80,13 +83,11 @@ function Viewproduct() {
     const addToCart = () => {
         const existingItem = cartItems.find(item => item.Id === pro.Id);
         if (existingItem) {
-            // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng
             const updatedCartItems = cartItems.map(item =>
-                item.Id === pro.Id ? { quantity: item.quantity + num } : item
+                item.Id === pro.Id ? { ...item, quantity: item.quantity + num } : item
             );
             setCartItems(updatedCartItems);
         } else {
-            // Nếu sản phẩm chưa có trong giỏ hàng, thêm sản phẩm mới
             const productToAdd = {
                 ...pro,
                 quantity: num
@@ -95,7 +96,16 @@ function Viewproduct() {
         }
         setVisible(false);
         setNum(1); // Reset quantity after adding to cart
+    
+        // Hiển thị thông báo thành công
+        setNotification(true);
+    
+        // Ẩn thông báo sau 3 giây
+        setTimeout(() => {
+            setNotification(false);
+        }, 3000);
     };
+    
 
     return (
         <>
@@ -129,6 +139,12 @@ function Viewproduct() {
                     </div>
                 ))}
             </div>
+            {notification && (
+            <div className="notification">
+                Add successfully!
+            </div>
+            )}
+
 
             <Modal open={visible} onCancel={handleCancle} footer={null}>
                 <div className="modal-content">

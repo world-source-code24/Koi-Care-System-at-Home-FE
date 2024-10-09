@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './cart.scss';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
-import bg from '../../img/background.jpg';
+import bg from '../../img/news.jpg';
 
 function Cart() {
     const [cartItems, setCartItems] = useState([]);
