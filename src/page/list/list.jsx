@@ -1,6 +1,6 @@
 import Header from "../../components/header/header";
 import "./list.scss";
-import pic from "../../img/6.jpg";
+import pic from "../../img/3.jpg";
 import { Button, Divider, Input, Modal } from "antd";
 import { Listkoi } from "../../share/listkoi";
 import Footer from "../../components/footer/footer";
@@ -9,8 +9,9 @@ function List() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedKoi, setSelectedKoi] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [notFound, setNotFound] = useState(false);
 
+
+  
   const showModal = (koi) => {
     setSelectedKoi(koi);
     setIsModalOpen(true);
@@ -21,16 +22,19 @@ function List() {
     setSelectedKoi(null);
   };
 
+  
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    setNotFound(value && filteredKoi.length === 0); // Kiểm tra nếu không có kết quả
   };
 
   // Lọc danh sách cá Koi dựa trên searchTerm
   const filteredKoi = Listkoi.filter(koi =>
     koi.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const notFound = searchTerm && filteredKoi.length === 0; 
+  
   return (
     <>
       <Header />
@@ -67,7 +71,7 @@ function List() {
 
             {notFound && (
             <div className="not-found-message">
-              <h3>Cá Koi của bạn không được tìm thấy.</h3>
+              <h3>Oops, Your fish is not exist ! Please try again :((</h3>
             </div>
           )}  
         </div>
