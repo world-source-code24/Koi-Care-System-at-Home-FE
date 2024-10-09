@@ -71,7 +71,7 @@ function Profile() {
           }
         }
       } else {
-        navigate("/login"); // Chuyển hướng về trang đăng nhập khi không có token
+        navigate("/"); // Chuyển hướng về trang đăng nhập khi không có token
       }
     };
 
