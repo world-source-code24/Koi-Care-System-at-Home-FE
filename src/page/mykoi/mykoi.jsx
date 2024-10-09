@@ -68,7 +68,7 @@ function Mykoi() {
                 <div className="col-md-3 character_1">
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    name="name__fish"
+                    name="name"
                     label="Name"
                     className="custom-label"
                   >
@@ -76,7 +76,7 @@ function Mykoi() {
                   </Form.Item>
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    name="length__fish"
+                    name="length"
                     label="Length"
                     className="custom-label"
                   >
@@ -92,7 +92,7 @@ function Mykoi() {
                   </Form.Item>
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    name="breed__fish"
+                    name="breed"
                     label="Breeder"
                     className="custom-label"
                   >
@@ -103,7 +103,7 @@ function Mykoi() {
                 <div className="col-md-3 character_2">
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    name="physique__fish"
+                    name="physique"
                     label="Physique"
                     className="custom-label"
                   >
@@ -111,7 +111,7 @@ function Mykoi() {
                   </Form.Item>
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    name="weight__fish"
+                    name="weight"
                     label="Weight"
                     className="custom-label"
                   >
@@ -119,7 +119,7 @@ function Mykoi() {
                   </Form.Item>
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    name="pond__fish"
+                    name="pond"
                     label="Pond"
                     className="custom-label"
                   >
@@ -127,7 +127,7 @@ function Mykoi() {
                   </Form.Item>
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    name="purchase__fish"
+                    name="purchase"
                     label="Purchase Price"
                     className="custom-label"
                   >
@@ -138,7 +138,7 @@ function Mykoi() {
                 <div className="col-md-3 character_3">
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    name="age__fish"
+                    name="age"
                     label="Age"
                     className="custom-label"
                   >
@@ -146,7 +146,7 @@ function Mykoi() {
                   </Form.Item>
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    name="sex__fish"
+                    name="sex"
                     label="Sex"
                     className="custom-label"
                   >
@@ -154,7 +154,7 @@ function Mykoi() {
                   </Form.Item>
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    name="pond__since__fish"
+                    name="pond_since"
                     label="In Pond Since"
                     className="custom-label"
                   >
