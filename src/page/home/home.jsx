@@ -143,11 +143,12 @@ function HomePage() {
                   </div>
                   <div className='Viewproduct__buy'>
                       <h5>Quantity: </h5>
-                      <Button className='Viewproduct__minus' onClick={handleNumbeMinus}>-</Button>
+                      <p  style={{ cursor: 'pointer' }} onClick={handleNumbeMinus}>-</p>
                       <input type="text" value={num} readOnly />
-                      <Button className='Viewproduct__plus' onClick={handleNumbePlus}>+</Button>
+                      <p  style={{ cursor: 'pointer' }} onClick={handleNumbePlus}>+</p>
                   </div>
                   <div className="modal-actions">
+                      <Link type="secondary" to={`/detail/${pro.Id}`}>BUY NOW</Link>
                       <Button className="modal-add-cart" onClick={addToCart}>ADD TO CART</Button>
                   </div>
               </div>

@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import './viewproduct.scss';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
-import bg from '../../img/background.jpg';
+import bg from '../../img/news.jpg';
 import { Listproduct } from '../../share/listproduct';
 import { Button, Input, Modal } from 'antd';
+import { Link } from 'react-router-dom';
 
 function Viewproduct() {
     const [visible, setVisible] = useState(false);
@@ -24,19 +25,20 @@ function Viewproduct() {
         localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }, [cartItems]);
 
-    // useEffect(() => {
-    //     const fetchProducts = async () => {
-    //         try {
-    //             const response = await fetch('api'); 
-    //             const data = await response.json();
-    //             setStore(data);
-    //         } catch (error) {
-    //             console.error('Error fetching products:', error);
-    //         }
-    //     };
-
-    //     fetchProducts();
-    // }, []);
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch('https://koicaresystemapi.azurewebsites.net/api/products'); // Link API của bạn
+                const data = await response.json();
+                setStore(data); // Lưu danh sách sản phẩm vào state 'store'
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
+    
+        fetchProducts();
+    }, []);
+    
 
     const handleOpen = (product) => {
         setVisible(true);
@@ -157,11 +159,12 @@ function Viewproduct() {
                         <h5 className="modal-price">Price: {pro.Price} </h5>
                         <div className='Viewproduct__buy'>
                             <h5>Quantity: </h5>
-                            <Button className='Viewproduct__minus' onClick={handleNumbeMinus}>-</Button>
+                            <p style={{ cursor: 'pointer' }}  onClick={handleNumbeMinus}>-</p>
                             <input type="text" value={num} readOnly />
-                            <Button className='Viewproduct__plus' onClick={handleNumbePlus}>+</Button>
+                            <p style={{ cursor: 'pointer' }}  onClick={handleNumbePlus}>+</p>
                         </div>
                         <div className="modal-actions">
+                            <Link to={`/detail/${pro.Id}`}>BUY NOW</Link>
                             <Button className="modal-add-cart" onClick={addToCart}>ADD TO CART</Button>
                         </div>
                     </div>

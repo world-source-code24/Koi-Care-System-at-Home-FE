@@ -37,7 +37,7 @@ function Login() {
   };
   
   const handleLoginGoogle = async () => {
-    window.location.href = "https://localhost:5001/api/Login/signin-google";
+    window.location.href = "https://koicaresystemapi.azurewebsites.net/index.html?fbclid=IwY2xjawFxyedleHRuA2FlbQIxMAABHbwVrU1l3r4bIwj-2uamfChUuab0U2bD6fiUhK_bGYhemCyBNcWS9GvHdQ_aem_Y4Bg8BPTdJB_GOpMGFc1zg";
   };
 
   return (

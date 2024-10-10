@@ -15,107 +15,131 @@ export const Listproduct=[
         Id:'1',
         Image:pr1,
         Name:'King UV germicidal lamp1',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'2',
         Image:pr2,
         Name:'King UV germicidal lamp2',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'3',
         Image:pr3,
         Name:'King UV germicidal lamp3',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'4',
         Image:pr4,
         Name:'King UV germicidal lamp4',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'5',
         Image:pr5,
         Name:'King UV germicidal lamp5',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'6',
         Image:pr6,
         Name:'King UV germicidal lamp6',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'7',
         Image:pr7,
         Name:'King UV germicidal lamp7',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'8',
         Image:pr8,
         Name:'King UV germicidal lamp8',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'9',
         Image:pr9,
         Name:'King UV germicidal lamp9',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'10',
         Image:pr10,
         Name:'King UV germicidal lamp10',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'11',
         Image:pr11,
         Name:'King UV germicidal lamp11',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 
     {
         Id:'12',
         Image:pr12,
         Name:'King UV germicidal lamp12',
-        Origin:'',
+        Origin:'France',
         Category:'',
-        Price: '300.000 VND'
+        Price: '300.000',
+        Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
+        Rating: '5 star',
     },
 ]

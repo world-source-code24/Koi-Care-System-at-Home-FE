@@ -3,6 +3,7 @@ import './cart.scss';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import bg from '../../img/news.jpg';
+import { Link } from 'react-router-dom';
 
 function Cart() {
     const [cartItems, setCartItems] = useState([]);
@@ -61,7 +62,7 @@ function Cart() {
                             <span>Total:</span>
                             <span>{getTotalPrice().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}.000 VND</span>
                         </div>
-
+                        <Link to="/viewproduct">Continue buy product</Link>
                         <div className="cart__checkout">
                             <button>Checkout</button>
                         </div>
