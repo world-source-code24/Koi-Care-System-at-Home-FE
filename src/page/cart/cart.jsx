@@ -23,9 +23,9 @@ function Cart() {
 
     const getTotalPrice = () => {
         return cartItems.reduce((acc, item) => {
-            // Kiểm tra nếu item.Price là số trước khi tính toán
+
             const price = typeof item.Price === 'number' ? item.Price : parseFloat(item.Price);
-            return acc + price * (item.quantity || 1); // Nếu không có quantity, mặc định là 1
+            return acc + price * (item.quantity || 1); 
         }, 0);
     };
 

@@ -12,7 +12,6 @@ function Detail() {
     const find = Listproduct.find(pro => pro.Id === id);
     const [count, setCount] = useState(1);
 
-    // Tính tổng giá và định dạng giá trị theo kiểu tiền Việt Nam (có dấu chấm)
     const totalPrice = (find.Price * count).toLocaleString("vi-VN");
 
     const handleMinion = () => {

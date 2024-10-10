@@ -28,9 +28,9 @@ function Viewproduct() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch('https://koicaresystemapi.azurewebsites.net/api/products'); // Link API của bạn
+                const response = await fetch('https://koicaresystemapi.azurewebsites.net/api/products'); 
                 const data = await response.json();
-                setStore(data); // Lưu danh sách sản phẩm vào state 'store'
+                setStore(data);
             } catch (error) {
                 console.error('Error fetching products:', error);
             }
@@ -78,7 +78,7 @@ function Viewproduct() {
     }
 
     useEffect(() => {
-        setStore(Listproduct); // Hiển thị toàn bộ danh sách sản phẩm khi component được render lần đầu
+        setStore(Listproduct); 
     }, []);
     
 
@@ -97,12 +97,12 @@ function Viewproduct() {
             setCartItems([...cartItems, productToAdd]);
         }
         setVisible(false);
-        setNum(1); // Reset quantity after adding to cart
+        setNum(1); 
     
-        // Hiển thị thông báo thành công
+
         setNotification(true);
     
-        // Ẩn thông báo sau 3 giây
+
         setTimeout(() => {
             setNotification(false);
         }, 3000);
