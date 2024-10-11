@@ -17,7 +17,7 @@ function Login() {
     const { email, password } = values;
 
     try {
-      const response = await api.post("https://localhost:5001/api/User/Login", {
+      const response = await api.post("https://koicaresystemapi.azurewebsites.net/api/User/Login", {
         email,
         password,
       });
