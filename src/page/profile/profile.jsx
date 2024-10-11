@@ -267,45 +267,58 @@ function Profile() {
 
                 {/*Modal reset password */}
                 <Modal
-              title="Reset Password"
-              visible={isResetModalOpen}
-              onOk={handleResetPassword}
-              onCancel={() => setIsResetModalOpen(false)}
-              okText="Reset Password"
-            >
-              <Form>
-                <Form.Item label="Current Password">
-                  <Input.Password
-                    value={passwords.currentPassword}
-                    onChange={(e) =>
-                      setPasswords({ ...passwords, currentPassword: e.target.value })
-                    }
-                    placeholder="Enter your current password"
-                  />
-                </Form.Item>
-                <Form.Item label="New Password">
-                  <Input.Password
-                    value={passwords.newPassword}
-                    onChange={(e) =>
-                      setPasswords({ ...passwords, newPassword: e.target.value })
-                    }
-                    placeholder="Enter your new password"
-                  />
-                </Form.Item>
-                <Form.Item label="Confirm New Password">
-                  <Input.Password
-                    value={passwords.confirmNewPassword}
-                    onChange={(e) =>
-                      setPasswords({
-                        ...passwords,
-                        confirmNewPassword: e.target.value,
-                      })
-                    }
-                    placeholder="Confirm your new password"
-                  />
-                </Form.Item>
-              </Form>
-            </Modal>  
+  title="Reset Password"
+  visible={isResetModalOpen}
+  onOk={handleResetPassword}
+  onCancel={() => setIsResetModalOpen(false)}
+  okText="Reset Password"
+  cancelText="Cancel"
+  className="reset_password_modal"
+  centered
+  width={500}
+>
+  <Form layout="vertical" className="reset_password_form">
+    <Form.Item
+      label="Current Password"
+      name="currentPassword"
+      rules={[{ required: true, message: 'Please enter your current password' }]}
+    >
+      <Input.Password
+        value={passwords.currentPassword}
+        onChange={(e) =>
+          setPasswords({ ...passwords, currentPassword: e.target.value })
+        }
+        placeholder="Enter your current password"
+      />
+    </Form.Item>
+    <Form.Item
+      label="New Password"
+      name="newPassword"
+      rules={[{ required: true, message: 'Please enter your new password' }]}
+    >
+      <Input.Password
+        value={passwords.newPassword}
+        onChange={(e) =>
+          setPasswords({ ...passwords, newPassword: e.target.value })
+        }
+        placeholder="Enter your new password"
+      />
+    </Form.Item>
+    <Form.Item
+      label="Confirm New Password"
+      name="confirmNewPassword"
+      rules={[{ required: true, message: 'Please confirm your new password' }]}
+    >
+      <Input.Password
+        value={passwords.confirmNewPassword}
+        onChange={(e) =>
+          setPasswords({ ...passwords, confirmNewPassword: e.target.value })
+        }
+        placeholder="Confirm your new password"
+      />
+    </Form.Item>
+  </Form>
+</Modal>   
 
               <div className="profile_body_form">
                 <Form className="avatar">

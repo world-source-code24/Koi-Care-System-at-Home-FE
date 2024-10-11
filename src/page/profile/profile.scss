@@ -147,3 +147,43 @@
     margin-right: 40px;
     color: white;
   }
+
+  .reset_password_modal {
+    .ant-modal-header {
+      background-color: #f0f2f5; // Thay đổi màu nền của header
+      border-bottom: none; // Xóa đường viền dưới của header
+    }
+  
+    .ant-modal-title {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center; // Căn giữa tiêu đề modal
+    }
+  
+    .ant-modal-footer {
+      display: flex;
+      justify-content: center; // Căn giữa các nút
+      background-color: #f0f2f5;
+    }
+  
+    .reset_password_form {
+      .ant-form-item {
+        margin-bottom: 16px; // Tạo khoảng cách giữa các trường
+      }
+  
+      input {
+        border-radius: 5px; // Làm tròn các góc của input
+      }
+  
+      input::placeholder {
+        font-style: italic; // Thêm style cho placeholder
+        color: #999;
+      }
+    }
+  }
+
+  .ant-form-item-explain-error {
+    color: red; // Màu thông báo lỗi
+    font-style: italic;
+    margin-top: 5px; 
+  }
