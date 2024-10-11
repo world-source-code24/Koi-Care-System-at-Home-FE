@@ -3,7 +3,6 @@ import './viewproduct.scss';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import bg from '../../img/news.jpg';
-import { Listproduct } from '../../share/listproduct';
 import { Button, Input, Modal } from 'antd';
 import { Link } from 'react-router-dom';
 
@@ -11,11 +10,10 @@ function Viewproduct() {
     const [visible, setVisible] = useState(false);
     const [pro, setPro] = useState({});
     const [num, setNum] = useState(1);
-    const [search, setSearch]=useState('');
-    const [store,setStore]=useState([]);
+    const [search, setSearch] = useState('');
+    const [store, setStore] = useState([]);
+    const [filteredStore, setFilteredStore] = useState([]);
     const [notification, setNotification] = useState(false);
-
-
     const [cartItems, setCartItems] = useState(() => {
         const storedCart = localStorage.getItem("cartItems");
         return storedCart ? JSON.parse(storedCart) : [];
@@ -28,65 +26,65 @@ function Viewproduct() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch('https://koicaresystemapi.azurewebsites.net/api/products'); 
+                const response = await fetch('https://koicaresystemapi.azurewebsites.net/api/Product/get-all');
                 const data = await response.json();
-                setStore(data);
+
+ 
+                if (data && data.product && data.product.$values) {
+                    setStore(data.product.$values);
+                    setFilteredStore(data.product.$values); 
+                } else {
+                    console.error("Unexpected data format:", data);
+                    setStore([]); 
+                    setFilteredStore([]);
+                }
             } catch (error) {
                 console.error('Error fetching products:', error);
+                setStore([]); 
+                setFilteredStore([]);
             }
         };
-    
+
         fetchProducts();
     }, []);
-    
 
     const handleOpen = (product) => {
         setVisible(true);
         setPro(product);
     };
 
-    // const Ok = () => {
-    //     setVisible(false);
-    // };
-
-    const handleCancle = () => {
+    const handleCancel = () => {
         setVisible(false);
         setNum(1); 
     };
 
-    const handleNumbePlus = () => {
+    const handleNumPlus = () => {
         setNum(num + 1);
     };
 
-    const handleNumbeMinus = () => {
+    const handleNumMinus = () => {
         if (num > 1) {
             setNum(num - 1);
         }
     };
 
-    const handleSearch =() =>{
-        if(search.trim()===''){
-            setStore(Listproduct);
-        }
-        else{
-            const filter=Listproduct.filter(pro=>(
-                pro.Name.toLowerCase()===(search.toLowerCase())
-            ))
-            setStore(filter);
+    const handleSearch = () => {
+        if (search.trim() === '') {
+            setFilteredStore(store); 
+        } else {
+            const filtered = store.filter(product =>
+                product.name.toLowerCase().includes(search.toLowerCase())
+            );
+            setFilteredStore(filtered);
         }
         setSearch('');
-    }
-
-    useEffect(() => {
-        setStore(Listproduct); 
-    }, []);
-    
+    };
 
     const addToCart = () => {
-        const existingItem = cartItems.find(item => item.Id === pro.Id);
+        const existingItem = cartItems.find(item => item.productId === pro.productId);
         if (existingItem) {
             const updatedCartItems = cartItems.map(item =>
-                item.Id === pro.Id ? { ...item, quantity: item.quantity + num } : item
+                item.productId === pro.productId ? { ...item, quantity: item.quantity + num } : item
             );
             setCartItems(updatedCartItems);
         } else {
@@ -97,80 +95,76 @@ function Viewproduct() {
             setCartItems([...cartItems, productToAdd]);
         }
         setVisible(false);
-        setNum(1); 
-    
-
+        setNum(1);
         setNotification(true);
-    
-
         setTimeout(() => {
             setNotification(false);
         }, 3000);
     };
-    
 
     return (
         <>
             <Header />
-
             <div className='Viewproduct__img'>
                 <img src={bg} alt="" />
             </div>
-
             <div className='Viewproduct__title'>
-                <h3>List of Product</h3>
+                <h3>List of Products</h3>
             </div>
-
-            
             <div className='Viewproduct__search'>
                 <Input 
-                placeholder='Search Product'
-                value={search}
-                onChange={(e)=>setSearch(e.target.value)}
-                ></Input>
+                    placeholder='Search Product'
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
                 <Button type='secondary' onClick={handleSearch}>Search</Button>
             </div>
-
             <div className='row Viewproduct__product'>
-                {store.map(product => (
-                    <div className='col-md-3 product' key={product.Id}>
-                        <img src={product.Image} alt="" />
+                {filteredStore.map(product => (
+                    <div className='col-md-3 product' key={product.productId}>
+                        <img src={product.image} alt={product.name} />
                         <Button type="secondary" onClick={() => handleOpen(product)}>
-                            View product
+                            View Product
                         </Button>
                     </div>
                 ))}
             </div>
             {notification && (
-            <div className="notification">
-                Add successfully!
-            </div>
+                <div className="notification">Added successfully!</div>
             )}
-
-
-            <Modal open={visible} onCancel={handleCancle} footer={null}>
+            <Modal open={visible} onCancel={handleCancel} footer={null}>
                 <div className="modal-content">
                     <div className="modal-image">
-                        <img src={pro.Image} alt={pro.Name} />
+                        <img src={pro.image} alt={pro.name} />
                     </div>
                     <div className="modal-details">
-                        <h3>{pro.Name}</h3>
-                        <span className="modal-sku">Product code: {pro.Id}</span>
-                        <h5 className="modal-price">Price: {pro.Price} </h5>
+                        <h3>{pro.name}</h3>
+                        <span className="modal-sku">Product code: {pro.productId}</span>
+                        <p>{pro.productInfo}</p>
+                        <p>Stock :{pro.stock} products</p>
+                        <div className="modal-promotions">
+                            <ul>
+                                <li>Genuine product commitment</li>
+                                <li>Cash on Delivery</li>
+                            </ul>
+                        </div>
+
+                        <h5 className="modal-price">Price: {pro.price}.000 VND</h5>
+
                         <div className='Viewproduct__buy'>
                             <h5>Quantity: </h5>
-                            <p style={{ cursor: 'pointer' }}  onClick={handleNumbeMinus}>-</p>
+                            <p style={{ cursor: 'pointer' }} onClick={handleNumMinus}>-</p>
                             <input type="text" value={num} readOnly />
-                            <p style={{ cursor: 'pointer' }}  onClick={handleNumbePlus}>+</p>
+                            <p style={{ cursor: 'pointer' }} onClick={handleNumPlus}>+</p>
                         </div>
+                        
                         <div className="modal-actions">
-                            <Link to={`/detail/${pro.Id}`}>BUY NOW</Link>
+                            <Link to={`/detail/${pro.productId}`}>BUY NOW</Link>
                             <Button className="modal-add-cart" onClick={addToCart}>ADD TO CART</Button>
                         </div>
                     </div>
                 </div>
             </Modal>
-
             <Footer />
         </>
     );

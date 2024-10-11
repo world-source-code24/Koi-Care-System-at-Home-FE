@@ -19,14 +19,13 @@ function Environment() {
     const [isEditing, setIsEditing] = useState(false);
     const [editingIndex, setEditingIndex] = useState(null);
 
-    // Lấy dữ liệu từ localStorage khi trang tải lần đầu
+
     useEffect(() => {
         const storedPondData = JSON.parse(localStorage.getItem('pondDataList')) || [];
         setPondDataList(storedPondData);
         setOriginalPondDataList(storedPondData);
     }, []);
 
-    // Lưu dữ liệu vào localStorage mỗi khi pondDataList thay đổi
     useEffect(() => {
         localStorage.setItem('pondDataList', JSON.stringify(pondDataList));
     }, [pondDataList]);
@@ -83,7 +82,7 @@ function Environment() {
         return false; 
     };
 
-    // Sử dụng debounce để tối ưu tìm kiếm
+
     const handleSearch = debounce(() => {
         if (searchText.trim() === '') {
             setPondDataList(originalPondDataList); 

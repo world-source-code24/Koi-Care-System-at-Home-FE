@@ -8,12 +8,12 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 
 function Viewpond() {
     const [waterParamsForm] = Form.useForm();
-    const [chartData, setChartData] = useState([]); // State to hold chart data
+    const [chartData, setChartData] = useState([]); 
 
     const handleWaterParamsFormFinish = (values) => {
         console.log("Water Parameters Form Data:", values);
 
-        // Prepare chart data based on form values
+
         const newChartData = [
             { name: 'Temperature', value: parseFloat(values.temperature) || 0 },
             { name: 'Salt', value: parseFloat(values.salt) || 0 },
@@ -29,7 +29,7 @@ function Viewpond() {
             { name: 'Co2 Level', value: parseFloat(values.co2Level) || 0 },
             { name: 'Outdoor Temp', value: parseFloat(values.outDoorTemp) || 0 },
         ];
-        setChartData(newChartData); // Update chart data state
+        setChartData(newChartData); 
     };
 
     return (
@@ -151,12 +151,12 @@ function Viewpond() {
                                     <Input />
                                 </Form.Item>
 
-                                <Form.Item
+                                {/* <Form.Item
                                     rules={[{ required: true, message: 'Please input the date!' }]}
                                     label="Date:" name="date"
                                 >
                                     <Input />
-                                </Form.Item>
+                                </Form.Item> */}
 
                                 <Form.Item
                                     label="Note:" name="note"
