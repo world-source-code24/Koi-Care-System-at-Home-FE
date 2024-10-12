@@ -12,19 +12,29 @@ function Food() {
         <img src={background} alt="" />
       </div>
       <div className="Calculator_body">
-        <div className="Calculator_title">Food and salt Calculator</div>
+        <div className="Calculator_title">Food and Salt Calculator</div>
         <div className="Calculator_Form">
           <div className="Calculator_Food">
             <Form className="Food_form" layout="vertical">
               <div className="Food_title">Food calculator</div>
 
-              <Form.Item label="Koi Fish pond name: " name="pondName">
-                <Input placeholder="Enter the name of the koi pond" />
+              <Form.Item 
+              label="Koi Fish pond name: " 
+              name="pondName"
+              >
+                <Input 
+                placeholder="Enter the name of the koi pond" 
+                />
               </Form.Item>
               <div className="form-columns">
                 <div className="form-column">
-                  <Form.Item label="Total number of Koi fish:" name="totalFish">
-                    <Input placeholder="Enter the total number of koi fish" />
+                  <Form.Item 
+                  label="Total number of Koi fish:" 
+                  name="totalFish"
+                  >
+                    <Input 
+                    placeholder="Enter the total number of koi fish" 
+                    />
                   </Form.Item>
                   <Form.Item
                     label="Average weight of koi fish (kg):"
@@ -35,21 +45,33 @@ function Food() {
                 </div>
 
                 <div className="form-column">
-                  <Form.Item label="Ratio Food (1% - 4%): " name="feedRatio">
+                  <Form.Item 
+                  label="Ratio Food (1% - 4%): " 
+                  name="foodRatio">
                     <Input placeholder="Enter feed ratio" />
                   </Form.Item>
-                  <Form.Item label="Amount of food for the lake (gam):" name="feedAmount">
+                  <Form.Item
+                    label="Amount of food for the lake (gam):"
+                    name="foodAmount"
+                  >
                     <Input placeholder="Enter the amount of food for the pond" />
                   </Form.Item>
                 </div>
               </div>
-
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Calculator
+                </Button>
+              </Form.Item>
               <Form.Item label="Koi Fish name: " name="koiName">
                 <Input placeholder="Enter name of your Koi fish" />
               </Form.Item>
               <div className="form-columns">
                 <div className="form-column">
-                  <Form.Item label="Length of your Koi fish (cm):" name="length">
+                  <Form.Item
+                    label="Length of your Koi fish (cm):"
+                    name="length"
+                  >
                     <Input placeholder="Enter length of your Koi fish" />
                   </Form.Item>
                   <Form.Item
@@ -61,18 +83,28 @@ function Food() {
                 </div>
 
                 <div className="form-column">
-                  <Form.Item label="Tỉ lệ thức ăn" name="feedRatio">
-                    <Input placeholder="Nhập tỉ lệ thức ăn" />
+                  <Form.Item 
+                  label="Ratio Fish Food (1% - 4%):" 
+                  name="fishRatio"
+                  >
+                    <Input 
+                    placeholder="Enter ratio fish food" 
+                    />
                   </Form.Item>
-                  <Form.Item label="Lượng thức ăn cho hồ" name="feedAmount">
-                    <Input placeholder="Nhập lượng thức ăn" />
+                  <Form.Item 
+                  label="Amount of food for Koi fish ( gam ):" 
+                  name="fishAmount"
+                  >
+                    <Input 
+                    placeholder="Enter amount of food for Koi fish" 
+                    />
                   </Form.Item>
                 </div>
               </div>
 
               <Form.Item>
                 <Button type="primary" htmlType="submit">
-                  Tính toán
+                  Calculator
                 </Button>
               </Form.Item>
             </Form>
@@ -80,38 +112,43 @@ function Food() {
 
           {/*Salt Calculator */}
           <div className="Calculator_Salt">
-            <Form className="Food_form" layout="vertical">
-              <div className="Food_title">Food calculator</div>
+            <Form className="Salt_form" layout="vertical">
+              <div className="Salt_title">Salt calculator</div>
 
-              <Form.Item label="Tên hồ nuôi cá koi" name="pondName">
-                <Input placeholder="Nhập tên hồ nuôi cá koi" />
+              <Form.Item 
+              label="Koi fish pond name: "
+              name="pondName"
+              >
+                <Input placeholder="Enter koi fish pond name" />
               </Form.Item>
-              <div className="form-columns">
-                <div className="form-column">
-                  <Form.Item label="Tổng số cá koi" name="totalFish">
-                    <Input placeholder="Nhập tổng số cá koi" />
-                  </Form.Item>
+              <div className="salt-columns">
+                <div className="salt-column">
                   <Form.Item
-                    label="Cân nặng trung bình của cá koi"
-                    name="avgWeight"
+                    label="Amount of salt for the pond ( kg ):"
+                    name="saltAmount"
                   >
-                    <Input placeholder="Nhập cân nặng trung bình" />
+                    <Input placeholder="Enter Amount of salt for the pond" />
+                  </Form.Item>
+                  <Form.Item 
+                  label="Salt ratio (1% - 5%): " 
+                  name="saltRatio">
+                    <Input placeholder="Enter salt ratio" />
                   </Form.Item>
                 </div>
 
-                <div className="form-column">
-                  <Form.Item label="Tỉ lệ thức ăn" name="feedRatio">
-                    <Input placeholder="Nhập tỉ lệ thức ăn" />
-                  </Form.Item>
-                  <Form.Item label="Lượng thức ăn cho hồ" name="feedAmount">
-                    <Input placeholder="Nhập lượng thức ăn" />
+                <div className="salt-column">
+                  <Form.Item
+                    label="Volume of the lake ( litre ):"
+                    name="volume"
+                  >
+                    <Input placeholder="Enter volume of the lake" />
                   </Form.Item>
                 </div>
               </div>
 
               <Form.Item>
                 <Button type="primary" htmlType="submit">
-                  Tính toán
+                  Calculator
                 </Button>
               </Form.Item>
             </Form>
