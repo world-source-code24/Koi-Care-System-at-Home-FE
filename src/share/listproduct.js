@@ -27,6 +27,7 @@ export const Listproduct=[
         Image:pr2,
         Name:'King UV germicidal lamp2',
         Origin:'France',
+
         Category:'',
         Price: '300.000',
         Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
@@ -37,6 +38,7 @@ export const Listproduct=[
         Id:'3',
         Image:pr3,
         Name:'King UV germicidal lamp3',
+
         Origin:'France',
         Category:'',
         Price: '300.000',
@@ -48,6 +50,7 @@ export const Listproduct=[
         Id:'4',
         Image:pr4,
         Name:'King UV germicidal lamp4',
+
         Origin:'France',
         Category:'',
         Price: '300.000',
@@ -59,7 +62,9 @@ export const Listproduct=[
         Id:'5',
         Image:pr5,
         Name:'King UV germicidal lamp5',
+
         Origin:'France',
+
         Category:'',
         Price: '300.000',
         Information: 'Aquarium machine is a device that helps circulate water, provide oxygen and maintain a stable living environment for fish and plants in the aquarium. It supports water filtration, detoxification and ensures flow.',
@@ -103,6 +108,7 @@ export const Listproduct=[
         Id:'9',
         Image:pr9,
         Name:'King UV germicidal lamp9',
+
         Origin:'France',
         Category:'',
         Price: '300.000',
@@ -114,6 +120,7 @@ export const Listproduct=[
         Id:'10',
         Image:pr10,
         Name:'King UV germicidal lamp10',
+
         Origin:'France',
         Category:'',
         Price: '300.000',
@@ -136,6 +143,7 @@ export const Listproduct=[
         Id:'12',
         Image:pr12,
         Name:'King UV germicidal lamp12',
+
         Origin:'France',
         Category:'',
         Price: '300.000',

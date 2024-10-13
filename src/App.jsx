@@ -1,4 +1,4 @@
-import {RouterProvider,createBrowserRouter} from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from "./page/login/login";
 import HomePage from "./page/home/home";
 import AddPage from "./page/add/add";
@@ -11,55 +11,57 @@ import Cart from "./page/cart/cart";
 import Contact from "./page/contact/contact";
 import News from "./page/news/news";
 
-
 import Profile from "./page/profile/profile";
 import Mykoi from "./page/mykoi/mykoi";
 import List from "./page/list/list";
 import Detail from "./page/detail/detail";
 
-
 function Koi() {
-
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <HomePage/>,
+      element: <HomePage />,
     },
     {
-      path: "/login", 
-      element: <Login/>,
+      path: "/login",
+      element: <Login />,
     },
     {
       path: "/add",
-      element: <AddPage/>,
+      element: <AddPage />,
     },
     {
       path: "/food",
-      element: <FoodPage/>,
+      element: <FoodPage />,
     },
     {
       path: "/environment",
-      element: <Environment/>,
-    },
-    {
-      path: "/view/:id", 
-      element: <Viewpond/>,
-    },
-    {
-      path: "/viewproduct",
-      element: <Viewproduct/>,
-    },
-    {
-      path: "/cart",
-      element: <Cart/>,
+      element: <Environment />,
     },
     {
 
+      path: "/view/:id", 
+      element: <Viewpond/>,
+
+      path: "/view",
+      element: <Viewpond />,
+
+    },
+    {
+      path: "/viewproduct",
+      element: <Viewproduct />,
+    },
+    {
+      path: "/cart",
+      element: <Cart />,
+    },
+    {
       path: "/contact",
-      element: <Contact/>,
+      element: <Contact />,
     },
     {
       path: "/news",
+
       element: <News/>,
     },
 
@@ -67,13 +69,17 @@ function Koi() {
       path: "/profile",
       element: <Profile/>,
 
+
+      element: <News />,
+
     },
     {
       path: "/mykoi",
-      element: <Mykoi/>,
+      element: <Mykoi />,
     },
     {
       path: "/list",
+<<<<<<< Khoi
       element: <List/>,
     },
     {
@@ -83,10 +89,17 @@ function Koi() {
     {
       path: "/detail/:id",
       element: <Detail/>,
+
+      element: <List />,
+    },
+    {
+      path: "/profile",
+      element: <Profile />,
+
     },
   ]);
 
-  return <RouterProvider router={router}/>;
+  return <RouterProvider router={router} />;
 }
 
 export default Koi;

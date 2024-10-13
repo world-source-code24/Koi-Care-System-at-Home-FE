@@ -1,9 +1,11 @@
-import './header.scss';
-import { Link } from 'react-router-dom';
-import koi from '../../img/logo.png.jpg';
-import { useState, useEffect } from 'react';
-import { Button } from 'antd';
-import { MenuOutlined } from '@ant-design/icons';
+
+import "./header.scss";
+import { Link } from "react-router-dom";
+import koi from "../../img/logo.png.jpg";
+import { useState, useEffect } from "react";
+import { Button } from "antd";
+import { MenuOutlined } from "@ant-design/icons";
+
 
 function Header() {
   const [visible, setVisible] = useState(false);
@@ -37,7 +39,6 @@ function Header() {
   return (
     <>
 
-
       <div className="header">
         <div className="header__logo">
           <img className="" src={koi} alt="Koi" width={80} />
@@ -48,6 +49,7 @@ function Header() {
           <Link to="/" className="nav__news">
             Home
           </Link>
+
           {isLoggedIn ? (
             <>
               <Link to="/profile" className='nav__profile'>Profile</Link>
@@ -59,6 +61,14 @@ function Header() {
               {/* <Link to="/login" className='nav__login'>Login</Link> */}
             </>
           )}
+
+
+          <Link to="/login" className="nav__login">
+            Login
+          </Link>
+          <Link to="/profile" className="nav__profile">
+            Profile
+          </Link>
 
           <Link to="/news" className="nav__news">
             Blog and News
@@ -98,6 +108,13 @@ function Header() {
           Contact Us
         </Link>
 
+
+        <a href="/environment">Environment Monitor</a>
+        <a href="contact">Contact Us</a>
+        <a href="/cart">Cart</a>
+        <a href="#" onClick={handleLogout}>
+          Logout
+        </a>
 
       </div>
     </>
