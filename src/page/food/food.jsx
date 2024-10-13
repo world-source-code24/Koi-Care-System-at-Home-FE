@@ -3,7 +3,45 @@ import "./food.scss";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import { Button, Form, Input } from "antd";
+import axios from "axios";
 function Food() {
+
+// Hàm xử lý khi form Food calculator được submit
+const onFinishFoodCalculator = async (values) => {
+  try {
+    const response = await axios.post("API/Food calcu", values);
+    message.success("Calculation successful!");
+    console.log("Response from BE:", response.data);
+  } catch (error) {
+    message.error("An error occurred during calculation.");
+    console.error("Error:", error);
+  }
+};
+
+// Hàm xử lý khi form Fish calculator được submit
+const onFinishFishCalculator = async (values) => {
+  try {
+    const response = await axios.post("API/Fish calcu", values);
+    message.success("Calculation successful!");
+    console.log("Response from BE:", response.data);
+  } catch (error) {
+    message.error("An error occurred during calculation.");
+    console.error("Error:", error);
+  }
+};
+
+// Hàm xử lý khi form Salt calculator được submit
+const onFinishSaltCalculator = async (values) => {
+  try {
+    const response = await axios.post("API/salt calcu", values);
+    message.success("Calculation successful!");
+    console.log("Response from BE:", response.data);
+  } catch (error) {
+    message.error("An error occurred during calculation.");
+    console.error("Error:", error);
+  }
+};
+
   return (
     <>
       <Header />
@@ -15,15 +53,16 @@ function Food() {
         <div className="Calculator_title">Food and Salt Calculator</div>
         <div className="Calculator_Form">
           <div className="Calculator_Food">
-            <Form className="Food_form" layout="vertical">
+            <Form className="Food_form" layout="vertical" onFinish={onFinishFoodCalculator}>
               <div className="Food_title">Food calculator</div>
 
               <Form.Item 
               label="Koi Fish pond name: " 
               name="pondName"
+              rules={[{ required: true, message: "Please enter the pond name!" }]}
               >
                 <Input 
-                placeholder="Enter the name of the koi pond" 
+                placeholder="Enter the name of the koi pond"
                 />
               </Form.Item>
               <div className="form-columns">
@@ -31,6 +70,7 @@ function Food() {
                   <Form.Item 
                   label="Total number of Koi fish:" 
                   name="totalFish"
+                  rules={[{ required: true, message: "Please enter the total number of koi fish!" }]}
                   >
                     <Input 
                     placeholder="Enter the total number of koi fish" 
@@ -39,6 +79,7 @@ function Food() {
                   <Form.Item
                     label="Average weight of koi fish (kg):"
                     name="avgWeight"
+                    rules={[{ required: true, message: "Please enter the average weight!" }]}
                   >
                     <Input placeholder="Enter the average weight of Koi fish " />
                   </Form.Item>
@@ -53,6 +94,7 @@ function Food() {
                   <Form.Item
                     label="Amount of food for the lake (gam):"
                     name="foodAmount"
+                    rules={[{ required: true, message: "Please enter the amount of food!" }]}
                   >
                     <Input placeholder="Enter the amount of food for the pond" />
                   </Form.Item>
@@ -63,7 +105,16 @@ function Food() {
                   Calculator
                 </Button>
               </Form.Item>
-              <Form.Item label="Koi Fish name: " name="koiName">
+            </Form>
+          </div>
+
+          {/*Fish Calculator */}
+          <div className="Calculator_Fish">
+            <Form className="Fish_form" layout="vertical" onFinish={onFinishFishCalculator}>
+              <div className="Fish_title">
+                Your Fish Calculator
+              </div>
+            <Form.Item label="Koi Fish name: " name="koiName">
                 <Input placeholder="Enter name of your Koi fish" />
               </Form.Item>
               <div className="form-columns">
@@ -112,34 +163,40 @@ function Food() {
 
           {/*Salt Calculator */}
           <div className="Calculator_Salt">
-            <Form className="Salt_form" layout="vertical">
+            <Form className="Salt_form" layout="vertical" onFinish={onFinishSaltCalculator}>
               <div className="Salt_title">Salt calculator</div>
 
               <Form.Item 
               label="Koi fish pond name: "
               name="pondName"
+              rules={[{ required: true, message: "Please enter the pond name!" }]}  
               >
                 <Input placeholder="Enter koi fish pond name" />
               </Form.Item>
-              <div className="salt-columns">
-                <div className="salt-column">
+              <div className="form-columns">
+                <div className="form-column">
                   <Form.Item
                     label="Amount of salt for the pond ( kg ):"
                     name="saltAmount"
+                    rules={[{ required: true, message: "Please enter the amount of salt!" }]}
                   >
                     <Input placeholder="Enter Amount of salt for the pond" />
                   </Form.Item>
                   <Form.Item 
                   label="Salt ratio (1% - 5%): " 
-                  name="saltRatio">
-                    <Input placeholder="Enter salt ratio" />
+                  name="saltRatio"
+                  rules={[{ required: true, message: "Please enter the salt ratio!" }]}
+                  >
+                    <Input 
+                    placeholder="Enter salt ratio" />
                   </Form.Item>
                 </div>
 
-                <div className="salt-column">
+                <div className="form-column">
                   <Form.Item
                     label="Volume of the lake ( litre ):"
                     name="volume"
+                    rules={[{ required: true, message: "Please enter the volume of the lake!" }]}
                   >
                     <Input placeholder="Enter volume of the lake" />
                   </Form.Item>
