@@ -26,7 +26,6 @@ function Login() {
         const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
         console.log(token);
       if (token) {
-
           const userResponse = await api.get("Account/Profile",
             {
               // Gọi API để lấy thông tin người dùng
@@ -78,13 +77,14 @@ function Login() {
               >
                 <Input placeholder="Email" />
               </Form.Item>
+
               <Form.Item
                 name="password"
                 rules={[
                   { required: true, message: "Please enter your password" },
                 ]}
                 >
-<Input.Password placeholder="Password" />
+                <Input.Password placeholder="Password" />
                 </Form.Item>
                 {error && (
                   <Form.Item>

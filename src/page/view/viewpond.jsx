@@ -49,11 +49,11 @@ function Viewpond() {
     const handleWaterParamsFormFinish = async (values) => {
         console.log("Water Parameters Form Data:", values);
 
-        // Assuming pondId is taken from pondData
-        const pondId = pondData ? pondData.pondId : values.pondId || 38;
+
+        const pondId = pondData ? pondData.pondId : values.pondId ;
 
         const postData = {
-            $id: "1", // Optional, can be removed if not needed
+            $id: "1", 
             parameterId: values.parameterId || 5,
             temperature: values.temperature || 0,
             salt: values.salt || 0,
@@ -70,7 +70,7 @@ function Viewpond() {
 
         console.log("Data to be sent:", postData);
 
-        // Proceed with the POST request
+
         try {
             const response = await axios.post(
                 `https://koicaresystemapi.azurewebsites.net/api/WaterParameter/save-param${id}`, 

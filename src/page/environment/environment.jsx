@@ -20,7 +20,7 @@ function Environment() {
     const [isEditing, setIsEditing] = useState(false);
     const [editingIndex, setEditingIndex] = useState(null);
 
-    const user = JSON.parse(localStorage.getItem("user")); // Get the user ID from localStorage
+    const user = JSON.parse(localStorage.getItem("user")); 
 
     useEffect(() => {
         const fetchPondData = async () => {
@@ -32,7 +32,7 @@ function Environment() {
     
                 const user = JSON.parse(storedUser);
                 const userId = user.accId;  // Đảm bảo accId là đúng
-                console.log("Fetched user ID:", userId);  // Log userId
+                console.log("Fetched user ID:", userId);  
     
                 const response = await fetch(`https://koicaresystemapi.azurewebsites.net/api/Pond/Show-All-Ponds-UserID/${userId}`);
     
@@ -41,7 +41,7 @@ function Environment() {
                 }
     
                 const data = await response.json();
-                console.log("Fetched pond data:", data); // Log dữ liệu trả về
+                console.log("Fetched pond data:", data); 
     
                 if (data && data.listPond && data.listPond.$values) {
                     if (data.listPond.$values.length > 0) {
@@ -65,7 +65,7 @@ function Environment() {
         };
     
         fetchPondData();
-    }, []); // Chạy 1 lần khi mount component
+    }, []); 
     
     
     
@@ -120,10 +120,10 @@ function Environment() {
     };
 
     const handleOk = async () => {
-        const formData = environmentForm.getFieldsValue();  // Get form data
+        const formData = environmentForm.getFieldsValue(); 
         const userId = user.accId;
-        const pondId = isEditing ? updatePond?.pondId : 0; // Use `updatePond` for editing
-        const newPondData = { ...formData, image, userId, pondId };  // Merge form data with image URL
+        const pondId = isEditing ? updatePond?.pondId : 0; 
+        const newPondData = { ...formData, image, userId, pondId };  
 
         try {
             let response;
@@ -267,8 +267,8 @@ function Environment() {
                                             </Row>
                                             <div className='action'>
                                                 <Link to={`/view/${pondData.pondId}`}>View</Link>
-                                                <Button onClick={() => handleEditPond(index)}>Edit</Button>
-                                                <Button danger onClick={() => handleDeletePond(index)}>Delete</Button>
+                                                <Button type='secondary' onClick={() => handleEditPond(index)}>Edit</Button>
+                                                <Button type='secondary' danger onClick={() => handleDeletePond(index)}>Delete</Button>
                                             </div>
                                         </Col>
                                     </Row>
@@ -286,17 +286,16 @@ function Environment() {
                 width={800}
             >
                 <Form form={environmentForm} onFinish={handleOk} layout="vertical">
-                    {/* Pond Name */}
+
                     <Form.Item label="Pond Name" name="name" rules={[{ required: true, message: 'Please input the pond name!' }]}>
                         <Input />
                     </Form.Item>
 
-                    {/* Pump Capacity */}
+
                     <Form.Item label="Pump Capacity (L/min)" name="pumpCapacity">
                         <Input />
                     </Form.Item>
 
-                    {/* Depth */}
                     <Form.Item label="Depth (m)" name="depth">
                         <Input />
                     </Form.Item>
@@ -305,12 +304,10 @@ function Environment() {
                         <Input />
                     </Form.Item>
 
-                    {/* Drain Count */}
                     <Form.Item label="Drain Count" name="drainCount">
                         <Input />
                     </Form.Item>
 
-                    {/* Pond Image Upload */}
                     <Upload beforeUpload={handleImageUpload}>
                                 <Button icon={<UploadOutlined />}>Upload Image</Button>
                             </Upload>
@@ -320,7 +317,7 @@ function Environment() {
                                 </div>
                             )}
 
-                    {/* Buttons */}
+
                     <Form.Item>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <Button

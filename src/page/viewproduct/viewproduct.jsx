@@ -14,6 +14,7 @@ function Viewproduct() {
     const [store, setStore] = useState([]);
     const [filteredStore, setFilteredStore] = useState([]);
     const [notification, setNotification] = useState(false);
+
     const [cartItems, setCartItems] = useState(() => {
         const storedCart = localStorage.getItem("cartItems");
         return storedCart ? JSON.parse(storedCart) : [];
@@ -28,7 +29,7 @@ function Viewproduct() {
         const fetchProducts = async () => {
             try {
                 const response = await fetch('https://koicaresystemapi.azurewebsites.net/api/Product/get-all');
-                const data = await response.json();
+                const data = await response.json(); // chuyển đổi dữ liệu từ json sang java
 
  
                 if (data && data.product && data.product.$values) {
@@ -100,7 +101,7 @@ function Viewproduct() {
         setNotification(true);
         setTimeout(() => {
             setNotification(false);
-        }, 3000);
+        }, 1000);
     };
 
     return (

@@ -22,7 +22,7 @@ function Cart() {
     };
 
     const getTotalPrice = () => {
-        return cartItems.reduce((acc, item) => {
+        return cartItems.reduce((acc, item) => { // biến mảng thành giá trị duy nhất
             const price = item.price ? (typeof item.price === 'number' ? item.price : parseFloat(item.price.toString().replace(/,/g, ''))) : 0;
             return acc + price * (item.quantity || 1);
         }, 0);
