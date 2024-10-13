@@ -6,7 +6,7 @@ import { Button, Form, Input } from "antd";
 import axios from "axios";
 function Food() {
 
-// Hàm xử lý khi form Food calculator được submit
+// Hàm xử lý khi form Food calculator 
 const onFinishFoodCalculator = async (values) => {
   try {
     const response = await axios.post("API/Food calcu", values);
@@ -18,7 +18,7 @@ const onFinishFoodCalculator = async (values) => {
   }
 };
 
-// Hàm xử lý khi form Fish calculator được submit
+// Hàm xử lý khi form Fish calculator 
 const onFinishFishCalculator = async (values) => {
   try {
     const response = await axios.post("API/Fish calcu", values);
@@ -30,7 +30,7 @@ const onFinishFishCalculator = async (values) => {
   }
 };
 
-// Hàm xử lý khi form Salt calculator được submit
+// Hàm xử lý khi form Salt calculator 
 const onFinishSaltCalculator = async (values) => {
   try {
     const response = await axios.post("API/salt calcu", values);
@@ -74,6 +74,7 @@ const onFinishSaltCalculator = async (values) => {
                   >
                     <Input 
                     placeholder="Enter the total number of koi fish" 
+                    rules={[{ required: true, message: "Please enter the total number of Koi fish!" }]}
                     />
                   </Form.Item>
                   <Form.Item
@@ -114,7 +115,7 @@ const onFinishSaltCalculator = async (values) => {
               <div className="Fish_title">
                 Your Fish Calculator
               </div>
-            <Form.Item label="Koi Fish name: " name="koiName">
+            <Form.Item label="Koi Fish name: " name="koiName" rules={[{ required: true, message: "Please enter name of your Koi fish!" }]}>
                 <Input placeholder="Enter name of your Koi fish" />
               </Form.Item>
               <div className="form-columns">
@@ -122,14 +123,16 @@ const onFinishSaltCalculator = async (values) => {
                   <Form.Item
                     label="Length of your Koi fish (cm):"
                     name="length"
+                    rules={[{ required: true, message: "Please enter your length of your Koi fish!" }]}
                   >
-                    <Input placeholder="Enter length of your Koi fish" />
+                    <Input placeholder="Enter length of your Koi fish"  />
                   </Form.Item>
                   <Form.Item
                     label="Weight of your Koi fish (kg): "
                     name="weight"
+                    rules={[{ required: true, message: "Please enter weight of your Koi fish!" }]}
                   >
-                    <Input placeholder="Enter weight of your Koi fish " />
+                    <Input placeholder="Enter weight of your Koi fish "  />
                   </Form.Item>
                 </div>
 
@@ -137,14 +140,17 @@ const onFinishSaltCalculator = async (values) => {
                   <Form.Item 
                   label="Ratio Fish Food (1% - 4%):" 
                   name="fishRatio"
+                  rules={[{ required: true, message: "Please enter ratio of food for Koi fish!" }]}
                   >
                     <Input 
                     placeholder="Enter ratio fish food" 
+
                     />
                   </Form.Item>
                   <Form.Item 
                   label="Amount of food for Koi fish ( gam ):" 
                   name="fishAmount"
+                  rules={[{ required: true, message: "Please enter the amount of food for Koi fish!" }]}
                   >
                     <Input 
                     placeholder="Enter amount of food for Koi fish" 

@@ -42,7 +42,7 @@ function Koi() {
 
       path: "/view/:id", 
       element: <Viewpond/>,
-
+      
       path: "/view",
       element: <Viewpond />,
 
@@ -79,7 +79,7 @@ function Koi() {
     },
     {
       path: "/list",
-<<<<<<< Khoi
+
       element: <List/>,
     },
     {
