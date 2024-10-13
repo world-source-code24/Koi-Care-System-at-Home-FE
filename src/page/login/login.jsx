@@ -17,16 +17,29 @@ function Login() {
     const { email, password } = values;
   
     try {
-      const response = await api.post("/", { email, password });
+      const response = await api.post("User/Login", { email, password });
       console.log(response);  // Kiểm tra dữ liệu trả về từ API
   
       if (response.data.success) {
 
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // Giả sử thông tin user nằm trong response.data.user
+        localStorage.setItem("token", response.data.data.accessToken);
+        const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
+        console.log(token);
+      if (token) {
 
+          const userResponse = await api.get("Account/Profile",
+            {
+              // Gọi API để lấy thông tin người dùng
+              headers: {
+                Authorization: `Bearer ${token}`, // Gửi Access Token
+              },
+            }
+          );
+          localStorage.setItem("user", JSON.stringify(userResponse.data)); // Giả sử thông tin user nằm trong response.data.user
+       
         navigate("/"); 
       }
+    }
     } catch (error) {
       if (error.response && error.response.data) {
         setError(error.response.data.message || "Email or password is incorrect");
@@ -70,45 +83,45 @@ function Login() {
                 rules={[
                   { required: true, message: "Please enter your password" },
                 ]}
-              >
-                <Input.Password placeholder="Password" />
-              </Form.Item>
-              {error && (
-                <Form.Item>
-                  <div style={{ color: "red" }}>{error}</div>
-                </Form.Item>
-              )}
-              <Form.Item>
-                <Button
-                  type="secondary"
-                  htmlType="submit"
-                  className="login__but1"
-                  block
                 >
-                  Login
-                </Button>
-              </Form.Item>
-            </Form>
-            <b>Forgot password?</b>
-            <div className="signup">
-              <h3>New member?</h3>
-              <Link to={"/register"}>Sign Up Now!</Link>
+<Input.Password placeholder="Password" />
+                </Form.Item>
+                {error && (
+                  <Form.Item>
+                    <div style={{ color: "red" }}>{error}</div>
+                  </Form.Item>
+                )}
+                <Form.Item>
+                  <Button
+                    type="secondary"
+                    htmlType="submit"
+                    className="login__but1"
+                    block
+                  >
+                    Login
+                  </Button>
+                </Form.Item>
+              </Form>
+              <b>Forgot password?</b>
+              <div className="signup">
+                <h3>New member?</h3>
+                <Link to={"/register"}>Sign Up Now!</Link>
+              </div>
+              <div className="divider"></div>
+              <button className="login__google" onClick={handleLoginGoogle}>
+                <img
+                  className="google"
+                  src="https://tse2.mm.bing.net/th?id=OIP.DdVPhTob_7Dpl5-BRiaK8wHaHa&pid=Api&P=0&h=220"
+                  width={20}
+                  alt="Google Logo"
+                />
+                <span>Sign in with Google</span>
+              </button>
             </div>
-            <div className="divider"></div>
-            <button className="login__google" onClick={handleLoginGoogle}>
-              <img
-                className="google"
-                src="https://tse2.mm.bing.net/th?id=OIP.DdVPhTob_7Dpl5-BRiaK8wHaHa&pid=Api&P=0&h=220"
-                width={20}
-                alt="Google Logo"
-              />
-              <span>Sign in with Google</span>
-            </button>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-export default Login;
+    );
+  }
+  
+  export default Login;

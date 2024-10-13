@@ -42,7 +42,7 @@ function Koi() {
       element: <Environment/>,
     },
     {
-      path: "/view",
+      path: "/view/:id", 
       element: <Viewpond/>,
     },
     {
@@ -75,7 +75,6 @@ function Koi() {
     {
       path: "/list",
       element: <List/>,
-
     },
     {
       path: "/profile",

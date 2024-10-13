@@ -15,8 +15,8 @@ function Cart() {
         }
     }, []);
 
-    const handleRemove = (id) => {
-        const updatedCartItems = cartItems.filter(item => item.id !== id);
+    const handleRemove = (indexToRemove) => {
+        const updatedCartItems = cartItems.filter((_, index) => index !== indexToRemove);
         setCartItems(updatedCartItems);
         localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
     };
@@ -46,11 +46,11 @@ function Cart() {
                                     <img src={item.image} alt={item.name} />
                                     <div className="cart__item__details">
                                         <h4>{item.name}</h4>
-                                        <p>Product code: {item.id}</p>
+                                        {/* <p>Product code: {item.Id}</p> */}
                                         <p>Quantity: {item.quantity || 1}</p>
                                         <p>Price: {item.price ? item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : 'N/A'}.000 VND</p>
                                     </div>
-                                    <button onClick={() => handleRemove(item.id)}>✖</button>
+                                    <button onClick={() => handleRemove(index)}>✖</button>
                                 </div>
                             ))}
                         </div>

@@ -23,6 +23,7 @@ function Viewproduct() {
         localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }, [cartItems]);
 
+
     useEffect(() => {
         const fetchProducts = async () => {
             try {

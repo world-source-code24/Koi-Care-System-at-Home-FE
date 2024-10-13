@@ -1,7 +1,7 @@
 
 import axios from "axios";
 
-const baseUrl = "https://koicaresystemapi.azurewebsites.net/api/User/Login";
+const baseUrl = "https://koicaresystemapi.azurewebsites.net/api/";
 
 const config = {
   baseURL: baseUrl, 
