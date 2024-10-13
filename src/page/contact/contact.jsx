@@ -2,7 +2,7 @@
 
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
-import bg from '../../img/background.jpg';
+import bg from '../../img/news.jpg';
 import './contact.scss';
 import { Button, Form, Input } from 'antd';
 

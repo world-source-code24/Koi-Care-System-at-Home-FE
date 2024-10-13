@@ -1,21 +1,22 @@
+
 import axios from "axios";
 
-const baseUrl = "http://localhost:5000/api/Login";
+const baseUrl = "https://koicaresystemapi.azurewebsites.net/api/";
 
 const config = {
-  baseURL: baseUrl, // Fix: It should be "baseURL", not "baseUrl" for axios config.
+  baseURL: baseUrl, 
 };
 
 const api = axios.create(config);
 
-api.defaults.baseURL = baseUrl; // This line is redundant since you already set `baseURL` in the `config` object.
+api.defaults.baseURL = baseUrl;
 
-// Handle before API call
+
 const handleBefore = (config) => {
-  // Retrieve the token and attach it to the request
+
   const token = localStorage.getItem("token");
   if (token) {
-    config.headers["Authorization"] = `Bearer ${token}`;
+    config.headers["Authorization"];
   }
   return config;
 };

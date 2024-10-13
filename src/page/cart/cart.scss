@@ -14,16 +14,26 @@
     margin: 0 auto;
     padding: 20px 0;
 
+    a{
+        position: relative;
+        top: 10px;
+        text-decoration: none;
+        color: #d00000;
+        font-size: 15px;
+        font-weight: 600;
+        font-family: gowun patang;
+    }
+
     h3 {
         font-size: 28px;
         font-weight: bold;
         margin-bottom: 20px;
-        color: #f4511e;
+        color: #d00000;
         font-family: gowun patang;
     }
 
     .cart__items {
-        border: 1px solid #f4511e;
+        border: 1px solid #d00000;
         border-radius: 8px;
         padding: 20px;
 
@@ -67,7 +77,7 @@
                     align-items: center;
 
                     button {
-                        background-color: #f4511e;
+                        background-color: #d00000;
                         color: white;
                         border: none;
                         padding: 5px 10px;
@@ -77,7 +87,7 @@
                         border-radius: 4px;
 
                         &:hover {
-                            background-color: #e64a19;
+                            background-color: #d00000;
                         }
                     }
 
@@ -93,7 +103,7 @@
                 background-color: transparent;
                 border: none;
                 font-size: 18px;
-                color: #f4511e;
+                color: #d00000;
                 cursor: pointer;
                 text-align: right;
                 position: relative;
@@ -112,7 +122,8 @@
         justify-content: space-between;
         font-size: 20px;
         font-weight: bold;
-        color: #f4511e;
+        color: #d00000;
+        font-family: gowun patang;
     }
 
 
@@ -122,7 +133,7 @@
         width: 100%;
         
         button {
-            background-color: #f4511e;
+            background-color: #d00000;
             color: white;
             padding: 15px 30px;
             border: none;

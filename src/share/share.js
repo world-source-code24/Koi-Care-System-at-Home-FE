@@ -1,9 +1,9 @@
-import img1 from '../img/ka1.jpg';
-import img2 from '../img/ka2.jpg';
-import img3 from '../img/ka3.jpg';
-import img4 from '../img/ka4.jpg';
-import img5 from '../img/ka5.jpg';
-import img6 from '../img/ka6.jpg';
+import img1 from '../img/a10.jpg';
+import img2 from '../img/a7.jpg';
+import img3 from '../img/a3.jpg';
+import img4 from '../img/a4.jpg';
+import img5 from '../img/a8.jpg';
+import img6 from '../img/a6.jpg';
 // import ca6 from '../img/ca6.jpg';
 // import ca7 from '../img/ca7.jpg';
 // import ca8 from '../img/ca8.jpg';

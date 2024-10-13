@@ -14,6 +14,7 @@ import News from "./page/news/news";
 import Profile from "./page/profile/profile";
 import Mykoi from "./page/mykoi/mykoi";
 import List from "./page/list/list";
+import Detail from "./page/detail/detail";
 
 function Koi() {
   const router = createBrowserRouter([
@@ -38,8 +39,13 @@ function Koi() {
       element: <Environment />,
     },
     {
+
+      path: "/view/:id", 
+      element: <Viewpond/>,
+
       path: "/view",
       element: <Viewpond />,
+
     },
     {
       path: "/viewproduct",
@@ -55,7 +61,17 @@ function Koi() {
     },
     {
       path: "/news",
+
+      element: <News/>,
+    },
+
+    {
+      path: "/profile",
+      element: <Profile/>,
+
+
       element: <News />,
+
     },
     {
       path: "/mykoi",
@@ -63,11 +79,23 @@ function Koi() {
     },
     {
       path: "/list",
+<<<<<<< Khoi
+      element: <List/>,
+    },
+    {
+      path: "/profile",
+      element: <Profile/>,
+    },
+    {
+      path: "/detail/:id",
+      element: <Detail/>,
+
       element: <List />,
     },
     {
       path: "/profile",
       element: <Profile />,
+
     },
   ]);
 

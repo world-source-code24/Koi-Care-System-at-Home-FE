@@ -1,9 +1,11 @@
+
 import "./header.scss";
 import { Link } from "react-router-dom";
 import koi from "../../img/logo.png.jpg";
 import { useState, useEffect } from "react";
 import { Button } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
+
 
 function Header() {
   const [visible, setVisible] = useState(false);
@@ -36,6 +38,7 @@ function Header() {
 
   return (
     <>
+
       <div className="header">
         <div className="header__logo">
           <img className="" src={koi} alt="Koi" width={80} />
@@ -46,14 +49,33 @@ function Header() {
           <Link to="/" className="nav__news">
             Home
           </Link>
+
+          {isLoggedIn ? (
+            <>
+              <Link to="/profile" className='nav__profile'>Profile</Link>
+              <Link onClick={handleLogout} className='nav__logout'>Logout</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className='nav__login'>Profile</Link>
+              {/* <Link to="/login" className='nav__login'>Login</Link> */}
+            </>
+          )}
+
+
           <Link to="/login" className="nav__login">
             Login
           </Link>
           <Link to="/profile" className="nav__profile">
             Profile
           </Link>
+
           <Link to="/news" className="nav__news">
             Blog and News
+          </Link>
+
+          <Link to="/cart" className="nav__news">
+            Cart
           </Link>
 
           <span className="nav__menu">
@@ -70,12 +92,22 @@ function Header() {
         <a href="#" className="closebtn" onClick={handleClose}>
           ×
         </a>
-        <a href="/add">Add New Koi</a>
+        <Link to="/add" className="nav__news">
+          Add New Koi
+        </Link>
+        <Link to="/mykoi" className="nav__news">
+          My Koi Fish
+        </Link>
+        <Link to="/list" className="nav__news">
+          List of Koi
+        </Link>
+        <Link to="/environment" className="nav__news">
+          Environment Monitor
+        </Link>
+        <Link to="/contact" className="nav__news">
+          Contact Us
+        </Link>
 
-        <a href="#">My Koi Fish</a>
-
-        <a href="/mykoi">My Koi Fish</a>
-        <a href="/list">List of Koi</a>
 
         <a href="/environment">Environment Monitor</a>
         <a href="contact">Contact Us</a>
@@ -83,6 +115,7 @@ function Header() {
         <a href="#" onClick={handleLogout}>
           Logout
         </a>
+
       </div>
     </>
   );

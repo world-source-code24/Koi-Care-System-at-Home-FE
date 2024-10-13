@@ -194,22 +194,14 @@ h2{
                 border-radius: 5px;
             }
 
-            .Viewproduct__minus,
-            .Viewproduct__plus {
-                width: 5px;
-                height: 15px;
-                border: none;
-                background-color: red;
+            p {
+                padding: 1px 10px;
+                background-color: rgb(199, 199, 199);
                 color: white;
                 font-size: 15px;
-                border-radius: 50%;
                 position: relative;
-                bottom: 10px;
+                top: 10px;
                 font-family: gowun patang;
-
-                &:hover {
-                    background-color: darkred;
-                }
             }
         }
 
@@ -232,6 +224,18 @@ h2{
 
             .modal-add-cart {
                 background-color: orange;
+                width: 180px;
+            }
+
+            a{
+                text-decoration: none;
+                padding: 5px 60px;
+                border-radius: 5px;
+                background-color: rgb(196, 0, 0);
+                color: white;
+                &:hover {
+                    background-color: darkred;
+                }
             }
         }
     }
@@ -257,3 +261,13 @@ h2{
     }
 }
 
+.notification {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+    z-index: 999;
+}
