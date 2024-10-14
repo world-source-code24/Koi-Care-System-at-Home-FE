@@ -16,12 +16,12 @@ function List() {
    useEffect(() => {
     const fetchKoi = async () => {
       try {
-        const response = await fetch('https://koicaresystemapi.azurewebsites.net/api/Koi/1');
+        const response = await fetch('https://koicaresystemapi.azurewebsites.net/api/user/1/Koi');
         const data = await response.json();
 
-        if (data && data.koi && data.koi.$values) {
-          setStore(data.koi.$values); 
-          setFilteredKoi(data.koi.$values); 
+        if (data && data.koi && data.userID.$values) {
+          setStore(data.userID.$values); 
+          setFilteredKoi(data.userID.$values); 
         } else {
           console.error("Unexpected data format:", data);
           setStore([]); 

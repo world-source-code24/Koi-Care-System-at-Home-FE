@@ -89,7 +89,8 @@ const onFinishSaltCalculator = async (values) => {
                 <div className="form-column">
                   <Form.Item 
                   label="Ratio Food (1% - 4%): " 
-                  name="foodRatio">
+                  name="foodRatio"
+                  rules={[{ required: true, message: "Please enter ratio of food!" }]}>
                     <Input placeholder="Enter feed ratio" />
                   </Form.Item>
                   <Form.Item

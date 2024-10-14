@@ -39,13 +39,8 @@ function Koi() {
       element: <Environment />,
     },
     {
-
-      path: "/view/:id", 
-      element: <Viewpond/>,
-      
-      path: "/view",
+      path: "/view/:id",
       element: <Viewpond />,
-
     },
     {
       path: "/viewproduct",
@@ -61,17 +56,12 @@ function Koi() {
     },
     {
       path: "/news",
-
-      element: <News/>,
+      element: <News />,
     },
 
     {
       path: "/profile",
-      element: <Profile/>,
-
-
-      element: <News />,
-
+      element: <Profile />,
     },
     {
       path: "/mykoi",
@@ -79,23 +69,15 @@ function Koi() {
     },
     {
       path: "/list",
-
-      element: <List/>,
-    },
-    {
-      path: "/profile",
-      element: <Profile/>,
-    },
-    {
-      path: "/detail/:id",
-      element: <Detail/>,
-
       element: <List />,
     },
     {
       path: "/profile",
       element: <Profile />,
-
+    },
+    {
+      path: "/detail/:id",
+      element: <Detail />,
     },
   ]);
 

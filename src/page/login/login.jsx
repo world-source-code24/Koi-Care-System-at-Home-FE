@@ -17,45 +17,26 @@ function Login() {
     const { email, password } = values;
 
     try {
-
       const response = await api.post("User/Login", { email, password });
-      console.log(response);  // Kiểm tra dữ liệu trả về từ API
-  
-      if (response.data.success) {
-
-        localStorage.setItem("token", response.data.data.accessToken);
-        const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
-        console.log(token);
-      if (token) {
-
-          const userResponse = await api.get("Account/Profile",
-            {
-              // Gọi API để lấy thông tin người dùng
-              headers: {
-                Authorization: `Bearer ${token}`, // Gửi Access Token
-              },
-            }
-          );
-          localStorage.setItem("user", JSON.stringify(userResponse.data)); // Giả sử thông tin user nằm trong response.data.user
-       
-        navigate("/"); 
-
-      const response = await api.post("https://koicaresystemapi.azurewebsites.net/api/User/Login", {
-        email,
-        password,
-      });
       console.log(response); // Kiểm tra dữ liệu trả về từ API
 
       if (response.data.success) {
-        // Save the token and user information in localStorage
         localStorage.setItem("token", response.data.data.accessToken);
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // Giả sử thông tin user nằm trong response.data.user
+        const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
+        console.log(token);
+        if (token) {
+          const userResponse = await api.get("Account/Profile", {
+            // Gọi API để lấy thông tin người dùng
+            headers: {
+              Authorization: `Bearer ${token}`, // Gửi Access Token
+            },
+          });
+          localStorage.setItem("user", JSON.stringify(userResponse.data)); // Giả sử thông tin user nằm trong response.data.user
 
-        navigate("/");
-
+          navigate("/");
+        }
       }
-    }
-    }} catch (error) {
+    } catch (error) {
       if (error.response && error.response.data) {
         setError(
           error.response.data.message || "Email or password is incorrect"
@@ -65,10 +46,10 @@ function Login() {
       }
     }
   };
-  
 
   const handleLoginGoogle = async () => {
-    window.location.href = "https://koicaresystemapi.azurewebsites.net/index.html?fbclid=IwY2xjawFxyedleHRuA2FlbQIxMAABHbwVrU1l3r4bIwj-2uamfChUuab0U2bD6fiUhK_bGYhemCyBNcWS9GvHdQ_aem_Y4Bg8BPTdJB_GOpMGFc1zg";
+    window.location.href =
+      "https://koicaresystemapi.azurewebsites.net/index.html?fbclid=IwY2xjawFxyedleHRuA2FlbQIxMAABHbwVrU1l3r4bIwj-2uamfChUuab0U2bD6fiUhK_bGYhemCyBNcWS9GvHdQ_aem_Y4Bg8BPTdJB_GOpMGFc1zg";
   };
 
   return (
@@ -96,50 +77,51 @@ function Login() {
               >
                 <Input placeholder="Email" />
               </Form.Item>
+
               <Form.Item
                 name="password"
                 rules={[
                   { required: true, message: "Please enter your password" },
                 ]}
-                >
-<Input.Password placeholder="Password" />
-                </Form.Item>
-                {error && (
-                  <Form.Item>
-                    <div style={{ color: "red" }}>{error}</div>
-                  </Form.Item>
-                )}
+              >
+                <Input.Password placeholder="Password" />
+              </Form.Item>
+              {error && (
                 <Form.Item>
-                  <Button
-                    type="secondary"
-                    htmlType="submit"
-                    className="login__but1"
-                    block
-                  >
-                    Login
-                  </Button>
+                  <div style={{ color: "red" }}>{error}</div>
                 </Form.Item>
-              </Form>
-              <b>Forgot password?</b>
-              <div className="signup">
-                <h3>New member?</h3>
-                <Link to={"/register"}>Sign Up Now!</Link>
-              </div>
-              <div className="divider"></div>
-              <button className="login__google" onClick={handleLoginGoogle}>
-                <img
-                  className="google"
-                  src="https://tse2.mm.bing.net/th?id=OIP.DdVPhTob_7Dpl5-BRiaK8wHaHa&pid=Api&P=0&h=220"
-                  width={20}
-                  alt="Google Logo"
-                />
-                <span>Sign in with Google</span>
-              </button>
+              )}
+              <Form.Item>
+                <Button
+                  type="secondary"
+                  htmlType="submit"
+                  className="login__but1"
+                  block
+                >
+                  Login
+                </Button>
+              </Form.Item>
+            </Form>
+            <b>Forgot password?</b>
+            <div className="signup">
+              <h3>New member?</h3>
+              <Link to={"/register"}>Sign Up Now!</Link>
             </div>
+            <div className="divider"></div>
+            <button className="login__google" onClick={handleLoginGoogle}>
+              <img
+                className="google"
+                src="https://tse2.mm.bing.net/th?id=OIP.DdVPhTob_7Dpl5-BRiaK8wHaHa&pid=Api&P=0&h=220"
+                width={20}
+                alt="Google Logo"
+              />
+              <span>Sign in with Google</span>
+            </button>
           </div>
         </div>
       </div>
-    );
-  }
-  
-  export default Login;
+    </div>
+  );
+}
+
+export default Login;
