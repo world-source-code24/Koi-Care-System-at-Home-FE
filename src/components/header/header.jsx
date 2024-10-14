@@ -10,7 +10,7 @@ function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Kiểm tra xem token đã được lưu trong localStorage hay chưa
+
     const token = localStorage.getItem("token");
     if (token) {
       setIsLoggedIn(true); // Đã đăng nhập
