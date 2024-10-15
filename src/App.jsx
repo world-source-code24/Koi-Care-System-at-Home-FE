@@ -13,7 +13,6 @@ import News from "./page/news/news";
 
 import Profile from "./page/profile/profile";
 import Mykoi from "./page/mykoi/mykoi";
-import List from "./page/list/list";
 import Detail from "./page/detail/detail";
 
 function Koi() {
@@ -66,10 +65,6 @@ function Koi() {
     {
       path: "/mykoi",
       element: <Mykoi />,
-    },
-    {
-      path: "/list",
-      element: <List />,
     },
     {
       path: "/profile",
