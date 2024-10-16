@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import './viewproduct.scss';
 import Header from '../../components/header/header';
@@ -172,6 +173,7 @@ function Viewproduct() {
             <Footer />
         </>
     );
+
 }
 
 export default Viewproduct;

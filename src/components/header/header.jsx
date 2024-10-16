@@ -1,16 +1,15 @@
-import './header.scss';
-import { Link } from 'react-router-dom';
-import koi from '../../img/logo.png.jpg';
-import { useState, useEffect } from 'react';
-import { Button } from 'antd';
-import { MenuOutlined } from '@ant-design/icons';
+import "./header.scss";
+import { Link } from "react-router-dom";
+import koi from "../../img/logo.png.jpg";
+import { useState, useEffect } from "react";
+import { Button } from "antd";
+import { MenuOutlined } from "@ant-design/icons";
 
 function Header() {
   const [visible, setVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-
     const token = localStorage.getItem("token");
     if (token) {
       setIsLoggedIn(true); // Đã đăng nhập
@@ -36,8 +35,6 @@ function Header() {
 
   return (
     <>
-
-
       <div className="header">
         <div className="header__logo">
           <img className="" src={koi} alt="Koi" width={80} />
@@ -47,9 +44,7 @@ function Header() {
         <div className="header__nav">
           <Link to="/" className="nav__news">
             Home
-          </Link> 
-
-
+          </Link>
 
           <Link to="/news" className="nav__news">
             Blog and News
@@ -58,17 +53,32 @@ function Header() {
           <Link to="/cart" className="nav__news">
             Cart
           </Link>
+
           {isLoggedIn ? (
             <>
-              <Link to="/profile" className='nav__profile'>Profile</Link>
-              <Link onClick={handleLogout} className='nav__logout'>Logout</Link>
+              <Link to="/profile" className="nav__profile">
+                Profile
+              </Link>
+              <Link onClick={handleLogout} className="nav__logout">
+                Logout
+              </Link>
             </>
           ) : (
             <>
-              <Link to="/login" className='nav__login'>Profile</Link>
+              <Link to="/login" className="nav__login">
+                Profile
+              </Link>
               {/* <Link to="/login" className='nav__login'>Login</Link> */}
             </>
           )}
+
+          <Link to="/news" className="nav__news">
+            Blog and News
+          </Link>
+
+          <Link to="/cart" className="nav__news">
+            Cart
+          </Link>
 
           <span className="nav__menu">
             <Button onClick={handleMenu}>
@@ -100,7 +110,12 @@ function Header() {
           Contact Us
         </Link>
 
-
+        <a href="/environment">Environment Monitor</a>
+        <a href="contact">Contact Us</a>
+        <a href="/cart">Cart</a>
+        <a href="#" onClick={handleLogout}>
+          Logout
+        </a>
       </div>
     </>
   );

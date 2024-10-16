@@ -15,8 +15,9 @@ function Login() {
 
   const handleLogin = async (values) => {
     const { email, password } = values;
-  
+
     try {
+
       const response = await api.post("User/Login", { email, password });
       console.log(response);  // Kiểm tra dữ liệu trả về từ API
   
@@ -37,17 +38,33 @@ function Login() {
           localStorage.setItem("user", JSON.stringify(userResponse.data)); // Giả sử thông tin user nằm trong response.data.user
        
         navigate("/"); 
+
+      const response = await api.post("https://koicaresystemapi.azurewebsites.net/api/User/Login", {
+        email,
+        password,
+      });
+      console.log(response); // Kiểm tra dữ liệu trả về từ API
+
+      if (response.data.success) {
+        // Save the token and user information in localStorage
+        localStorage.setItem("token", response.data.data.accessToken);
+        localStorage.setItem("user", JSON.stringify(response.data.user)); // Giả sử thông tin user nằm trong response.data.user
+
+        navigate("/");
+
       }
     }
     } catch (error) {
       if (error.response && error.response.data) {
-        setError(error.response.data.message || "Email or password is incorrect");
+        setError(
+          error.response.data.message || "Email or password is incorrect"
+        );
       } else {
         setError("An error occurred. Please try again.");
       }
     }
   };
-  
+
   const handleLoginGoogle = async () => {
     window.location.href = "https://koicaresystemapi.azurewebsites.net/index.html?fbclid=IwY2xjawFxyedleHRuA2FlbQIxMAABHbwVrU1l3r4bIwj-2uamfChUuab0U2bD6fiUhK_bGYhemCyBNcWS9GvHdQ_aem_Y4Bg8BPTdJB_GOpMGFc1zg";
   };

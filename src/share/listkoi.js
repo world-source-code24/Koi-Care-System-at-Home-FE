@@ -1,4 +1,22 @@
 import aka from '../img/koi-list/aka.jpg'
+import asagi from '../img/koi-list/ASAGI.jpg'
+import benigoi from '../img/koi-list/BENIGOI.jpg'
+import chagoi from '../img/koi-list/CHAGOI.jpg'
+import doitsu from '../img/koi-list/DOITSU.jpg'
+import ginrinplat from '../img/koi-list/GINRIN-PLATINUM.jpg'
+import ginrin from '../img/koi-list/GINRIN.jpg'
+import goromo from '../img/koi-list/GOROMO.jpg'
+import utsuri from '../img/koi-list/HI-UTSURI.jpg'
+import kohaku from '../img/koi-list/KOHAKU.jpg'
+import kujaku from '../img/koi-list/KUJAKU.jpg'
+import ochiba from '../img/koi-list/ochiba.jpg'
+import sanke from '../img/koi-list/SANKE.jpg'
+import shiro from '../img/koi-list/SHIRO-UTSURI.jpg'
+import showa from '../img/koi-list/SHOWA-SANSOKU.jpg'
+import shusui from '../img/koi-list/SHUSUI.jpg'
+import tancho from '../img/koi-list/TANCHO.jpg'
+import yama from '../img/koi-list/YAMABUKI.jpg'
+
 
 export const Listkoi = [
     {
@@ -12,8 +30,8 @@ export const Listkoi = [
     },
     {
         koiID: '2',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Asagi',
+        Image: asagi,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -21,8 +39,8 @@ export const Listkoi = [
      },
      {
         koiID: '3',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Benigoi',
+        Image: benigoi,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -30,8 +48,8 @@ export const Listkoi = [
      },
      {
         koiID: '4',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Chagoi',
+        Image: chagoi,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -39,8 +57,8 @@ export const Listkoi = [
      },
      {
         koiID: '5',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Doitsu',
+        Image: doitsu,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -48,8 +66,8 @@ export const Listkoi = [
      },
      {
         koiID: '6',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Ginrin-Platinum',
+        Image: ginrinplat,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -57,8 +75,8 @@ export const Listkoi = [
      },
      {
         koiID: '7',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Ginrin',
+        Image: ginrin,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -66,8 +84,8 @@ export const Listkoi = [
      },
      {
         koiID: '8',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Goromo',
+        Image: goromo,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -75,8 +93,8 @@ export const Listkoi = [
      },
      {
         koiID: '9',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Utsuri',
+        Image: utsuri,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -84,8 +102,8 @@ export const Listkoi = [
      },
      {
         koiID: '10',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Kohaku',
+        Image: kohaku,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -93,8 +111,8 @@ export const Listkoi = [
      },
      {
         koiID: '11',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Kujaku',
+        Image: kujaku,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -102,8 +120,8 @@ export const Listkoi = [
      },
      {
         koiID: '12',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Ochiba',
+        Image: ochiba,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -111,8 +129,8 @@ export const Listkoi = [
      },
      {
         koiID: '13',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Sanke',
+        Image: sanke,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -120,8 +138,8 @@ export const Listkoi = [
      },
      {
         koiID: '14',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Shiro',
+        Image: shiro,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -129,8 +147,8 @@ export const Listkoi = [
      },
      {
         koiID: '15',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Showa',
+        Image: showa,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -138,8 +156,8 @@ export const Listkoi = [
      },
      {
         koiID: '16',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Shusui',
+        Image: shusui,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -147,8 +165,8 @@ export const Listkoi = [
      },
      {
         koiID: '17',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Tancho',
+        Image: tancho,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',
@@ -156,8 +174,8 @@ export const Listkoi = [
      },
      {
         koiID: '18',
-        name: 'Aka-matsuba',
-        Image: aka,
+        name: 'Yamabuki',
+        Image: yama,
         Length: '15 cm to over 75 cm',
         Weight: '0,1 kg to over 10kg',
         Breed: 'Purebred Japanese Koi',

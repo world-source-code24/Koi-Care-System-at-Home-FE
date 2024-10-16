@@ -12,8 +12,9 @@ import {
   Modal,
   Radio,
   Upload,
+  Form,
 } from "antd";
-import { Form, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -27,6 +28,12 @@ function Profile() {
   const [previewImage, setPreviewImage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [passwords, setPasswords] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  });
 
   const [userInfo, setUserInfo] = useState({
     fullName: "",
@@ -38,18 +45,46 @@ function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
+  // Lấy thông tin để show ra ở profile
   useEffect(() => {
     const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(""); 
-        setUserInfo(response.data);
-      } catch (error) {
-        message.error("Failed to fetch user information");
+      const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
+
+      if (token) {
+        try {
+          const response = await axios.get(
+            "https://localhost:5001/api/Account/Profile",
+            {
+              // Gọi API để lấy thông tin người dùng
+              headers: {
+                Authorization: `Bearer ${token}`, // Gửi Access Token
+              },
+            }
+          );
+
+          setUserInfo({
+            fullName: response.data.name || "",
+            email: response.data.email || "",
+            phone: response.data.phone || "",
+            address: response.data.address || "",
+          }); // Thiết lập thông tin người dùng vào trạng thái
+          console.log(userInfo);
+        } catch (error) {
+          console.error("Error fetching user info:", error);
+          if (error.response && error.response.status === 401) {
+            // Nếu token không hợp lệ hoặc hết hạn
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            navigate("/login"); // Chuyển hướng về trang đăng nhập
+          }
+        }
+      } else {
+        navigate("/profile"); // Chuyển hướng về trang đăng nhập khi không có token
       }
     };
 
     fetchUserInfo();
-  }, []);
+  }, [navigate]);
 
   const handleEditToggle = () => {
     if (isEditing) {
@@ -59,6 +94,7 @@ function Profile() {
     }
   };
 
+  // Sửa thay đổi thông tin người dùng và lưu 
   const handleSave = async () => {
     try {
       const formData = new FormData();
@@ -69,7 +105,8 @@ function Profile() {
         formData.append("", image); // name tên trong API
       }
 
-      await axios.put("", formData, {
+      await axios.put("https://localhost:5001/api/Account/Profile", formData, {
+        //API
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -104,11 +141,11 @@ function Profile() {
   };
 
   const handleImageUpload = (file) => {
-     setImage(URL.createObjectURL(file));
-    // setImage(file);
+    setImage(URL.createObjectURL(file));
     return false;
   };
 
+  // Log out và xóa all thông tin qua localStorage
   const handleLogout = async () => {
     try {
       await axios.post(""); // API
@@ -123,6 +160,33 @@ function Profile() {
     }
   };
 
+  // Reset password 
+  const handleResetPassword = async () => {
+    if (passwords.newPassword !== passwords.confirmNewPassword) {
+      message.error("New passwords do not match!");
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        "https://localhost:5001/api/Account/ResetPassword", // API reset password
+        {
+          currentPassword: passwords.currentPassword,
+          newPassword: passwords.newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Gửi token để xác thực
+          },
+        }
+      );
+      message.success("Password reset successfully!");
+      setIsResetModalOpen(false); // Đóng modal khi thành công
+    } catch (error) {
+      message.error("Failed to reset password. Please try again.");
+    }
+  };
   return (
     <>
       <div>
@@ -143,26 +207,21 @@ function Profile() {
               >
                 <Menu.Item key={1}>Account Settings</Menu.Item>
                 <Menu.Item key={2}>Your Order</Menu.Item>
-                <Menu.Item key={3}>Reset Password</Menu.Item>
+                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>Reset Password</Menu.Item>
                 <Menu.Item key={4}>Log out</Menu.Item>
               </Menu>
             </Sider>
 
             <Content className="profile_content">
               <h5>Account Settings</h5>
-              {/* <Button
-                type="primary"
-                onClick={showModal}
-                className="membership-button"
-              >
-                Membership
-              </Button> */}
 
-              <p onClick={showModal} className="membership-button">Membership</p>
+              <p onClick={showModal} className="membership-button">
+                Membership
+              </p>
 
               {/*Divider */}
               <div className="profile_divider"></div>
-
+                
               {/*Modal Membership*/}
               <Modal
                 title="Membership Packages"
@@ -205,6 +264,61 @@ function Profile() {
                   </Radio>
                 </Radio.Group>
               </Modal>
+
+                {/*Modal reset password */}
+                <Modal
+  title="Reset Password"
+  visible={isResetModalOpen}
+  onOk={handleResetPassword}
+  onCancel={() => setIsResetModalOpen(false)}
+  okText="Reset Password"
+  cancelText="Cancel"
+  className="reset_password_modal"
+  centered
+  width={500}
+>
+  <Form layout="vertical" className="reset_password_form">
+    <Form.Item
+      label="Current Password"
+      name="currentPassword"
+      rules={[{ required: true, message: 'Please enter your current password' }]}
+    >
+      <Input.Password
+        value={passwords.currentPassword}
+        onChange={(e) =>
+          setPasswords({ ...passwords, currentPassword: e.target.value })
+        }
+        placeholder="Enter your current password"
+      />
+    </Form.Item>
+    <Form.Item
+      label="New Password"
+      name="newPassword"
+      rules={[{ required: true, message: 'Please enter your new password' }]}
+    >
+      <Input.Password
+        value={passwords.newPassword}
+        onChange={(e) =>
+          setPasswords({ ...passwords, newPassword: e.target.value })
+        }
+        placeholder="Enter your new password"
+      />
+    </Form.Item>
+    <Form.Item
+      label="Confirm New Password"
+      name="confirmNewPassword"
+      rules={[{ required: true, message: 'Please confirm your new password' }]}
+    >
+      <Input.Password
+        value={passwords.confirmNewPassword}
+        onChange={(e) =>
+          setPasswords({ ...passwords, confirmNewPassword: e.target.value })
+        }
+        placeholder="Confirm your new password"
+      />
+    </Form.Item>
+  </Form>
+</Modal>   
 
               <div className="profile_body_form">
                 <Form className="avatar">
