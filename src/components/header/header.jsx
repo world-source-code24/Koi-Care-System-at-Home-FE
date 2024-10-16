@@ -50,10 +50,6 @@ function Header() {
             Blog and News
           </Link>
 
-          <Link to="/cart" className="nav__news">
-            Cart
-          </Link>
-
           {isLoggedIn ? (
             <>
               <Link to="/profile" className="nav__profile">
@@ -71,10 +67,6 @@ function Header() {
               {/* <Link to="/login" className='nav__login'>Login</Link> */}
             </>
           )}
-
-          <Link to="/news" className="nav__news">
-            Blog and News
-          </Link>
 
           <Link to="/cart" className="nav__news">
             Cart
@@ -103,16 +95,12 @@ function Header() {
         <Link to="/list" className="nav__news">
           List of Koi
         </Link>
-        <Link to="/environment" className="nav__news">
-          Environment Monitor
-        </Link>
         <Link to="/contact" className="nav__news">
           Contact Us
         </Link>
 
         <a href="/environment">Environment Monitor</a>
         <a href="contact">Contact Us</a>
-        <a href="/cart">Cart</a>
         <a href="#" onClick={handleLogout}>
           Logout
         </a>
