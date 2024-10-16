@@ -34,23 +34,6 @@ function Login() {
           localStorage.setItem("user", JSON.stringify(userResponse.data)); // Giả sử thông tin user nằm trong response.data.user
 
           navigate("/");
-
-          const response = await api.post(
-            "https://koicaresystemapi.azurewebsites.net/api/User/Login",
-            {
-              email,
-              password,
-            }
-          );
-          console.log(response); // Kiểm tra dữ liệu trả về từ API
-
-          if (response.data.success) {
-            // Save the token and user information in localStorage
-            localStorage.setItem("token", response.data.data.accessToken);
-            localStorage.setItem("user", JSON.stringify(response.data.user)); // Giả sử thông tin user nằm trong response.data.user
-
-            navigate("/");
-          }
         }
       }
     } catch (error) {
@@ -94,7 +77,6 @@ function Login() {
               >
                 <Input placeholder="Email" />
               </Form.Item>
-
               <Form.Item
                 name="password"
                 rules={[
