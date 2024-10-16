@@ -15,7 +15,6 @@ import Profile from "./page/profile/profile";
 import Mykoi from "./page/mykoi/mykoi";
 import List from "./page/list/list";
 import Detail from "./page/detail/detail";
-import Checkout from "./page/checkout/checkout";
 
 function Koi() {
   const router = createBrowserRouter([
@@ -79,10 +78,6 @@ function Koi() {
     {
       path: "/detail/:id",
       element: <Detail />,
-    },
-    {
-      path: "/checkout",
-      element: <Checkout />,
     },
   ]);
 
