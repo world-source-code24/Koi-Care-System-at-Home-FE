@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+
 .my_wall {
   position: relative;
   width: 100%;
@@ -25,6 +27,7 @@
     padding: 20px;
     border-radius: 10px;
     margin-top: 300px;
+    
     h1 {
       font-size: 3.3rem; 
       gap: 10px;
@@ -41,7 +44,7 @@
       transition: transform 0.3s ease, color 0.3s ease; 
       
       &.clicked {
-        transform: scale(1.2); // Tăng kích thước khi nhấn
+        transform: scale(1.2); 
         color: #f39c12; 
       }
     }
@@ -51,5 +54,121 @@
 .my_title {
   display: flex;
   justify-content: center;
+  h1 {
+    font-size: 50px;
+    margin-top: 10px;
+    color: red;
+  }
+}
+
+.my_divider {
+  width: 90%;
+  margin-left: 150px;
   
+  .ant-divider {
+    margin-top: 20px;
+    background-color: black;
+
+  }
+}
+
+.my_sort_container {
+  font-family: Gowun Batang;
+  display: flex;
+  padding: 10px; 
+
+  .my_sidebar {
+    width: 25%;
+    padding: 20px;
+    background-color: white;
+    border-right: 1px solid #ddd;
+    margin-bottom: 40px;
+    
+    .my_icon_filter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      
+      .filter_icon {
+        font-size: 40px;
+        color: red;
+      }
+    }
+
+    .sort_dropdown {
+      margin-bottom: 20px; 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      label {
+        font-size: 22px;
+        font-weight: 600;
+        margin-right: 10px; 
+      }
+
+      .ant-select {
+        width: 70%; 
+        height: 50px;
+      }
+    }
+
+    .ant-divider {
+      margin: 15px 0; 
+    }
+  }
+
+  .my_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px; 
+    margin-left: 700px;
+    font-family: Gowun Batang;
+    
+    h5 {
+      font-size: 50px;
+    }
+
+    p {
+      font-size: 20px;
+    }
+
+    .add-koi-container {
+      display: flex;
+      align-items: center; 
+      margin-top: 20px;
+      background-color: red;
+      background-size: 20px;
+      border-radius: 20px;
+      padding: 10px;
+
+      .plus-icon {
+        font-size: 40px; 
+        color: white; 
+        cursor: pointer; 
+        margin-right: 10px; 
+
+        &:hover {
+          color: rgba(128, 128, 128, 0.5);
+        }
+      }
+      
+      .koi-count {
+        font-size: 30px; 
+        color: white; 
+      }
+    }
+  }
+}
+
+.form-columns {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  .form-column {
+    flex: 1;
+    margin-right: 16px;
+  }
 }
