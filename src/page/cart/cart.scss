@@ -130,13 +130,14 @@
     .cart__checkout {
         text-align: center;
         margin-top: 30px;
+        margin-bottom: 20px;
         width: 100%;
-        
-        button {
+        a {
             background-color: #d00000;
             color: white;
-            padding: 15px 30px;
+            padding: 5px;
             border: none;
+            display: block;
             border-radius: 4px;
             width: 100%;
             font-size: 18px;
@@ -149,3 +150,4 @@
         }
     }
 }
+

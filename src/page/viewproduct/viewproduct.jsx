@@ -81,7 +81,7 @@ function Viewproduct() {
         }
         setSearch('');
     };
-
+ 
     const addToCart = () => {
         const existingItem = cartItems.find(item => item.productId === pro.productId);
         if (existingItem) {
@@ -95,6 +95,7 @@ function Viewproduct() {
                 quantity: num
             };
             setCartItems([...cartItems, productToAdd]);
+
         }
         setVisible(false);
         setNum(1);
@@ -103,6 +104,7 @@ function Viewproduct() {
             setNotification(false);
         }, 1000);
     };
+
 
     return (
         <>
