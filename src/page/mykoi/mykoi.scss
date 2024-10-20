@@ -68,7 +68,6 @@
   .ant-divider {
     margin-top: 20px;
     background-color: black;
-
   }
 }
 
@@ -122,17 +121,58 @@
   .my_content {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; // Căn lề bên trái cho my_content
     margin-top: 20px; 
-    margin-left: 700px;
+    margin-left: 0; // Đặt margin-left bằng 0 để không bị lệch
     font-family: Gowun Batang;
     
-    h5 {
-      font-size: 50px;
+    .koi_noti {
+      margin-left: 300px ;
     }
+    .koi-content-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
 
-    p {
-      font-size: 20px;
+      .koi-list {
+        display: flex;
+        flex-wrap: wrap; // Đảm bảo các thẻ xuống dòng khi không đủ chỗ
+        justify-content: flex-start; // Căn lề trái
+        gap: 24px; // Tăng khoảng cách giữa các thẻ để tránh bị đè
+        padding: 20px;
+      }
+      
+      .koi-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 16px;
+        width: 100%;  // Giữ nguyên chiều rộng 100% trong thẻ Col
+        text-align: center;
+        margin-bottom: 16px;  // Đảm bảo khoảng cách dọc vừa phải
+      
+        img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 8px;
+          margin-bottom: 16px;
+        }
+      
+        .info_container {
+          text-align: left; // Bạn có thể giữ căn giữa hoặc căn trái, tùy thuộc vào thiết kế
+          width: 100%;
+      
+          h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+          }
+      
+          p {
+            font-size: 14px;
+            margin: 4px 0;
+          }
+        }
+      }
     }
 
     .add-koi-container {
@@ -143,7 +183,7 @@
       background-size: 20px;
       border-radius: 20px;
       padding: 10px;
-
+      margin-left: 300px;
       .plus-icon {
         font-size: 40px; 
         color: white; 

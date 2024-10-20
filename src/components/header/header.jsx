@@ -91,11 +91,14 @@ function Header() {
         <Link to="/mykoi" className="nav__news">
           My Koi Fish
         </Link>
-        <Link to="/list" className="nav__news">
-          List of Koi
-        </Link>
         <Link to="/environment" className="nav__news">
           Environment Monitor
+        </Link>
+        <Link to="/food" className="nav__news">
+          Food Calculator
+        </Link>
+        <Link to="/salt" className="nav__news">
+          Salt Calculator
         </Link>
         <Link to="/contact" className="nav__news">
           Contact Us
