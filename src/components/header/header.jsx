@@ -62,7 +62,7 @@ function Header() {
           ) : (
             <>
               <Link to="/login" className="nav__login">
-                Profile
+                Login
               </Link>
               {/* <Link to="/login" className='nav__login'>Login</Link> */}
             </>
@@ -99,8 +99,7 @@ function Header() {
           Contact Us
         </Link>
 
-        <a href="/environment">Environment Monitor</a>
-        <a href="contact">Contact Us</a>
+        <Link to="/environment">Environment Monitor</Link>
         <a href="#" onClick={handleLogout}>
           Logout
         </a>

@@ -16,6 +16,7 @@ import Mykoi from "./page/mykoi/mykoi";
 import List from "./page/list/list";
 import Detail from "./page/detail/detail";
 import Checkout from "./page/checkout/checkout";
+import PaymentSuccess from "./page/payment/payment";
 
 function Koi() {
   const router = createBrowserRouter([
@@ -83,6 +84,10 @@ function Koi() {
     {
       path: "/checkout",
       element: <Checkout />,
+    },
+    {
+      path: "/payment",
+      element: <PaymentSuccess />,
     },
   ]);
 

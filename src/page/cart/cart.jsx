@@ -25,13 +25,13 @@ function Cart() {
 
   const getTotalPrice = () => {
     return cartItems.reduce((acc, item) => {
-      // biến mảng thành giá trị duy nhất
       const price = item.price
         ? typeof item.price === "number"
           ? item.price
           : parseFloat(item.price.toString().replace(/,/g, ""))
         : 0;
-      return acc + price * (item.quantity || 1);
+      // Thêm 3 số 0 vào giá
+      return acc + price * (item.quantity || 1) * 1000;
     }, 0);
   };
 
@@ -59,15 +59,10 @@ function Cart() {
                   <img src={item.image} alt={item.name} />
                   <div className="cart__item__details">
                     <h4>{item.name}</h4>
-                    {/* <p>Product code: {item.Id}</p> */}
                     <p>Quantity: {item.quantity || 1}</p>
                     <p>
                       Price:{" "}
-                      {item.price
-                        ? item.price
-                            .toString()
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                        : "N/A"}
+                      {item.price ? item.price.toLocaleString("vi-VN") : "N/A"}
                       .000 VND
                     </p>
                   </div>
@@ -78,8 +73,10 @@ function Cart() {
             <div className="cart__summary">
               <span>Total:</span>
               <span>
-                {getTotalPrice()}
-                .000 VND
+                {getTotalPrice()
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                VND
               </span>
             </div>
             <Link to="/viewproduct">Continue shopping</Link>

@@ -5,12 +5,14 @@ import Footer from "../../components/footer/footer";
 import bg from "../../img/a10.jpg";
 import { Form, Input, Col, Row, Select, Button } from "antd";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
 function Checkout() {
   const [totalPrice, setTotalPrice] = useState(0);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const storedTotalPrice = localStorage.getItem("checkout");
     if (storedTotalPrice) {
@@ -19,9 +21,29 @@ function Checkout() {
     console.log(totalPrice);
   }, []);
 
-  const handleFinish = (values) => {
-    console.log("Form values:", values);
-    // navigate("/confirmation");
+  const handleFinish = async (values) => {
+    try {
+      const payload = {
+        orderType: "product",
+        amount: totalPrice,
+        orderDescription: values.note || "No description provided",
+        name: values.userName,
+      };
+
+      const response = await axios.post(
+        "https://koicaresystemapi.azurewebsites.net/api/VnPay/CreatePaymentString",
+        payload
+      );
+
+      if (response.data) {
+        window.location.href = response.data;
+      } else {
+        console.log("No payment URL returned.");
+      }
+      // navigate("/payment");
+    } catch (error) {
+      console.error("Payment error:", error.response?.data || error.message);
+    }
   };
 
   const provinces = [
@@ -89,7 +111,12 @@ function Checkout() {
           <Form className="Checkout__form" onFinish={handleFinish}>
             <Row gutter={16}>
               <Col xs={24} sm={12}>
-                <Form.Item name="userName">
+                <Form.Item
+                  name="userName"
+                  rules={[
+                    { required: true, message: "Please input your name!" },
+                  ]}
+                >
                   <Input placeholder="Name" />
                 </Form.Item>
               </Col>
@@ -103,28 +130,38 @@ function Checkout() {
 
             <Row gutter={16}>
               <Col xs={24} sm={12}>
-                <div className="inline-fields">
-                  <Form.Item name="Province">
-                    <Select placeholder="Select Province / City">
-                      {provinces.map((pro) => (
-                        <Option value={pro.value}></Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
+                <Form.Item
+                  name="Province"
+                  rules={[
+                    { required: true, message: "Please select your province!" },
+                  ]}
+                >
+                  <Select placeholder="Select Province / City">
+                    {provinces.map((pro) => (
+                      <Option key={pro.value} value={pro.value}>
+                        {pro.label}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
               </Col>
             </Row>
 
             <Row gutter={16}>
               <Col xs={24} sm={12}>
-                <Form.Item name="qdresss">
+                <Form.Item
+                  name="address"
+                  rules={[
+                    { required: true, message: "Please input your address!" },
+                  ]}
+                >
                   <Input placeholder="Address" />
                 </Form.Item>
               </Col>
 
               <Col xs={24} sm={12}>
                 <Form.Item name="note">
-                  <Input placeholder="Note" />
+                  <Input placeholder="Note (Optional)" />
                 </Form.Item>
               </Col>
             </Row>
@@ -142,10 +179,7 @@ function Checkout() {
 
           <div className="Checkout_total">
             <p>Sub Total</p>
-            <p>
-              {totalPrice}
-              .000 VND
-            </p>
+            <p>{totalPrice.toLocaleString("vi-VN")} VND</p>
           </div>
 
           <div className="Checkout_ship">
