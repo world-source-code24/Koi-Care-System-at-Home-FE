@@ -17,6 +17,7 @@ import List from "./page/list/list";
 import Detail from "./page/detail/detail";
 import Checkout from "./page/checkout/checkout";
 import PaymentSuccess from "./page/payment/payment";
+import Register from "./page/register/register";
 
 function Koi() {
   const router = createBrowserRouter([
@@ -88,6 +89,10 @@ function Koi() {
     {
       path: "/payment",
       element: <PaymentSuccess />,
+    },
+    {
+      path: "/register",
+      element: <Register />,
     },
   ]);
 

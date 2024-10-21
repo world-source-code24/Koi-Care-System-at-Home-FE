@@ -24,14 +24,14 @@ function Checkout() {
   const handleFinish = async (values) => {
     try {
       const payload = {
-        orderType: "product",
-        amount: totalPrice,
-        orderDescription: values.note || "No description provided",
-        name: values.userName,
+        OrderType: "product",
+        Amount: totalPrice,
+        OrderDescription: values.note || "No description provided",
+        Name: values.userName,
       };
 
       const response = await axios.post(
-        "https://koicaresystemapi.azurewebsites.net/api/VnPay/CreatePaymentString",
+        "https://koicaresystemapi.azurewebsites.net/api/VnCreatePaymentString",
         payload
       );
 
