@@ -7,14 +7,12 @@ import Environment from "./page/environment/environment";
 import Viewpond from "./page/view/viewpond";
 import Viewproduct from "./page/viewproduct/viewproduct";
 import Cart from "./page/cart/cart";
-
 import Contact from "./page/contact/contact";
 import News from "./page/news/news";
-
 import Profile from "./page/profile/profile";
 import Mykoi from "./page/mykoi/mykoi";
 import Detail from "./page/detail/detail";
-
+import Expert from "./page/expert/expert";
 function Koi() {
   const router = createBrowserRouter([
     {
@@ -73,6 +71,10 @@ function Koi() {
     {
       path: "/detail/:id",
       element: <Detail />,
+    },
+    {
+      path: "/expert",
+      element: <Expert />,
     },
   ]);
 

@@ -1,0 +1,35 @@
+.exp_background_form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url('../../img/foodwall.jpg');
+    background-size: cover;
+  }
+
+.exp_container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%; 
+    margin: 0 auto;
+}
+  
+.exp_title {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+  
+.exp_form_wrapper {
+    display: flex;
+    justify-content: space-between; 
+    gap: 20px;
+}
+  
+.exp_left_form {
+    align-items: center;
+    flex: 1;
+    width: 40%; 
+    padding: 20px;
+}

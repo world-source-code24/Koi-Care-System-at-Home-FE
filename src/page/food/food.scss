@@ -2,10 +2,80 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Chiều cao bằng với toàn màn hình */
+  min-height: 100vh;
   background-image: url('../../img/foodwall.jpg');
-  background-size: cover; /* Đảm bảo ảnh bao phủ toàn bộ khung */
-  background-position: center; /* Căn giữa ảnh */
-  background-repeat: no-repeat; /* Ngăn ảnh nền lặp lại */
-  z-index: -1;
+  background-size: cover;
 }
+
+.food_container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%; 
+  margin: 0 auto;
+}
+
+.food_title {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.food_form_wrapper {
+  display: flex;
+  justify-content: space-between; 
+  gap: 20px;
+}
+
+.food_left_form {
+  align-items: center;
+  flex: 1;
+  width: 40%; 
+  padding: 20px;
+}
+
+.food_right_form {
+  flex: 1;
+  width: 40%; 
+  padding: 20px;
+  text-align: left;
+}
+
+.growth-buttons,
+.temperature-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin: 10px 0;
+}
+
+// .ant-btn.growth-button,
+// .ant-btn.temperature-button {
+//   background-color: white;
+//   border: 1px solid #ccc;
+//   border-radius: 12px; 
+//   width: 80px; 
+//   height: 50px; 
+//   font-size: 14px;
+//   font-weight: bold;
+//   text-transform: uppercase;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+
+// .ant-btn.selected {
+//   background-color: #f97316; 
+//   color: white;
+//   border: none;
+// }
+
+// .ant-btn:hover {
+//   background-color: #f97316; 
+//   color: white;
+//   border: none;
+// }
+
+// .ant-btn:disabled {
+//   background-color: #f0f0f0;
+//   color: #ccc;
+// }
