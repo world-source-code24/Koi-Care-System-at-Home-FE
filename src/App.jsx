@@ -13,6 +13,7 @@ import Profile from "./page/profile/profile";
 import Mykoi from "./page/mykoi/mykoi";
 import Detail from "./page/detail/detail";
 import Expert from "./page/expert/expert";
+import Salt from "./page/salt/salt";
 function Koi() {
   const router = createBrowserRouter([
     {
@@ -65,16 +66,16 @@ function Koi() {
       element: <Mykoi />,
     },
     {
-      path: "/profile",
-      element: <Profile />,
-    },
-    {
       path: "/detail/:id",
       element: <Detail />,
     },
     {
       path: "/expert",
       element: <Expert />,
+    },
+    {
+      path: "/salt",
+      element: <Salt />,
     },
   ]);
 

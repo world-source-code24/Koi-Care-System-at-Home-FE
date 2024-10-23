@@ -40,11 +40,11 @@ function Environment() {
         }
 
         const user = JSON.parse(storedUser);
-        const userId = user.accId; // Đảm bảo accId là đúng
+        const userId = user.accId;
         console.log("Fetched user ID:", userId);
 
         const response = await fetch(
-          `https://koicaresystemapi.azurewebsites.net/api/Pond/Show-All-Ponds-UserID/${userId}`
+          `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${userId}`
         );
 
         if (!response.ok) {
@@ -88,7 +88,7 @@ function Environment() {
 
     try {
       const response = await fetch(
-        `https://koicaresystemapi.azurewebsites.net/api/Pond/Delete-Pond/${pondId}`,
+        `https://koicaresystemapi.azurewebsites.net/api/Delete-Pond/${pondId}`,
         {
           method: "DELETE",
           headers: {
@@ -146,7 +146,7 @@ function Environment() {
 
       if (isEditing) {
         response = await fetch(
-          `https://koicaresystemapi.azurewebsites.net/api/Pond/Update-Pond/${pondDataList[editingIndex].pondId}`,
+          `https://koicaresystemapi.azurewebsites.net/api/Update-Pond/${pondDataList[editingIndex].pondId}`,
           {
             method: "PUT",
             headers: {
@@ -159,7 +159,7 @@ function Environment() {
         description = `Pond ${newPondData.name} has been updated successfully.`;
       } else {
         response = await fetch(
-          `https://koicaresystemapi.azurewebsites.net/api/Pond/Create-Pond?accId=${user.accId}`,
+          `https://koicaresystemapi.azurewebsites.net/api/Create-Pond?accId=${user.accId}`,
           {
             method: "POST",
             headers: {
@@ -168,6 +168,7 @@ function Environment() {
             body: JSON.stringify(newPondData),
           }
         );
+        console.log(response.data);
       }
 
       if (!response.ok) {

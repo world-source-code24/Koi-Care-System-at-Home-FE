@@ -8,20 +8,13 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import {
-  DatePicker,
-  Divider,
-  Form,
-  Image,
-  Input,
-  Modal,
-  Select,
-  Upload,
-} from "antd";
+import { Divider, Form, Image, Input, Modal, Select, Upload } from "antd";
 import { useForm } from "antd/es/form/Form";
+import axios from "axios";
 
 function MyKoi() {
   const { Option } = Select;
+  const [ponds, setPonds] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái modal
   const [isClicked, setIsClicked] = useState(false);
   const [sortValue, setSortValue] = useState("In pond since (newest first)");
@@ -42,6 +35,23 @@ function MyKoi() {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchPonds = async () => {
+      try {
+        const accID = localStorage.getItem("userId");
+        const response = await axios.get(
+          `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accID}`
+        );
+        setPonds(response.data.listPond["$values"]); // Lưu danh sách hồ vào state
+      } catch (error) {
+        console.error("Error fetching ponds", error);
+      }
+    };
+
+    if (isModalVisible) {
+      fetchPonds(); // Gọi API khi modal mở
+    }
+  }, [isModalVisible]);
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -57,6 +67,7 @@ function MyKoi() {
     setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
+
   const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
 
   // Hàm cho Down Icon
@@ -93,19 +104,36 @@ function MyKoi() {
 
   // Hàm lưu dữ liệu vào localStorage sau khi submit form
   const handleOk = () => {
-    form.validateFields().then((values) => {
+    form.validateFields().then(async (values) => {
       const newKoi = {
-        ...values,
-        image: fileList.length ? fileList[0].thumbUrl : null,
+        name: values.name,
+        length: values.length,
+        weight: values.weight,
+        sex: values.sex,
+        pondId: values.pond, // Đảm bảo pondId có giá trị hợp lệ
+        breeder: values.breeder,
+        variety: values.variety,
+        physique: values.physique,
+        image: fileList.length ? fileList[0].thumbUrl : null, // Đảm bảo fileList không rỗng
       };
 
-      const updatedKoiList = [...koiList, newKoi];
-      setKoiList(updatedKoiList);
-      localStorage.setItem("koiList", JSON.stringify(updatedKoiList)); // Lưu vào localStorage
+      try {
+        const response = await axios.post(
+          `https://koicaresystemapi.azurewebsites.net/api/pond/${newKoi.pondId}/Koi`,
+          newKoi
+        );
+        console.log("New Koi added successfully:", response.data);
 
-      form.resetFields();
-      setFileList([]);
-      setIsModalVisible(false);
+        const updatedKoiList = [...koiList, response.data];
+        setKoiList(updatedKoiList);
+        localStorage.setItem("koiList", JSON.stringify(updatedKoiList));
+
+        form.resetFields();
+        setFileList([]);
+        setIsModalVisible(false);
+      } catch (error) {
+        console.error("Error adding new Koi", error);
+      }
     });
   };
 
@@ -204,15 +232,18 @@ function MyKoi() {
           <Divider />
 
           {/*Sex: */}
-          <div className="sort_dropdown">
-            <label>Sex: </label>
-            <Select value={sexValue} onChange={handleSexChange}>
-              <Option>All</Option>
-              <Option>Male</Option>
-              <Option>Female</Option>
-              <Option>Not specified</Option>
+          <Form.Item
+            label="Sex:"
+            name="sex"
+            initialValue="Not specified"
+            required
+          >
+            <Select>
+              <Option value="Not specified">Not specified</Option>
+              <Option value="Male">Male</Option>
+              <Option value="Female">Female</Option>
             </Select>
-          </div>
+          </Form.Item>
 
           <Divider />
 
@@ -293,11 +324,16 @@ function MyKoi() {
                     </Upload>
                   </Form.Item>
 
-                  <Form.Item label="Physique: " name="physique" required>
+                  <Form.Item
+                    label="Physique: "
+                    name="physique"
+                    initialValue="Normal"
+                    required
+                  >
                     <Select>
-                      <Option>Slim</Option>
-                      <Option>Normal</Option>
-                      <Option>Corpulent</Option>
+                      <Option value="Slim">Slim</Option>
+                      <Option value="Normal">Normal</Option>
+                      <Option value="Corpulent">Corpulent</Option>
                     </Select>
                   </Form.Item>
 
@@ -308,16 +344,36 @@ function MyKoi() {
                     />
                   </Form.Item>
 
-                  <Form.Item label="Sex:" name="sex" required>
+                  <Form.Item
+                    label="Sex:"
+                    name="sex"
+                    initialValue="Not specified"
+                    required
+                  >
                     <Select>
-                      <Option>Not specified</Option>
-                      <Option>Male</Option>
-                      <Option>Female</Option>
+                      <Option value="Not specified">Not specified</Option>
+                      <Option value="Male">Male</Option>
+                      <Option value="Female">Female</Option>
                     </Select>
                   </Form.Item>
 
-                  <Form.Item label="Pond: " name="pond" required>
-                    <Input placeholder="Enter pond" />
+                  <Form.Item
+                    label="Pond: "
+                    name="pond"
+                    initialValue={
+                      ponds.length > 0 ? ponds[0].pondId : undefined
+                    }
+                    required
+                  >
+                    <Select placeholder="Select Pond">
+                      {ponds.map((pond) =>
+                        pond.pondId && pond.name ? (
+                          <Option key={pond.pondId} value={pond.pondId}>
+                            {pond.name}
+                          </Option>
+                        ) : null
+                      )}
+                    </Select>
                   </Form.Item>
 
                   <Form.Item label="Breeder: " name="breeder" required>
@@ -330,11 +386,16 @@ function MyKoi() {
                     <Input placeholder="Enter name of your Koi fish" />
                   </Form.Item>
 
-                  <Form.Item label="Age: " name="image" required>
+                  <Form.Item
+                    label="Age: "
+                    name="age"
+                    initialValue="Not specified"
+                    required
+                  >
                     <Select>
-                      <Option>Not specified</Option>
-                      <Option>0 year</Option>
-                      <Option>1 year</Option>
+                      <Option value="Not specified">Not specified</Option>
+                      <Option value="0 year">0 year</Option>
+                      <Option value="1 year">1 year</Option>
                       {/* Add more years here as needed */}
                     </Select>
                   </Form.Item>
@@ -348,18 +409,6 @@ function MyKoi() {
 
                   <Form.Item label="Variety: " name="variety">
                     <Input placeholder="Enter Notes" />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="In pond since: "
-                    name="inPondSince"
-                    required
-                  >
-                    <DatePicker
-                      showTime
-                      format="YYYY-MM-DD HH:mm:ss"
-                      placeholder="Select Date and Time"
-                    />
                   </Form.Item>
 
                   <Form.Item label="Purchase price: ">

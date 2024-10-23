@@ -2,50 +2,52 @@ import { Button, Form, Select, Spin } from "antd";
 import Header from "../../components/header/header";
 import "./food.scss";
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const { Option } = Select;
 function Food() {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [ponds, setPonds] = useState([]);
   const [selectedPond, setSelectedPond] = useState("All pond");
   const [koiWeight, setKoiWeight] = useState("");
   const [loading, setLoading] = useState(false);
-  const [growth, setGrowth] = useState("low"); 
-  const [temperature, setTemperature] = useState("6-8"); 
+  const [growth, setGrowth] = useState("low");
+  const [temperature, setTemperature] = useState("6-8");
   const [isMediumHighDisabled, setIsMediumHighDisabled] = useState(true);
-   
+
   useEffect(() => {
     const fetchPonds = async () => {
       try {
+        const accID = localStorage.getItem("userId");
         const response = await axios.get(
-          "https://koicaresystemapi.azurewebsites.net/api/Pond/Show-All-Ponds"  // API để lấy danh sách ponds
+          `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accID}`
         );
-        setPonds(response.data.listPond.$values);
+        setPonds(response.data.listPond["$values"]); 
+        console.log(response.data.listPond["$values"]); 
       } catch (error) {
-        console.error("Error fetching ponds", error);
+        console.error("Lỗi khi lấy danh sách hồ", error);
       }
     };
     fetchPonds();
   }, []);
 
-    // const lấy tổng cân nặng 
-    const fetchAllKoiWeights = async () => {
-      let totalWeight = 0;
-      for (const pond of ponds) {
-        try {
-          const response = await axios.get(
-            `https://koicaresystemapi.azurewebsites.net/api/pond/${pond.pondId}/Koi` //API lấy danh sách cá koi trong ponds
-          );
-          const koiList = response.data.$values;
-          const pondWeight = koiList.reduce((sum, koi) => sum + koi.weight, 0);
-          totalWeight += pondWeight;
-        } catch (error) {
-          console.error(`Error fetching koi data for pond ${pond.pondId}`, error);
-        }
+  // const lấy tổng cân nặng
+  const fetchAllKoiWeights = async () => {
+    let totalWeight = 0;
+    for (const pond of ponds) {
+      try {
+        const response = await axios.get(
+          `https://koicaresystemapi.azurewebsites.net/api/pond/${pond.pondId}/Koi` //API lấy danh sách cá koi trong ponds
+        );
+        const koiList = response.data.$values;
+        const pondWeight = koiList.reduce((sum, koi) => sum + koi.weight, 0);
+        totalWeight += pondWeight;
+      } catch (error) {
+        console.error(`Error fetching koi data for pond ${pond.pondId}`, error);
       }
-      return totalWeight;
-    };
+    }
+    return totalWeight;
+  };
 
   // Const chọn một hồ hoặc tất cả hồ
   const handlePondChange = async (value) => {
@@ -73,47 +75,47 @@ function Food() {
 
   const calculateRecommendedAmount = (weight, growth, temperatureRange) => {
     let recommendedAmount = 0;
-    
+
     const [minTemp, maxTemp] = temperatureRange.split("-").map(Number);
-    const avgTemp = (minTemp + maxTemp) / 2; 
-  
+    const avgTemp = (minTemp + maxTemp) / 2;
+
     // Const tính lượng thức ăn
     if (growth === "low") {
       if (avgTemp < 15) {
-        recommendedAmount = weight * 0.005; 
+        recommendedAmount = weight * 0.005;
       } else if (avgTemp >= 15 && avgTemp <= 20) {
-        recommendedAmount = weight * 0.01; 
+        recommendedAmount = weight * 0.01;
       } else if (avgTemp > 20) {
-        recommendedAmount = weight * 0.02; 
+        recommendedAmount = weight * 0.02;
       }
     } else if (growth === "medium") {
       if (avgTemp < 15) {
-        recommendedAmount = weight * 0.01; 
+        recommendedAmount = weight * 0.01;
       } else if (avgTemp >= 15 && avgTemp <= 20) {
-        recommendedAmount = weight * 0.015; 
+        recommendedAmount = weight * 0.015;
       } else if (avgTemp > 20) {
-        recommendedAmount = weight * 0.025; 
+        recommendedAmount = weight * 0.025;
       }
     } else if (growth === "high") {
       if (avgTemp < 15) {
-        recommendedAmount = weight * 0.01; 
+        recommendedAmount = weight * 0.01;
       } else if (avgTemp >= 15 && avgTemp <= 20) {
-        recommendedAmount = weight * 0.025; 
+        recommendedAmount = weight * 0.025;
       } else if (avgTemp > 20) {
-        recommendedAmount = weight * 0.04; 
+        recommendedAmount = weight * 0.04;
       }
     }
-     return recommendedAmount;
+    return recommendedAmount;
   };
 
   // Xử lý khi thay đổi nhiệt độ nước
   const handleTemperatureChange = (value) => {
     setTemperature(value);
     if (value === "6-8" || value == "9-12") {
-      setGrowth("low"); 
-      setIsMediumHighDisabled(true); 
+      setGrowth("low");
+      setIsMediumHighDisabled(true);
     } else if (value === "13-16") {
-      setIsMediumHighDisabled(false); 
+      setIsMediumHighDisabled(false);
     }
   };
 
@@ -125,135 +127,138 @@ function Food() {
     <>
       <Header />
       <div className="food_background_form">
-      <div className="food_container">
-        <div className="food_title">Food Calculator</div>
+        <div className="food_container">
+          <div className="food_title">Food Calculator</div>
 
-        <div className="food_form_wrapper">         
-        {/*Left-form*/}
-        <div className="food_left_form">
-          <Form layout="vertical">
-            <Form.Item label="Name: ">
-              <Select
-                  defaultValue="All ponds"
-                  onChange={handlePondChange}
-                  style={{ width: 200 }}
-              >
-                <Option value="All ponds">
-                  All ponds
-                </Option>
-                {ponds.map((pond) => (
-                    <Option key={pond.pondId} value={pond.pondId}>
-                      {pond.name}
-                    </Option>
-                  ))}
-              </Select>
-            </Form.Item>
-            <Form.Item label="Total koi weight: ">
-            {loading ? <Spin /> : <p>{koiWeight} g</p>}
-            </Form.Item>
-            <Form.Item>
-              <Button
-                type="primary"
-                onClick={() => navigate('/expert')}
-                style={{ display: "inline-block" }}
-              >
-                Expert mode
-              </Button>
-            </Form.Item>
-          
-          {/*Desired Growth*/}
-          <Form.Item label="Desired Growth">
-              <div className="growth-buttons">
-                <Button
-                  type={growth === "low" ? "primary" : "default"}
-                  onClick={() => handleGrowthChange("low")}
-                >
-                  Low
-                </Button>
-                <Button
-                  type={growth === "medium" ? "primary" : "default"}
-                  onClick={() => handleGrowthChange("medium")}
-                  disabled={isMediumHighDisabled} 
-                >
-                  Medium
-                </Button>
-                <Button
-                  type={growth === "high" ? "primary" : "default"}
-                  onClick={() => handleGrowthChange("high")}
-                  disabled={isMediumHighDisabled} 
-                >
-                  High
-                </Button>
-              </div>
-            </Form.Item>    
+          <div className="food_form_wrapper">
+            {/*Left-form*/}
+            <div className="food_left_form">
+              <Form layout="vertical">
+                <Form.Item label="Name: ">
+                  <Select
+                    defaultValue="All ponds"
+                    onChange={handlePondChange}
+                    style={{ width: 200 }}
+                  >
+                    <Option value="All ponds">All ponds</Option>
+                    {ponds.map((pond) => (
+                      <Option key={pond.pondId} value={pond.pondId}>
+                        {pond.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item label="Total koi weight: ">
+                  {loading ? <Spin /> : <p>{koiWeight} g</p>}
+                </Form.Item>
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    onClick={() => navigate("/expert")}
+                    style={{ display: "inline-block" }}
+                  >
+                    Expert mode
+                  </Button>
+                </Form.Item>
 
-            {/* Water Temperature */}
-            <Form.Item label="Water Temperature">
-              <div className="temperature-buttons">
-                <Button
-                  type={temperature === "6-8" ? "primary" : "default"}
-                  onClick={() => handleTemperatureChange("6-8")}
-                >
-                  6-8°
-                </Button>
-                <Button
-                  type={temperature === "9-12" ? "primary" : "default"}
-                  onClick={() => handleTemperatureChange("9-12")}
-                >
-                  9-12°
-                </Button>
-                <Button
-                  type={temperature === "13-16" ? "primary" : "default"}
-                  onClick={() => handleTemperatureChange("13-16")}
-                >
-                  13-16°
-                </Button>
-                <Button
-                  type={temperature === "17-20" ? "primary" : "default"}
-                  onClick={() => handleTemperatureChange("17-20")}
-                >
-                  17-20°
-                </Button>
-                <Button
-                  type={temperature === "21-28" ? "primary" : "default"}
-                  onClick={() => handleTemperatureChange("21-28")}
-                >
-                  21-28°
-                </Button>
-              </div>
-            </Form.Item>
-            
-            {/*Recommend Amount */}
-            <Form.Item label="Recommended food amount: ">
-              {loading ? (
-                <Spin />
-              ) : (
-                <p>
-                  {/* Kiểm tra nếu growth là "low" và temperature là "6-8" để hiển thị khác */}
-                  {growth === "low" && temperature === "6-8" ? (
-                    `${calculateRecommendedAmount(koiWeight, growth, temperature).toFixed(2)} g per feeding`
+                {/*Desired Growth*/}
+                <Form.Item label="Desired Growth">
+                  <div className="growth-buttons">
+                    <Button
+                      type={growth === "low" ? "primary" : "default"}
+                      onClick={() => handleGrowthChange("low")}
+                    >
+                      Low
+                    </Button>
+                    <Button
+                      type={growth === "medium" ? "primary" : "default"}
+                      onClick={() => handleGrowthChange("medium")}
+                      disabled={isMediumHighDisabled}
+                    >
+                      Medium
+                    </Button>
+                    <Button
+                      type={growth === "high" ? "primary" : "default"}
+                      onClick={() => handleGrowthChange("high")}
+                      disabled={isMediumHighDisabled}
+                    >
+                      High
+                    </Button>
+                  </div>
+                </Form.Item>
+
+                {/* Water Temperature */}
+                <Form.Item label="Water Temperature">
+                  <div className="temperature-buttons">
+                    <Button
+                      type={temperature === "6-8" ? "primary" : "default"}
+                      onClick={() => handleTemperatureChange("6-8")}
+                    >
+                      6-8°
+                    </Button>
+                    <Button
+                      type={temperature === "9-12" ? "primary" : "default"}
+                      onClick={() => handleTemperatureChange("9-12")}
+                    >
+                      9-12°
+                    </Button>
+                    <Button
+                      type={temperature === "13-16" ? "primary" : "default"}
+                      onClick={() => handleTemperatureChange("13-16")}
+                    >
+                      13-16°
+                    </Button>
+                    <Button
+                      type={temperature === "17-20" ? "primary" : "default"}
+                      onClick={() => handleTemperatureChange("17-20")}
+                    >
+                      17-20°
+                    </Button>
+                    <Button
+                      type={temperature === "21-28" ? "primary" : "default"}
+                      onClick={() => handleTemperatureChange("21-28")}
+                    >
+                      21-28°
+                    </Button>
+                  </div>
+                </Form.Item>
+
+                {/*Recommend Amount */}
+                <Form.Item label="Recommended food amount: ">
+                  {loading ? (
+                    <Spin />
                   ) : (
-                    `${calculateRecommendedAmount(koiWeight, growth, temperature).toFixed(2)} g per day`
+                    <p>
+                      {/* Kiểm tra nếu growth là "low" và temperature là "6-8" để hiển thị khác */}
+                      {growth === "low" && temperature === "6-8"
+                        ? `${calculateRecommendedAmount(
+                            koiWeight,
+                            growth,
+                            temperature
+                          ).toFixed(2)} g per feeding`
+                        : `${calculateRecommendedAmount(
+                            koiWeight,
+                            growth,
+                            temperature
+                          ).toFixed(2)} g per day`}
+                    </p>
                   )}
-                </p>
-              )}
-            </Form.Item>          
-            </Form>
+                </Form.Item>
+              </Form>
             </div>
 
-        {/*Right-form: Feeding infomation */}
-        <div className="food_right_form">
+            {/*Right-form: Feeding infomation */}
+            <div className="food_right_form">
               {temperature === "6-8" && (
                 <div>
                   <h3>Feeding information</h3>
                   <p>
                     The specified amount of food should only be given to the koi{" "}
-                    <strong>every 2-3 days</strong>.
-                    When the temperature is
-                    below 6°C, feeding should be omitted in any case!
-                    In the temperature range 6-8°C, the growth 
-                    targets <strong>medium</strong> and <strong>high</strong> are not selectable due to 
-                    the reduced metabolism of the koi.
+                    <strong>every 2-3 days</strong>. When the temperature is
+                    below 6°C, feeding should be omitted in any case! In the
+                    temperature range 6-8°C, the growth targets{" "}
+                    <strong>medium</strong> and <strong>high</strong> are not
+                    selectable due to the reduced metabolism of the koi.
                   </p>
                 </div>
               )}
@@ -263,8 +268,9 @@ function Food() {
                   <p>
                     The recommended amount of food should be split evenly into{" "}
                     <strong>2-3 feedings per day</strong>. In the temperature
-                    range 9-12°C the growth targets <strong>medium</strong> and <strong>high</strong> are not
-                    selectable due to the reduced metabolism of the koi.
+                    range 9-12°C the growth targets <strong>medium</strong> and{" "}
+                    <strong>high</strong> are not selectable due to the reduced
+                    metabolism of the koi.
                   </p>
                 </div>
               )}
@@ -299,7 +305,7 @@ function Food() {
                   </p>
                 </div>
               )}
-            </div>        
+            </div>
           </div>
         </div>
       </div>
