@@ -7,16 +7,14 @@ import {
   PlusCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Col,
   DatePicker,
   Divider,
   Form,
   Image,
   Input,
   Modal,
-  Row,
   Select,
   Upload,
 } from "antd";
@@ -32,12 +30,17 @@ function MyKoi() {
   const [stateValue, setStateValue] = useState("All");
   const [koiList, setKoiList] = useState([]);
   const [form] = useForm();
-
-  // image
-  // const [image, setImage] = useState(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
+
+  // Khi trang load, kiểm tra và lấy dữ liệu từ localStorage
+  useEffect(() => {
+    const storedKoiList = localStorage.getItem("koiList");
+    if (storedKoiList) {
+      setKoiList(JSON.parse(storedKoiList));
+    }
+  }, []);
 
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -88,29 +91,29 @@ function MyKoi() {
     setIsModalVisible(true);
   };
 
-  // xử lí khi submit form
+  // Hàm lưu dữ liệu vào localStorage sau khi submit form
   const handleOk = () => {
     form.validateFields().then((values) => {
       const newKoi = {
         ...values,
-        image: fileList.length ? fileList[0].thumbUrl : null, // Lấy hình ảnh từ fileList
+        image: fileList.length ? fileList[0].thumbUrl : null,
       };
-      setKoiList([...koiList, newKoi]); // Thêm Koi mới vào danh sách
-      form.resetFields(); // Reset form
-      setFileList([]); // Reset fileList
-      setIsModalVisible(false); // Đóng modal
+
+      const updatedKoiList = [...koiList, newKoi];
+      setKoiList(updatedKoiList);
+      localStorage.setItem("koiList", JSON.stringify(updatedKoiList)); // Lưu vào localStorage
+
+      form.resetFields();
+      setFileList([]);
+      setIsModalVisible(false);
     });
   };
 
   const handleCancel = () => {
-    setIsModalVisible(false);
+    form.resetFields(); // Reset các trường trong form
+    setFileList([]); // Reset fileList nếu cần
+    setIsModalVisible(false); // Đóng modal
   };
-
-  // Image
-  // const handleImageUpload = (file) => {
-  //   setImage(URL.createObjectURL(file));
-  //   return false;
-  // };
 
   const uploadButton = (
     <button
@@ -228,39 +231,34 @@ function MyKoi() {
         <div className="my_content">
           {/* Kiểm tra và ẩn h1 và p trong my_content nếu koiList không trống */}
           <div className="koi_noti">
-          {koiList.length === 0 && (
-            <>
-              <h1>No Koi Fish Added Yet</h1>
-              <p>Add your first Koi fish to start.</p>
-            </>
-          )}
+            {koiList.length === 0 && (
+              <>
+                <h1>No Koi Fish Added Yet</h1>
+                <p>Add your first Koi fish to start.</p>
+              </>
+            )}
           </div>
 
           {/* Container chung cho các modal nhỏ và nút plus */}
-          <div className="koi-content-container">
-            {/* Hiển thị các modal nhỏ với thông tin đã nhập */}
-            <div className="koi-list">
-              <Row gutter={[16,16]}>
-                {koiList.map((koi, index) => (
-                  <Col span={8} key={index}>
-                    <div className="koi-card">
-                      {koi.image && (
-                        <Image
-                          src={koi.image}
-                          alt={koi.name}
-                          style={{ width: "100%", height: "auto" }}
-                        />
-                      )}
-                      <div className="info_container">
-                      <h3>Name: {koi.name}</h3>
-                      <p>Age: {koi.age}</p>
-                      <p>Variety: {koi.variety}</p>
-                      <p>Length: {koi.length} cm</p>
-                      </div>
-                    </div>
-                  </Col>
-                ))}
-              </Row>
+          <div className="koi-content-container container">
+            <div className="row koi-list">
+              {koiList.map((koi, index) => (
+                <div className="col-md-3 koi-card" key={index}>
+                  {koi.image && (
+                    <Image
+                      src={koi.image}
+                      alt={koi.name}
+                      className="img-fluid"
+                    />
+                  )}
+                  <div className="info_container">
+                    <h3>Name: {koi.name}</h3>
+                    <p>Age: {koi.age}</p>
+                    <p>Variety: {koi.variety}</p>
+                    <p>Length: {koi.length} cm</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
