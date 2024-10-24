@@ -12,6 +12,7 @@ const { Option } = Select;
 
 function Checkout() {
   const [totalPrice, setTotalPrice] = useState(0);
+  const [save, setSave] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
     const storedTotalPrice = localStorage.getItem("checkout");
@@ -19,6 +20,7 @@ function Checkout() {
       setTotalPrice(parseFloat(storedTotalPrice));
     }
     console.log(totalPrice);
+    console.log(save);
   }, []);
 
   const handleFinish = async (values) => {
@@ -34,6 +36,7 @@ function Checkout() {
         "https://koicaresystemapi.azurewebsites.net/api/VnCreatePaymentString",
         payload
       );
+      setSave(payload);
 
       if (response.data) {
         window.location.href = response.data;

@@ -94,7 +94,7 @@ function Profile() {
     }
   };
 
-  // Sửa thay đổi thông tin người dùng và lưu 
+  // Sửa thay đổi thông tin người dùng và lưu
   const handleSave = async () => {
     try {
       const formData = new FormData();
@@ -160,13 +160,13 @@ function Profile() {
     }
   };
 
-  // Reset password 
+  // Reset password
   const handleResetPassword = async () => {
     if (passwords.newPassword !== passwords.confirmNewPassword) {
       message.error("New passwords do not match!");
       return;
     }
-  
+
     try {
       const token = localStorage.getItem("token");
       await axios.put(
@@ -207,7 +207,9 @@ function Profile() {
               >
                 <Menu.Item key={1}>Account Settings</Menu.Item>
                 <Menu.Item key={2}>Your Order</Menu.Item>
-                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>Reset Password</Menu.Item>
+                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
+                  Reset Password
+                </Menu.Item>
                 <Menu.Item key={4}>Log out</Menu.Item>
               </Menu>
             </Sider>
@@ -221,7 +223,7 @@ function Profile() {
 
               {/*Divider */}
               <div className="profile_divider"></div>
-                
+
               {/*Modal Membership*/}
               <Modal
                 title="Membership Packages"
@@ -265,60 +267,84 @@ function Profile() {
                 </Radio.Group>
               </Modal>
 
-                {/*Modal reset password */}
-                <Modal
-  title="Reset Password"
-  visible={isResetModalOpen}
-  onOk={handleResetPassword}
-  onCancel={() => setIsResetModalOpen(false)}
-  okText="Reset Password"
-  cancelText="Cancel"
-  className="reset_password_modal"
-  centered
-  width={500}
->
-  <Form layout="vertical" className="reset_password_form">
-    <Form.Item
-      label="Current Password"
-      name="currentPassword"
-      rules={[{ required: true, message: 'Please enter your current password' }]}
-    >
-      <Input.Password
-        value={passwords.currentPassword}
-        onChange={(e) =>
-          setPasswords({ ...passwords, currentPassword: e.target.value })
-        }
-        placeholder="Enter your current password"
-      />
-    </Form.Item>
-    <Form.Item
-      label="New Password"
-      name="newPassword"
-      rules={[{ required: true, message: 'Please enter your new password' }]}
-    >
-      <Input.Password
-        value={passwords.newPassword}
-        onChange={(e) =>
-          setPasswords({ ...passwords, newPassword: e.target.value })
-        }
-        placeholder="Enter your new password"
-      />
-    </Form.Item>
-    <Form.Item
-      label="Confirm New Password"
-      name="confirmNewPassword"
-      rules={[{ required: true, message: 'Please confirm your new password' }]}
-    >
-      <Input.Password
-        value={passwords.confirmNewPassword}
-        onChange={(e) =>
-          setPasswords({ ...passwords, confirmNewPassword: e.target.value })
-        }
-        placeholder="Confirm your new password"
-      />
-    </Form.Item>
-  </Form>
-</Modal>   
+              {/*Modal reset password */}
+              <Modal
+                title="Reset Password"
+                visible={isResetModalOpen}
+                onOk={handleResetPassword}
+                onCancel={() => setIsResetModalOpen(false)}
+                okText="Reset Password"
+                cancelText="Cancel"
+                className="reset_password_modal"
+                centered
+                width={500}
+              >
+                <Form layout="vertical" className="reset_password_form">
+                  <Form.Item
+                    label="Current Password"
+                    name="currentPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your current password",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      value={passwords.currentPassword}
+                      onChange={(e) =>
+                        setPasswords({
+                          ...passwords,
+                          currentPassword: e.target.value,
+                        })
+                      }
+                      placeholder="Enter your current password"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label="New Password"
+                    name="newPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your new password",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      value={passwords.newPassword}
+                      onChange={(e) =>
+                        setPasswords({
+                          ...passwords,
+                          newPassword: e.target.value,
+                        })
+                      }
+                      placeholder="Enter your new password"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label="Confirm New Password"
+                    name="confirmNewPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please confirm your new password",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      value={passwords.confirmNewPassword}
+                      onChange={(e) =>
+                        setPasswords({
+                          ...passwords,
+                          confirmNewPassword: e.target.value,
+                        })
+                      }
+                      placeholder="Confirm your new password"
+                    />
+                  </Form.Item>
+                </Form>
+              </Modal>
 
               <div className="profile_body_form">
                 <Form className="avatar">

@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Result } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
@@ -19,7 +18,7 @@ function PaymentSuccess() {
           title={<span className="gradient-text">Payment Successful!</span>}
           subTitle="Thank you for your order! We have received your payment and sent a confirmation email."
           extra={[
-            <Link to="/orders" key="orders">
+            <Link to="/cart" key="orders">
               <Button
                 type="primary"
                 size="large"
@@ -29,7 +28,7 @@ function PaymentSuccess() {
                 View My Orders
               </Button>
             </Link>,
-            <Link to="/" key="home">
+            <Link to="/viewproduct" key="home">
               <Button
                 size="large"
                 shape="round"

@@ -32,11 +32,14 @@ function Login() {
             },
           });
           localStorage.setItem("user", JSON.stringify(userResponse.data)); // Giả sử thông tin user nằm trong response.data.user
-
+          const user = userResponse.data;
+          localStorage.setItem("userId", user.accId);
+          console.log("accId:" + user.accId);
           navigate("/");
         }
       }
     } catch (error) {
+      console.log(error.toString());
       if (error.response && error.response.data) {
         setError(
           error.response.data.message || "Email or password is incorrect"

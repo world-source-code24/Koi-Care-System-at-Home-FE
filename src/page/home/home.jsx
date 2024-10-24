@@ -6,7 +6,8 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Footer from "../../components/footer/footer";
 import cakoi from "../../img/cakoi.png.jpg";
-
+import axios from "axios";
+import { Listproduct } from "../../share/listproduct";
 function HomePage() {
   const [notification, setNotification] = useState(false);
   const [cartItems, setCartItems] = useState(() => {
@@ -28,7 +29,18 @@ function HomePage() {
         const data = await response.json();
         const productList = data?.product?.$values || [];
 
-        setProducts(productList.slice(0, 4));
+        // Kết hợp dữ liệu với Listproduct để lấy hình ảnh
+        const combinedProducts = productList.slice(0, 4).map((product) => {
+          const matchedProduct = Listproduct.find(
+            (p) => p.Id === String(product.productId)
+          );
+          return {
+            ...product,
+            image: matchedProduct ? matchedProduct.Image : "/default-image.jpg", // Sử dụng hình ảnh từ Listproduct nếu có, nếu không thì dùng ảnh mặc định
+          };
+        });
+
+        setProducts(combinedProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -40,15 +52,73 @@ function HomePage() {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = () => {
-    const productToAdd = { ...pro, quantity: num };
-    setCartItems([...cartItems, productToAdd]);
+  // const addToCart = () => {
+  //   const productToAdd = { ...pro, quantity: num };
+  //   setCartItems([...cartItems, productToAdd]);
+  // setVisible(false);
+  // setNotification(true);
+  //   console.log("Product to add:", productToAdd);
+
+  // setTimeout(() => {
+  //   setNotification(false);
+  // }, 3000);
+  // };
+
+  const addToCart = async () => {
+    const accId = localStorage.getItem("userId");
+
+    const cart = await axios.get(
+      `https://koicaresystemapi.azurewebsites.net/api/Show-All-Carts-From-User/${accId}`
+    );
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(cart.data.listUserCart.$values)
+    );
+    console.log("Cart" + localStorage.getItem("cart"));
+    const number = localStorage.getItem("cart");
+
+    let parsedCart = [];
+    if (number) {
+      try {
+        parsedCart = JSON.parse(number);
+      } catch (error) {
+        console.error("Lỗi khi parse dữ liệu từ localStorage:", error);
+      }
+    }
+    const value = {
+      AccId: parseInt(accId),
+      ProductId: pro.productId,
+      Quantity: num,
+    };
+
+    const exists =
+      Array.isArray(parsedCart) &&
+      parsedCart.some((item) => item.productId === value.ProductId);
+
+    let update;
+    let add;
+    if (exists) {
+      console.log("Giá trị đã tồn tại trong giỏ hàng.");
+      update = await axios.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Update-Cart-Quantity?AccId=${value.AccId}&ProductId=${value.ProductId}&Quantity=${value.Quantity}`
+      );
+    } else {
+      console.log("Giá trị chưa có trong giỏ hàng.");
+      add = await axios.post(
+        `https://koicaresystemapi.azurewebsites.net/api/Add-Carts-For-User?AccId=${value.AccId}&ProductId=${value.ProductId}&Quantity=${value.Quantity}`
+      );
+    }
+    setVisible(false);
     setVisible(false);
     setNotification(true);
-
     setTimeout(() => {
       setNotification(false);
     }, 3000);
+    if ((update && update.status === 200) || (add && add.status === 201)) {
+      console.log("Sản phẩm đã được gửi lên API thành công.");
+    } else {
+      console.log("Lỗi khi gửi sản phẩm lên API.");
+    }
   };
 
   const handleOpen = (values) => {
@@ -114,7 +184,8 @@ function HomePage() {
         <div className="row HomePage__body">
           {products.map((product) => (
             <div className="col-md-3 koi" key={product.productId}>
-              <img src={product.image} alt={product.name} />
+              <img src={product.image} alt={product.name} />{" "}
+              {/* Sử dụng hình ảnh từ Listproduct */}
               <br />
               <Button type="secondary" onClick={() => handleOpen(product)}>
                 View product

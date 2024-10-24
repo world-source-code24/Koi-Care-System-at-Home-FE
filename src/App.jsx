@@ -18,6 +18,8 @@ import Detail from "./page/detail/detail";
 import Checkout from "./page/checkout/checkout";
 import PaymentSuccess from "./page/payment/payment";
 import Register from "./page/register/register";
+import Admin from "./page/admin/admin";
+import AdminRoutes from "./components/admin/routes";
 
 function Koi() {
   const router = createBrowserRouter([
@@ -75,10 +77,6 @@ function Koi() {
       element: <List />,
     },
     {
-      path: "/profile",
-      element: <Profile />,
-    },
-    {
       path: "/detail/:id",
       element: <Detail />,
     },
@@ -93,6 +91,16 @@ function Koi() {
     {
       path: "/register",
       element: <Register />,
+    },
+    {
+      path: "/admin",
+      element: <Admin />,
+      children: [
+        {
+          path: "/admin/*",
+          element: <AdminRoutes />,
+        },
+      ],
     },
   ]);
 
