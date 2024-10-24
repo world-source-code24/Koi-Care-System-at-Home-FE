@@ -18,12 +18,14 @@ function Expert() {
   useEffect(() => {
     const fetchPonds = async () => {
       try {
+        const accID = localStorage.getItem("userId");
         const response = await axios.get(
-          "https://koicaresystemapi.azurewebsites.net/api/Pond/Show-All-Ponds" // API để lấy danh sách ponds
+          `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accID}`
         );
-        setPonds(response.data.listPond.$values);
+        setPonds(response.data.listPond["$values"]); 
+        console.log(response.data.listPond["$values"]); 
       } catch (error) {
-        console.error("Error fetching ponds", error);
+        console.error("Lỗi khi lấy danh sách hồ", error);
       }
     };
     fetchPonds();
@@ -100,8 +102,7 @@ function Expert() {
           </div>
 
           <div className="exp_divider">
-            {" "}
-            <Divider />{" "}
+            <Divider />
           </div>
 
           <div className="exp_form_wrapper">
