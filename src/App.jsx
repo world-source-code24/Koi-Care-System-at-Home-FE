@@ -2,7 +2,6 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from "./page/login/login";
 import HomePage from "./page/home/home";
 import AddPage from "./page/add/add";
-import FoodPage from "./page/food/food";
 import Environment from "./page/environment/environment";
 import Viewpond from "./page/view/viewpond";
 import Viewproduct from "./page/viewproduct/viewproduct";
