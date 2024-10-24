@@ -14,6 +14,10 @@ import Mykoi from "./page/mykoi/mykoi";
 import Detail from "./page/detail/detail";
 import Expert from "./page/expert/expert";
 import Salt from "./page/salt/salt";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute/ProtectedRoute";
+import Admin from "./page/admin/admin/admin";
+import AdminRoutes from "./components/admin/admin/routes";
+import Food from "./page/food/food";
 function Koi() {
   const router = createBrowserRouter([
     {
@@ -30,11 +34,15 @@ function Koi() {
     },
     {
       path: "/food",
-      element: <FoodPage />,
+      element: (
+        <ProtectedRoute element={<Food />} requiredRole="member" />
+      ),
     },
     {
       path: "/environment",
-      element: <Environment />,
+      element: (
+        <ProtectedRoute element={<Environment />} requiredRole="member" />
+      ),
     },
     {
       path: "/view/:id",
@@ -75,7 +83,21 @@ function Koi() {
     },
     {
       path: "/salt",
-      element: <Salt />,
+      element: (
+        <ProtectedRoute element={<Salt />} requiredRole="member" />
+      ),
+    },
+    {
+      path: "/admin",
+      element: <ProtectedRoute element={<Admin />} requiredRole="admin" />,
+      children: [
+        {
+          path: "/admin/*",
+          element: (
+            <ProtectedRoute element={<AdminRoutes />} requiredRole="admin" />
+          ),
+        },
+      ],
     },
   ]);
 

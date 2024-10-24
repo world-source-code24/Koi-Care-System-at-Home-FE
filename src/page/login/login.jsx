@@ -7,46 +7,42 @@ import { Form, Input, Button } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import api from "../../config/axios";
+import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
 
 function Login() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [error, setError] = useState("");
-
+  const { setUser } = useUser(); // Lấy hàm setUser từ context để cập nhật người dùng
   const handleLogin = async (values) => {
     const { email, password } = values;
 
     try {
       const response = await api.post("User/Login", { email, password });
-      console.log(response); // Kiểm tra dữ liệu trả về từ API
 
       if (response.data.success) {
-        localStorage.setItem("token", response.data.data.accessToken);
-        const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
-        console.log(token);
+        const token = response.data.data.accessToken;
+        localStorage.setItem("token", token);
+
         if (token) {
           const userResponse = await api.get("Account/Profile", {
-            // Gọi API để lấy thông tin người dùng
             headers: {
-              Authorization: `Bearer ${token}`, // Gửi Access Token
+              Authorization: `Bearer ${token}`,
             },
           });
-          localStorage.setItem("user", JSON.stringify(userResponse.data)); // Giả sử thông tin user nằm trong response.data.user
+
           const user = userResponse.data;
-          localStorage.setItem("userId", user.accId);
-          console.log("accId:" + user.accId);
-          navigate("/");
+          setUser(user);
+
+          if (user.role === "admin") {
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
         }
       }
     } catch (error) {
-      console.log(error.toString());
-      if (error.response && error.response.data) {
-        setError(
-          error.response.data.message || "Email or password is incorrect"
-        );
-      } else {
-        setError("An error occurred. Please try again.");
-      }
+      console.error("Login failed", error);
     }
   };
 
