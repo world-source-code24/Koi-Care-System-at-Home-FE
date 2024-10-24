@@ -19,30 +19,44 @@ function Login() {
 
     try {
       const response = await api.post("User/Login", { email, password });
+      console.log(response); // Kiểm tra dữ liệu trả về từ API
 
       if (response.data.success) {
-        const token = response.data.data.accessToken;
-        localStorage.setItem("token", token);
-
+        localStorage.setItem("token", response.data.data.accessToken);
+        const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
+        console.log(token);
         if (token) {
           const userResponse = await api.get("Account/Profile", {
+            // Gọi API để lấy thông tin người dùng
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`, // Gửi Access Token
             },
           });
 
-          const user = userResponse.data;
-          setUser(user);
+          const user = userResponse.data; // Giả sử thông tin user nằm trong userResponse.data
+          localStorage.setItem("user", JSON.stringify(user)); // Lưu thông tin người dùng vào localStorage
+          localStorage.setItem("userId", user.accId); // Lưu accId vào localStorage
+          setUser(user); // Cập nhật thông tin người dùng vào UserContext
 
-          if (user.role === "admin") {
-            navigate("/admin");
+          console.log("accId:" + user.accId);
+
+          // Điều hướng tùy thuộc vào vai trò
+          if (user.role === "Admin") {
+            navigate("/admin"); // Điều hướng đến trang admin nếu là Admin
           } else {
-            navigate("/");
+            navigate("/"); // Điều hướng đến trang chủ nếu không phải Admin
           }
         }
       }
     } catch (error) {
-      console.error("Login failed", error);
+      console.log(error.toString());
+      if (error.response && error.response.data) {
+        setError(
+          error.response.data.message || "Email or password is incorrect"
+        );
+      } else {
+        setError("An error occurred. Please try again.");
+      }
     }
   };
 

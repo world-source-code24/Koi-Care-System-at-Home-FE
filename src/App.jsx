@@ -1,7 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from "./page/login/login";
 import HomePage from "./page/home/home";
-import AddPage from "./page/add/add";
 import Environment from "./page/environment/environment";
 import Viewpond from "./page/view/viewpond";
 import Viewproduct from "./page/viewproduct/viewproduct";
@@ -17,6 +16,7 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute/Protected
 import Admin from "./page/admin/admin/admin";
 import AdminRoutes from "./components/admin/admin/routes";
 import Food from "./page/food/food";
+import PaymentSuccess from "./page/payment/payment/payment";
 function Koi() {
   const router = createBrowserRouter([
     {
@@ -28,14 +28,8 @@ function Koi() {
       element: <Login />,
     },
     {
-      path: "/add",
-      element: <AddPage />,
-    },
-    {
       path: "/food",
-      element: (
-        <ProtectedRoute element={<Food />} requiredRole="member" />
-      ),
+      element: <ProtectedRoute element={<Food />} requiredRole="member" />,
     },
     {
       path: "/environment",
@@ -82,9 +76,11 @@ function Koi() {
     },
     {
       path: "/salt",
-      element: (
-        <ProtectedRoute element={<Salt />} requiredRole="member" />
-      ),
+      element: <ProtectedRoute element={<Salt />} requiredRole="member" />,
+    },
+    {
+      path: "/payment",
+      element: <PaymentSuccess />,
     },
     {
       path: "/admin",

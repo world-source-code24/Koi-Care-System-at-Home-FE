@@ -1,5 +1,5 @@
 import "./header.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import koi from "../../img/logo.png.jpg";
 import { useState, useEffect } from "react";
 import { Button } from "antd";
@@ -8,6 +8,7 @@ import { MenuOutlined } from "@ant-design/icons";
 function Header() {
   const [visible, setVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -31,6 +32,7 @@ function Header() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
+    navigate("/login");
   };
 
   return (

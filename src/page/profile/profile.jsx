@@ -14,14 +14,15 @@ import {
   Upload,
   Form,
 } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useAsyncError, useNavigate } from "react-router-dom";
 
 import { UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
+import api from "../../config/axios";
 
 function Profile() {
   const { Sider, Content } = Layout;
-
+  const [accId, setAccId] = useState(localStorage.getItem("userId"));
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -40,6 +41,7 @@ function Profile() {
     email: "",
     phone: "",
     address: "",
+    image: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -53,7 +55,7 @@ function Profile() {
       if (token) {
         try {
           const response = await axios.get(
-            "https://localhost:5001/api/Account/Profile",
+            "https://koicaresystemapi.azurewebsites.net/api/Account/Profile",
             {
               // Gọi API để lấy thông tin người dùng
               headers: {
@@ -61,12 +63,13 @@ function Profile() {
               },
             }
           );
-
+          console.log(response.data);
           setUserInfo({
             fullName: response.data.name || "",
             email: response.data.email || "",
             phone: response.data.phone || "",
             address: response.data.address || "",
+            image: response.data.image || "",
           }); // Thiết lập thông tin người dùng vào trạng thái
           console.log(userInfo);
         } catch (error) {
@@ -94,26 +97,30 @@ function Profile() {
     }
   };
 
-  // Sửa thay đổi thông tin người dùng và lưu 
+  // Sửa thay đổi thông tin người dùng và lưu
   const handleSave = async () => {
     try {
       const formData = new FormData();
-      formData.append("fullName", userInfo.fullName);
+      formData.append("name", userInfo.fullName);
       formData.append("phone", userInfo.phone);
       formData.append("address", userInfo.address);
       if (image) {
-        formData.append("", image); // name tên trong API
+        formData.append("image", image); // name tên trong API
+      } else {
+        formData.append("image", "");
       }
 
-      await axios.put("https://localhost:5001/api/Account/Profile", formData, {
+      const respone = await axios.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Account/Profile?accId=${accId}`,
+        formData,
         //API
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      setSuccessMessage("Update Successfully !!!");
-      setIsEditing(false);
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log(respone.data.message);
+      if (respone.status === 200) {
+        message.success("Update successfully!");
+        setIsEditing(false);
+      }
     } catch (error) {
       message.error("Failed to update information");
     }
@@ -160,29 +167,24 @@ function Profile() {
     }
   };
 
-  // Reset password 
+  // Reset password
   const handleResetPassword = async () => {
     if (passwords.newPassword !== passwords.confirmNewPassword) {
       message.error("New passwords do not match!");
       return;
     }
-  
+
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        "https://localhost:5001/api/Account/ResetPassword", // API reset password
-        {
-          currentPassword: passwords.currentPassword,
-          newPassword: passwords.newPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Gửi token để xác thực
-          },
-        }
+      console.log(accId);
+      console.log(passwords.confirmNewPassword);
+      const respones = await api.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Account/change-password${accId}?changePassword=${passwords.confirmNewPassword}` // API reset password
       );
-      message.success("Password reset successfully!");
-      setIsResetModalOpen(false); // Đóng modal khi thành công
+
+      if (respones.status === 200) {
+        message.success("Password reset successfully!");
+        setIsResetModalOpen(false); // Đóng modal khi thành công
+      }
     } catch (error) {
       message.error("Failed to reset password. Please try again.");
     }
@@ -207,7 +209,9 @@ function Profile() {
               >
                 <Menu.Item key={1}>Account Settings</Menu.Item>
                 <Menu.Item key={2}>Your Order</Menu.Item>
-                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>Reset Password</Menu.Item>
+                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
+                  Reset Password
+                </Menu.Item>
                 <Menu.Item key={4}>Log out</Menu.Item>
               </Menu>
             </Sider>
@@ -221,7 +225,7 @@ function Profile() {
 
               {/*Divider */}
               <div className="profile_divider"></div>
-                
+
               {/*Modal Membership*/}
               <Modal
                 title="Membership Packages"
@@ -265,60 +269,84 @@ function Profile() {
                 </Radio.Group>
               </Modal>
 
-                {/*Modal reset password */}
-                <Modal
-  title="Reset Password"
-  visible={isResetModalOpen}
-  onOk={handleResetPassword}
-  onCancel={() => setIsResetModalOpen(false)}
-  okText="Reset Password"
-  cancelText="Cancel"
-  className="reset_password_modal"
-  centered
-  width={500}
->
-  <Form layout="vertical" className="reset_password_form">
-    <Form.Item
-      label="Current Password"
-      name="currentPassword"
-      rules={[{ required: true, message: 'Please enter your current password' }]}
-    >
-      <Input.Password
-        value={passwords.currentPassword}
-        onChange={(e) =>
-          setPasswords({ ...passwords, currentPassword: e.target.value })
-        }
-        placeholder="Enter your current password"
-      />
-    </Form.Item>
-    <Form.Item
-      label="New Password"
-      name="newPassword"
-      rules={[{ required: true, message: 'Please enter your new password' }]}
-    >
-      <Input.Password
-        value={passwords.newPassword}
-        onChange={(e) =>
-          setPasswords({ ...passwords, newPassword: e.target.value })
-        }
-        placeholder="Enter your new password"
-      />
-    </Form.Item>
-    <Form.Item
-      label="Confirm New Password"
-      name="confirmNewPassword"
-      rules={[{ required: true, message: 'Please confirm your new password' }]}
-    >
-      <Input.Password
-        value={passwords.confirmNewPassword}
-        onChange={(e) =>
-          setPasswords({ ...passwords, confirmNewPassword: e.target.value })
-        }
-        placeholder="Confirm your new password"
-      />
-    </Form.Item>
-  </Form>
-</Modal>   
+              {/*Modal reset password */}
+              <Modal
+                title="Reset Password"
+                visible={isResetModalOpen}
+                onOk={handleResetPassword}
+                onCancel={() => setIsResetModalOpen(false)}
+                okText="Reset Password"
+                cancelText="Cancel"
+                className="reset_password_modal"
+                centered
+                width={500}
+              >
+                <Form layout="vertical" className="reset_password_form">
+                  <Form.Item
+                    label="Current Password"
+                    name="currentPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your current password",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      value={passwords.currentPassword}
+                      onChange={(e) =>
+                        setPasswords({
+                          ...passwords,
+                          currentPassword: e.target.value,
+                        })
+                      }
+                      placeholder="Enter your current password"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label="New Password"
+                    name="newPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your new password",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      value={passwords.newPassword}
+                      onChange={(e) =>
+                        setPasswords({
+                          ...passwords,
+                          newPassword: e.target.value,
+                        })
+                      }
+                      placeholder="Enter your new password"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label="Confirm New Password"
+                    name="confirmNewPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please confirm your new password",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      value={passwords.confirmNewPassword}
+                      onChange={(e) =>
+                        setPasswords({
+                          ...passwords,
+                          confirmNewPassword: e.target.value,
+                        })
+                      }
+                      placeholder="Confirm your new password"
+                    />
+                  </Form.Item>
+                </Form>
+              </Modal>
 
               <div className="profile_body_form">
                 <Form className="avatar">
