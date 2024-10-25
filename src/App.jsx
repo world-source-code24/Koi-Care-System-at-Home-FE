@@ -17,6 +17,7 @@ import Admin from "./page/admin/admin/admin";
 import AdminRoutes from "./components/admin/admin/routes";
 import Food from "./page/food/food";
 import PaymentSuccess from "./page/payment/payment/payment";
+import Register from "./page/register/register";
 function Koi() {
   const router = createBrowserRouter([
     {
@@ -67,6 +68,10 @@ function Koi() {
     {
       path: "/detail/:id",
       element: <Detail />,
+    },
+    {
+      path: "/register",
+      element: <Register />,
     },
     {
       path: "/expert",
