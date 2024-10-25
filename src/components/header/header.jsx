@@ -12,7 +12,7 @@ function Header() {
   const [isAdmin, setIsAdmin] = useState(false); // Trạng thái để kiểm tra Admin
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
+    if (token || localStorage.getItem("accId")) {
       setIsLoggedIn(true); // Đã đăng nhập
     } else {
       setIsLoggedIn(false); // Chưa đăng nhập
@@ -40,7 +40,9 @@ function Header() {
     <>
       <div className="header">
         <div className="header__logo">
-          <img className="" src={koi} alt="Koi" width={80} />
+          <Link to="/">
+            <img className="" src={koi} alt="Koi" width={80} />
+          </Link>
           <h2>Royal Koi</h2>
         </div>
 
@@ -92,8 +94,8 @@ function Header() {
         <a href="#" className="closebtn" onClick={handleClose}>
           ×
         </a>
-        <Link to="/add" className="nav__news">
-          Add New Koi
+        <Link to="/" className="nav__news">
+          Home Page
         </Link>
         <Link to="/mykoi" className="nav__news">
           My Koi Fish
