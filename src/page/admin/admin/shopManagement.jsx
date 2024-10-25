@@ -212,7 +212,7 @@ function ShopManagement() {
 
   return (
     <Space direction="vertical">
-      <Typography.Title level={2}>Shop Management</Typography.Title>
+      <h1 className="vertical">Shop Management</h1>
       <Form form={form} component={false}>
         <Table
           components={{ body: { cell: EditableCell } }}

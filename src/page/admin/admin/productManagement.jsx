@@ -168,7 +168,7 @@ function ProductManagement() {
 
   return (
     <Space direction="vertical">
-      <Typography.Title level={2}>Product Management</Typography.Title>
+      <h1 className="vertical">Product Management</h1>
       <Form form={form} component={false}>
         <Table
           components={{ body: { cell: EditableCell } }}

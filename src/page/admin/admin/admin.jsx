@@ -10,8 +10,11 @@ import {
   ShopOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import AdminRoutes from "../../../components/admin/admin/routes";
 
+import bg from "../../../img/news.jpg";
+import AdminRoutes from "../../../components/admin/admin/routes";
+import Footer from "../../../components/footer/footer";
+import Header from "../../../components/header/header";
 function Admin() {
   const [user, setUser] = useState(null);
 
@@ -34,10 +37,13 @@ function Admin() {
   const navigate = useNavigate();
   return (
     <div className="Admin">
+      <Header />
+      <img src={bg} className="Contact__img" alt="" />
+      <h1 className="admin__header">Admin Page</h1>
       <div className="Header">
         {user && <Image width={50} src={user.image} />}
-        <Typography.Title>Admin Page</Typography.Title>
-        <div></div>
+
+        <br />
       </div>
       <div className="SideMenuAndContent">
         <div className="SideMenu">
@@ -68,11 +74,16 @@ function Admin() {
                 key: "/admin/productManagement",
                 icon: <ProductOutlined />,
               },
-              {
-                label: "Logout",
-                key: "/",
-                icon: <LogoutOutlined />,
-              },
+              // {
+              //   label: "Reports", // Thêm mục Reports
+              //   key: "/admin/reports", // Đường dẫn đến trang báo cáo
+              //   icon: <DashboardOutlined />, // Bạn có thể thay đổi icon nếu muốn
+              // },
+              // {
+              //   label: "Logout",
+              //   key: "/login",
+              //   icon: <LogoutOutlined />,
+              // },
             ]}
           ></Menu>
         </div>
@@ -93,6 +104,9 @@ function Admin() {
           Terms of Use
         </Typography.Link>
       </div>
+      <br />
+      <br />
+      <Footer />
     </div>
   );
 }

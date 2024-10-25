@@ -9,7 +9,7 @@ function Header() {
   const [visible, setVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
-
+  const [isAdmin, setIsAdmin] = useState(false); // Trạng thái để kiểm tra Admin
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -32,6 +32,7 @@ function Header() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
+    setIsAdmin(false); // Reset trạng thái Admin
     navigate("/login");
   };
 
@@ -52,14 +53,16 @@ function Header() {
             Blog and News
           </Link>
 
-          <Link to="/cart" className="nav__news">
-            Cart
-          </Link>
           {isLoggedIn ? (
             <>
               <Link to="/profile" className="nav__profile">
                 Profile
               </Link>
+              {isAdmin && ( // Nếu người dùng là Admin, hiển thị nút Manager
+                <Link to="/admin/dashboard" className="nav__manager">
+                  Manager
+                </Link>
+              )}
               <Link onClick={handleLogout} className="nav__logout">
                 Logout
               </Link>
@@ -67,11 +70,13 @@ function Header() {
           ) : (
             <>
               <Link to="/login" className="nav__login">
-                Profile
+                Login
               </Link>
-              {/* <Link to="/login" className='nav__login'>Login</Link> */}
             </>
           )}
+          <Link to="/cart" className="nav__news">
+            Cart
+          </Link>
 
           <span className="nav__menu">
             <Button onClick={handleMenu}>

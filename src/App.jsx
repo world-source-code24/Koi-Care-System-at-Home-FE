@@ -33,9 +33,7 @@ function Koi() {
     },
     {
       path: "/environment",
-      element: (
-        <ProtectedRoute element={<Environment />} requiredRole="member" />
-      ),
+      element: <Environment />,
     },
     {
       path: "/view/:id",

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Form, Input, Table, Typography, Avatar, Space } from "antd";
 import axios from "axios";
+import "./userManagement.scss";
 import {
   CheckCircleFilled,
   CheckCircleOutlined,
@@ -214,7 +215,7 @@ function UserManagement() {
 
   return (
     <Space direction="vertical">
-      <Typography.Title level={2}>User Management</Typography.Title>
+      <h1 className="vertical">User Management</h1>
       <Form form={form} component={false}>
         <Table
           components={{ body: { cell: EditableCell } }}
