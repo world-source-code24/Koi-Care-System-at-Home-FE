@@ -11,6 +11,7 @@ import {
   Row,
   Col,
   notification,
+  Space,
 } from "antd";
 import Footer from "../../components/footer/footer";
 import { UploadOutlined } from "@ant-design/icons";
@@ -245,26 +246,45 @@ function Environment() {
         <img src={koi} alt="" />
       </div>
 
-      <div className="Environment__body">
-        <div className="title">
-          <h3>Environment monitor</h3>
-        </div>
-        <div className="search">
-          <Input
-            placeholder="Search Pond"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <Button type="secondary" onClick={handleSearch}>
-            Search
-          </Button>
-        </div>
-
-        <div className="add">
-          <Button type="secondary" onClick={showModalCreate}>
-            Add Pond
-          </Button>
-        </div>
+      <div
+        className="Environment__body"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "auto",
+          marginBottom: "20px",
+        }}
+      >
+        <Space direction="vertical" align="center">
+          <Space>
+            <div className="title">
+              <h3>Environment monitor</h3>
+            </div>
+          </Space>
+          <Space direction="horizontal" className="search">
+            <Input
+              className="input-custom"
+              placeholder="Search Pond"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <Button
+              className="button-custom"
+              type="secondary"
+              onClick={handleSearch}
+            >
+              Search
+            </Button>
+            <Button
+              className="add-button-custom"
+              type="secondary"
+              onClick={showModalCreate}
+            >
+              Add Pond
+            </Button>
+          </Space>
+        </Space>
       </div>
 
       {pondDataList.length > 0 ? (
@@ -325,7 +345,9 @@ function Environment() {
           </div>
         ))
       ) : (
-        <p>No ponds available.</p>
+        <p style={{ textAlign: "center", margin: "0 0 20px 0" }}>
+          No ponds available.
+        </p>
       )}
 
       <Modal
