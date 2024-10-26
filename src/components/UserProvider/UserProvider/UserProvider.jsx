@@ -3,9 +3,14 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    // Get user from local storage during initialization
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   useEffect(() => {
+    // This effect runs only once to set the initial user state
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -28,5 +33,11 @@ export const UserProvider = ({ children }) => {
   );
 };
 
-// Hook để sử dụng UserContext
-export const useUser = () => useContext(UserContext);
+// Hook to use UserContext
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("useUser must be used within a UserProvider");
+  }
+  return context;
+};

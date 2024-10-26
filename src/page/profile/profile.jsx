@@ -13,6 +13,7 @@ import {
   Radio,
   Upload,
   Form,
+  Space,
 } from "antd";
 import { useAsyncError, useNavigate } from "react-router-dom";
 
@@ -204,27 +205,23 @@ function Profile() {
                 defaultSelectedKeys={[1]}
                 className="profile_menu"
                 onClick={({ key }) => {
-                  if (key === "4") handleLogout();
+                  if (key === "5") handleLogout();
                 }}
               >
                 <Menu.Item key={1}>Account Settings</Menu.Item>
-                <Menu.Item key={2}>Your Order</Menu.Item>
-                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
+                <Menu.Item key={2} onClick={showModal}>
+                  Membership
+                </Menu.Item>
+                <Menu.Item key={3}>Your Order</Menu.Item>
+                <Menu.Item key={4} onClick={() => setIsResetModalOpen(true)}>
                   Reset Password
                 </Menu.Item>
-                <Menu.Item key={4}>Log out</Menu.Item>
+                <Menu.Item key={5}>Log out</Menu.Item>
               </Menu>
             </Sider>
 
             <Content className="profile_content">
               <h5>Account Settings</h5>
-
-              <p onClick={showModal} className="membership-button">
-                Membership
-              </p>
-
-              {/*Divider */}
-              <div className="profile_divider"></div>
 
               {/*Modal Membership*/}
               <Modal
@@ -232,17 +229,7 @@ function Profile() {
                 visible={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}
-                footer={[
-                  <Button key="buy" type="primary" onClick={handleOk}>
-                    Buy Now
-                  </Button>,
-                  <Button
-                    key="cart"
-                    onClick={() => message.success("Added to cart")}
-                  >
-                    Add to Cart
-                  </Button>,
-                ]}
+                okText={"Buy Membership"}
               >
                 <Radio.Group
                   onChange={(e) => setSelectedPackage(e.target.value)}
@@ -250,21 +237,9 @@ function Profile() {
                 >
                   <Radio
                     style={{ display: "block", marginBottom: "8px" }}
-                    value="1-month"
-                  >
-                    1 Month / 109k
-                  </Radio>
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
-                    value="3-months"
-                  >
-                    3 Months / 259k
-                  </Radio>
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
                     value="12-months"
                   >
-                    12 Months / 799k
+                    6 Months / 99k
                   </Radio>
                 </Radio.Group>
               </Modal>
@@ -351,15 +326,17 @@ function Profile() {
               <div className="profile_body_form">
                 <Form className="avatar">
                   <div className="title">Avatar Profile: </div>
-                  <Upload beforeUpload={handleImageUpload}>
-                    <Button icon={<UploadOutlined />}>Upload Image</Button>
-                  </Upload>
+                  <Space direction="horizontal">
+                    <Upload beforeUpload={handleImageUpload}>
+                      <Button icon={<UploadOutlined />}>Upload Image</Button>
+                    </Upload>
 
-                  {image && (
-                    <div>
-                      <img src={image} alt="Uploaded" width="20%" />
-                    </div>
-                  )}
+                    {image && (
+                      <div>
+                        <img src={image} alt="Uploaded" width="20%" />
+                      </div>
+                    )}
+                  </Space>
                 </Form>
 
                 <Form name="fullName">
