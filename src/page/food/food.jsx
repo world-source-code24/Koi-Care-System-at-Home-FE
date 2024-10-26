@@ -18,12 +18,12 @@ function Food() {
   useEffect(() => {
     const fetchPonds = async () => {
       try {
-        const accID = localStorage.getItem("userId");
+        const accId = localStorage.getItem("userId");
         const response = await axios.get(
-          `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accID}`
+          `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accId}`
         );
-        setPonds(response.data.listPond["$values"]); 
-        console.log(response.data.listPond["$values"]); 
+        setPonds(response.data.listPond["$values"]);
+        console.log(response.data.listPond["$values"]);
       } catch (error) {
         console.error("Lỗi khi lấy danh sách hồ", error);
       }

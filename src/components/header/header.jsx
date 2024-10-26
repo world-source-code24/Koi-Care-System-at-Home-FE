@@ -87,9 +87,6 @@ function Header() {
         <a href="#" className="closebtn" onClick={handleClose}>
           ×
         </a>
-        <Link to="/add" className="nav__news">
-          Add New Koi
-        </Link>
         <Link to="/mykoi" className="nav__news">
           My Koi Fish
         </Link>
