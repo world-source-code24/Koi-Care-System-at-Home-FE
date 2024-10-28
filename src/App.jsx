@@ -17,6 +17,8 @@ import Admin from "./page/admin/admin/admin";
 import AdminRoutes from "./components/admin/admin/routes";
 import Food from "./page/food/food";
 import PaymentSuccess from "./page/payment/payment/payment";
+import Koidetail from "./page/koidetail/koidetail";
+
 function Koi() {
   const router = createBrowserRouter([
     {
@@ -93,6 +95,10 @@ function Koi() {
           ),
         },
       ],
+    },
+    {
+      path: "/koidetail/:koiId", 
+      element: <Koidetail />,
     },
   ]);
 

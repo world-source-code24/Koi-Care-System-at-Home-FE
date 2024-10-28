@@ -1,4 +1,5 @@
 import "./mykoi.scss";
+import ca from "../../img/ca1.jpg";
 import Header from "../../components/header/header";
 import {
   Button,
@@ -15,6 +16,7 @@ import {
 import { FilterOutlined, UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const { Option } = Select;
 
 function Mykoi() {
@@ -26,6 +28,42 @@ function Mykoi() {
   const [selectedPond, setSelectedPond] = useState(null);
   const [image, setImage] = useState(null);
   const [fileList, setFileList] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const accId = localStorage.getItem("userId");
+
+    if (!user || !accId) {
+      console.error("Thiếu user hoặc accId trong localStorage");
+      alert("Vui lòng đăng nhập trước khi truy cập trang này.");
+      navigate("/login");
+      return;
+    }
+
+    const fetchKoiData = async () => {
+      try {
+        const response = await axios.get(
+          `https://koicaresystemapi.azurewebsites.net/api/user/${user.userId}/Koi?accId=${accId}`
+        );
+        const koiList = response.data.$values.map((koi) => ({
+          koiId: koi.koiId,
+          name: koi.name,
+          age: koi.age,
+          breed: koi.breed,
+          image: koi.image,
+          length: koi.length,
+          pondId: koi.pondId || selectedPond // Gán pondId nếu nó không tồn tại
+        }));
+        setKoiData(koiList);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách cá Koi:", error);
+      }
+    };
+
+    fetchKoiData();
+  }, [navigate]);
+
 
   useEffect(() => {
     const fetchPonds = async () => {
@@ -105,6 +143,7 @@ function Mykoi() {
 
   const handlePondChange = (value) => {
     setSelectedPond(value);
+    localStorage.setItem("selectedPondId", value); 
   };
 
   const handleCancel = () => {
@@ -123,6 +162,14 @@ function Mykoi() {
     setFileList([file]); 
     return false; 
   };
+
+    const handleNavigateToKoiDetail = (koi) => {
+      if (koi.pondId) {
+        navigate(`/koidetail/${koi.koiId}`, { state: { pondId: koi.pondId || selectedPond } });
+      } else {
+        console.error("Pond ID is undefined for this koi.");
+      }
+    };
 
   return (
     <>
@@ -154,14 +201,20 @@ function Mykoi() {
       {/* Hiển thị danh sách cá koi */}
       <div className="koi_list">
         {koiData.map((koi, index) => (
-          <div key={index} className="koi_item">
-            {koi.image && (
+          <div key={index} 
+          className="koi_item"
+          onClick={() => handleNavigateToKoiDetail(koi)}
+          style={{ cursor: 'pointer' }}  
+          >
+          { koi.image && koi.image.startsWith("blob:") ? (
+              <p>Image not available</p>
+          ) : (
               <img
-                src={koi.image}
+                src={ca}
                 alt={koi.name}
                 style={{ width: 100, height: 100 }}
               />
-            )}
+          )}
             <div className="koi_info">
               <p><strong>Name:</strong> {koi.name}</p>
               <p><strong>Age:</strong> {koi.age || "-"}</p>
@@ -182,7 +235,7 @@ function Mykoi() {
         <Form form={form} layout="vertical">
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
+              {/* <Form.Item
                 label="Image"
                 name="imageUrl"
                 rules={[{ required: true, message: "Please upload an image" }]}
@@ -190,16 +243,17 @@ function Mykoi() {
                 <Upload
                   beforeUpload={handleImageUpload}
                   listType="picture"
-                  fileList={fileList} // Sử dụng fileList để quản lý file tải lên
+                  fileList={fileList} 
                   onRemove={() => {
-                    setFileList([]); // Xóa file khỏi fileList khi người dùng xóa
-                    setImage(null); // Xóa URL tạm thời của ảnh
+                    setFileList([]); 
+                    setImage(null); 
                   }}
                 >
                   <Button icon={<UploadOutlined />}>Upload Image</Button>
                 </Upload>
               </Form.Item>
-              {image && <img src={image} alt="Uploaded preview" width="100%" />}
+              {image && <img src={image} alt="Uploaded preview" width="100%" />} */}
+              <img src={ca} alt="" />
             </Col>
             <Col span={12}>
               <Form.Item
