@@ -10,34 +10,74 @@ import {
   ShopOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import AdminRoutes from "../../../components/admin/admin/routes";
 
+import bg from "../../../img/news.jpg";
+import AdminRoutes from "../../../components/admin/admin/routes";
 function Admin() {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   const getUserInfor = () => {
+    const token = localStorage.getItem("token"); // Retrieve token from localStorage
     return fetch(
-      "https://koicaresystemapi.azurewebsites.net/api/Account/Profile"
-    ).then((res) => res.json());
+      "https://koicaresystemapi.azurewebsites.net/api/Account/Profile",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Error: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      })
+      .catch((err) => {
+        console.error("Error fetching user info:", err);
+        return null;
+      });
+  };
+
+  const handleLogout = () => {
+    // Clear token and other local storage data
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("role");
+    navigate("/login", { replace: true }); // Use replace to prevent going back
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login"); // Redirect if not authenticated
+      return;
+    }
+
     getUserInfor()
       .then((res) => {
-        setUser(res);
+        if (res) {
+          setUser(res);
+          if (res.role !== "admin") {
+            navigate("/login");
+          }
+        }
       })
-      .catch((err) => {
-        console.error("Error fetching orders:", err);
+      .catch((error) => {
+        console.error("Error fetching user info:", error);
+        navigate("/"); // Redirect to homepage on error
       });
-  }, []);
+  }, [navigate]);
 
-  const navigate = useNavigate();
   return (
     <div className="Admin">
+      <h1 className="admin__header">Admin Page</h1>
       <div className="Header">
-        {user && <Image width={50} src={user.image} />}
-        <Typography.Title>Admin Page</Typography.Title>
-        <div></div>
+        <br />
       </div>
       <div className="SideMenuAndContent">
         <div className="SideMenu">
@@ -70,11 +110,12 @@ function Admin() {
               },
               {
                 label: "Logout",
-                key: "/",
+                key: "/login",
                 icon: <LogoutOutlined />,
+                onClick: handleLogout,
               },
             ]}
-          ></Menu>
+          />
         </div>
         <div className="Content">
           <AdminRoutes />
@@ -82,18 +123,19 @@ function Admin() {
       </div>
       <div className="Footer">
         {user && (
-          <Typography.Link href="tel:{user.phone}">
+          <Typography.Link href={`tel:${user.phone}`}>
             {user.phone}
           </Typography.Link>
         )}
-        <Typography.Link href="https://www.google.com" target={"_blank"}>
+        <Typography.Link href="https://www.google.com" target="_blank">
           Privacy Policy
         </Typography.Link>
-        <Typography.Link href="https://www.google.com" target={"_blank"}>
+        <Typography.Link href="https://www.google.com" target="_blank">
           Terms of Use
         </Typography.Link>
       </div>
     </div>
   );
 }
+
 export default Admin;

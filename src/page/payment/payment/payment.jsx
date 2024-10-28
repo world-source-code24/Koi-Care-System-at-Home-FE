@@ -18,7 +18,7 @@ function PaymentSuccess() {
           title={<span className="gradient-text">Payment Successful!</span>}
           subTitle="Thank you for your order! We have received your payment and sent a confirmation email."
           extra={[
-            <Link to="/cart" key="orders">
+            <Link to="/profile" key="orders">
               <Button
                 type="primary"
                 size="large"

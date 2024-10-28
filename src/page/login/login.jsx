@@ -14,6 +14,7 @@ function Login() {
   const [form] = Form.useForm();
   const [error, setError] = useState("");
   const { setUser } = useUser(); // Lấy hàm setUser từ context để cập nhật người dùng
+
   const handleLogin = async (values) => {
     const { email, password } = values;
 
@@ -27,24 +28,22 @@ function Login() {
         console.log(token);
         if (token) {
           const userResponse = await api.get("Account/Profile", {
-            // Gọi API để lấy thông tin người dùng
             headers: {
-              Authorization: `Bearer ${token}`, // Gửi Access Token
+              Authorization: `Bearer ${token}`,
             },
           });
 
-          const user = userResponse.data; // Giả sử thông tin user nằm trong userResponse.data
-          localStorage.setItem("user", JSON.stringify(user)); // Lưu thông tin người dùng vào localStorage
-          localStorage.setItem("userId", user.accId); // Lưu accId vào localStorage
-          setUser(user); // Cập nhật thông tin người dùng vào UserContext
+          const user = userResponse.data;
+          localStorage.setItem("user", JSON.stringify(user));
+          localStorage.setItem("userId", user.accId);
+          setUser(user);
 
           console.log("accId:" + user.accId);
 
-          // Điều hướng tùy thuộc vào vai trò
-          if (user.role === "Admin") {
-            navigate("/admin"); // Điều hướng đến trang admin nếu là Admin
+          if (user.role === "admin") {
+            navigate("/admin/dashboard");
           } else {
-            navigate("/"); // Điều hướng đến trang chủ nếu không phải Admin
+            navigate("/");
           }
         }
       }

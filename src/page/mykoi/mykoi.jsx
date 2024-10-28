@@ -1,5 +1,4 @@
 import "./mykoi.scss";
-import ca from "../../img/ca1.jpg";
 import Header from "../../components/header/header";
 import {
   Button,
@@ -11,7 +10,7 @@ import {
   Row,
   Select,
   Tooltip,
-  Upload
+  Upload,
 } from "antd";
 import { FilterOutlined, UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -31,6 +30,17 @@ function Mykoi() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const storedKoiData = localStorage.getItem("koiData");
+    if (storedKoiData) {
+      setKoiData(JSON.parse(storedKoiData));
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("Danh sách cá Koi với pondId:", koiData);
+  }, [koiData]);
+
+  useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     const accId = localStorage.getItem("userId");
 
@@ -44,7 +54,7 @@ function Mykoi() {
     const fetchKoiData = async () => {
       try {
         const response = await axios.get(
-          `https://koicaresystemapi.azurewebsites.net/api/user/${user.userId}/Koi?accId=${accId}`
+          `https://koicaresystemapi.azurewebsites.net/api/user/${user}/Koi?accId=${accId}`
         );
         const koiList = response.data.$values.map((koi) => ({
           koiId: koi.koiId,
@@ -53,7 +63,7 @@ function Mykoi() {
           breed: koi.breed,
           image: koi.image,
           length: koi.length,
-          pondId: koi.pondId || selectedPond // Gán pondId nếu nó không tồn tại
+          pondId: koi.pondId,
         }));
         setKoiData(koiList);
       } catch (error) {
@@ -63,7 +73,6 @@ function Mykoi() {
 
     fetchKoiData();
   }, [navigate]);
-
 
   useEffect(() => {
     const fetchPonds = async () => {
@@ -101,7 +110,7 @@ function Mykoi() {
       const newKoi = {
         koiId: 0,
         name: values.name,
-        image: image, 
+        image: image,
         physique: values.physique || "string",
         age: values.age || 0,
         length: values.length || 0,
@@ -109,29 +118,32 @@ function Mykoi() {
         sex: values.sex === "male",
         breed: values.breed || "string",
         pondId: selectedPond,
-        koiGrowthChartsTbls: { $values: [] }
       };
 
-      const response = await fetch(`https://koicaresystemapi.azurewebsites.net/api/pond/${selectedPond}/Koi`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newKoi),
-      });
+      const response = await fetch(
+        `https://koicaresystemapi.azurewebsites.net/api/pond/${selectedPond}/Koi`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newKoi),
+        }
+      );
 
       if (response.ok) {
         console.log("Cá koi đã được thêm thành công vào hồ.");
         const data = await response.json();
-        
+
+        // Cập nhật koiData và lưu vào localStorage
         const updatedKoiData = [...koiData, data];
         setKoiData(updatedKoiData);
         localStorage.setItem("koiData", JSON.stringify(updatedKoiData));
 
         form.resetFields();
         setIsModalVisible(false);
-        setFileList([]); 
-        setImage(null);  
+        setFileList([]);
+        setImage(null);
       } else {
         const errorData = await response.json();
         console.error("Lỗi khi thêm cá vào hồ:", errorData);
@@ -143,13 +155,14 @@ function Mykoi() {
 
   const handlePondChange = (value) => {
     setSelectedPond(value);
-    localStorage.setItem("selectedPondId", value); 
+    localStorage.setItem("selectedPondId", value);
+    console.log(value);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    setImage(null); 
-    setFileList([]); 
+    setImage(null);
+    setFileList([]);
   };
 
   const toggleFilters = () => {
@@ -159,17 +172,19 @@ function Mykoi() {
   const handleImageUpload = (file) => {
     const imageUrl = URL.createObjectURL(file);
     setImage(imageUrl);
-    setFileList([file]); 
-    return false; 
+    setFileList([file]);
+    return false;
   };
 
-    const handleNavigateToKoiDetail = (koi) => {
-      if (koi.pondId) {
-        navigate(`/koidetail/${koi.koiId}`, { state: { pondId: koi.pondId || selectedPond } });
-      } else {
-        console.error("Pond ID is undefined for this koi.");
-      }
-    };
+  const handleNavigateToKoiDetail = (koi) => {
+    if (koi.koiId) {
+      navigate(`/koidetail/${koi.koiId}`, {
+        state: { pondId: koi.pondId },
+      });
+    } else {
+      console.error("Pond ID is undefined for this koi.");
+    }
+  };
 
   return (
     <>
@@ -201,25 +216,34 @@ function Mykoi() {
       {/* Hiển thị danh sách cá koi */}
       <div className="koi_list">
         {koiData.map((koi, index) => (
-          <div key={index} 
-          className="koi_item"
-          onClick={() => handleNavigateToKoiDetail(koi)}
-          style={{ cursor: 'pointer' }}  
+          <div
+            key={index}
+            className="koi_item"
+            onClick={() => handleNavigateToKoiDetail(koi)}
+            style={{ cursor: "pointer" }}
           >
-          { koi.image && koi.image.startsWith("blob:") ? (
+            {koi.image && koi.image.startsWith("blob:") ? (
               <p>Image not available</p>
-          ) : (
+            ) : (
               <img
-                src={ca}
+                src={koi.image}
                 alt={koi.name}
                 style={{ width: 100, height: 100 }}
               />
-          )}
+            )}
             <div className="koi_info">
-              <p><strong>Name:</strong> {koi.name}</p>
-              <p><strong>Age:</strong> {koi.age || "-"}</p>
-              <p><strong>Variety:</strong> {koi.variety || "-"}</p>
-              <p><strong>Length:</strong> {koi.length} cm</p>
+              <p>
+                <strong>Name:</strong> {koi.name}
+              </p>
+              <p>
+                <strong>Age:</strong> {koi.age || "-"}
+              </p>
+              <p>
+                <strong>Variety:</strong> {koi.variety || "-"}
+              </p>
+              <p>
+                <strong>Length:</strong> {koi.length} cm
+              </p>
             </div>
           </div>
         ))}
@@ -235,7 +259,7 @@ function Mykoi() {
         <Form form={form} layout="vertical">
           <Row gutter={16}>
             <Col span={12}>
-              {/* <Form.Item
+              <Form.Item
                 label="Image"
                 name="imageUrl"
                 rules={[{ required: true, message: "Please upload an image" }]}
@@ -243,17 +267,16 @@ function Mykoi() {
                 <Upload
                   beforeUpload={handleImageUpload}
                   listType="picture"
-                  fileList={fileList} 
+                  fileList={fileList}
                   onRemove={() => {
-                    setFileList([]); 
-                    setImage(null); 
+                    setFileList([]);
+                    setImage(null);
                   }}
                 >
                   <Button icon={<UploadOutlined />}>Upload Image</Button>
                 </Upload>
               </Form.Item>
-              {image && <img src={image} alt="Uploaded preview" width="100%" />} */}
-              <img src={ca} alt="" />
+              {image && <img src={image} alt="Uploaded preview" width="100%" />}
             </Col>
             <Col span={12}>
               <Form.Item

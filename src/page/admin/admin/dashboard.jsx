@@ -12,7 +12,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Column, Pie } from "@ant-design/plots";
-
+import "./dashboard.scss";
 function Dashboard() {
   const [totalAccounts, setTotalAccounts] = useState(0);
   const [totalShops, setTotalShops] = useState(0);
@@ -40,7 +40,7 @@ function Dashboard() {
   return (
     <div>
       <Space size={20} direction="vertical">
-        <Typography.Title level={3}>Dashboard</Typography.Title>
+        <h1 className="vertical">Dashboard</h1>
         <Space direction="horizontal">
           <Space direction="vertical">
             <Space direction="horizontal">

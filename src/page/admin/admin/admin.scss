@@ -1,16 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 .Admin{
-    display: flex;
     flex-direction: column;
     width: 100vw;
     height: 100vh;
+
 }
+
 .Header{
     height: 60px;
-    display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 4px 20px 4px 12px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+
+    margin: 0 auto;
+    z-index: 1;
+    position: relative;
+    h1{
+
+    }
+}
+
+.admin__header{
+    text-align: center;
+    font-size: 60px;
+    font-family: gowun patang;
+    position: relative;
+    top: 20px;
+    color: rgb(202, 0, 0);
 }
 .Footer{
     height: 50px;
@@ -36,3 +53,4 @@
 .Content{
     padding-left: 12px;
 }
+

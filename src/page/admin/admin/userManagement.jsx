@@ -1,12 +1,7 @@
 import { useState, useEffect } from "react";
-import { Form, Input, Table, Typography, Avatar, Space } from "antd";
+import { Form, Input, Table, Typography, Avatar, Space, Button } from "antd";
 import axios from "axios";
-import {
-  CheckCircleFilled,
-  CheckCircleOutlined,
-  CloseCircleFilled,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
+import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 
 const EditableCell = ({
   editing,
@@ -39,16 +34,17 @@ const EditableCell = ({
 function UserManagement() {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [editingKey, setEditingKey] = useState("");
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    // Fetching data from the API
     const fetchData = async () => {
       try {
         const response = await axios.get(
           "https://koicaresystemapi.azurewebsites.net/api/Account/get-all"
         );
-        const users = response.data.accs.$values; // Assuming this structure based on the provided JSON
+        const users = response.data.accs.$values;
         const formattedData = users.map((user) => ({
           key: user.accId.toString(),
           name: user.name,
@@ -60,6 +56,7 @@ function UserManagement() {
           status: user.status,
         }));
         setData(formattedData);
+        setFilteredData(formattedData);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
       }
@@ -92,28 +89,24 @@ function UserManagement() {
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.key);
 
-      // Lấy các giá trị cần cập nhật từ form
       const updatedUser = {
-        accId: key, // accId lấy từ key
-        name: row.name, // Tên người dùng
-        image: row.image, // Ảnh đại diện
-        phone: row.phone, // Số điện thoại
-        address: row.address, // Địa chỉ
-        // Thêm các trường khác nếu cần
+        accId: key,
+        name: row.name,
+        image: row.image,
+        phone: row.phone,
+        address: row.address,
       };
 
-      // Xây dựng URL với query parameters
       const query = new URLSearchParams(updatedUser).toString();
       const apiUrl = `https://koicaresystemapi.azurewebsites.net/api/Account/Profile?${query}`;
 
-      // Gửi yêu cầu đến API với URL đúng
       await axios.put(apiUrl);
 
-      // Cập nhật dữ liệu trong FE sau khi lưu thành công
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
         setData(newData);
+        setFilteredData(newData);
         setEditingKey("");
       }
     } catch (errInfo) {
@@ -121,11 +114,19 @@ function UserManagement() {
     }
   };
 
+  const handleSearch = () => {
+    const filtered = data.filter((item) =>
+      item.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredData(filtered);
+    setSearchText("");
+  };
+
   const columns = [
     {
       title: "Avatar",
       dataIndex: "image",
-      width: 20,
+      width: 80,
       render: (image) => <Avatar src={image} alt="avatar" />,
     },
     {
@@ -213,13 +214,28 @@ function UserManagement() {
   });
 
   return (
-    <Space direction="vertical">
-      <Typography.Title level={2}>User Management</Typography.Title>
+    <Space direction="vertical" style={{ width: "100%" }}>
+      <h1 className="vertical">User Management</h1>
+      <Space style={{ marginBottom: 16 }}>
+        <Input
+          placeholder="Search by Name"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 200 }}
+        />
+        <Button
+          type="primary"
+          className="search__product"
+          onClick={handleSearch}
+        >
+          Search
+        </Button>
+      </Space>
       <Form form={form} component={false}>
         <Table
           components={{ body: { cell: EditableCell } }}
           bordered
-          dataSource={data}
+          dataSource={filteredData}
           columns={mergedColumns}
           rowClassName="editable-row"
           pagination={{ pageSize: 5 }}

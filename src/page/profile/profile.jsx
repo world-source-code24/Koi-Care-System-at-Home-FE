@@ -13,6 +13,7 @@ import {
   Radio,
   Upload,
   Form,
+  List,
 } from "antd";
 import { useAsyncError, useNavigate } from "react-router-dom";
 
@@ -30,6 +31,38 @@ function Profile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [imageUrl, setImageUrl] = useState("");
+  const formatCurrency = (value) => {
+    if (typeof value !== "number" || isNaN(value)) {
+      return "0 VND";
+    }
+    return ` ${new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+    }).format(value * 1000)}`;
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(
+        `https://koicaresystemapi.azurewebsites.net/GetAll/${accId}`
+      );
+      const userOrders = response.data.orders.$values || [];
+      if (userOrders.length === 0) {
+        message.info("You have no orders yet.");
+      } else {
+        setOrders(userOrders);
+        setIsOrderModalOpen(true);
+      }
+    } catch (error) {
+      message.error("Failed to fetch orders");
+      console.error("Error fetching orders:", error);
+    }
+  };
+
   const [passwords, setPasswords] = useState({
     currentPassword: "",
     newPassword: "",
@@ -48,45 +81,42 @@ function Profile() {
   const [successMessage, setSuccessMessage] = useState("");
 
   // Lấy thông tin để show ra ở profile
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("token");
 
-      if (token) {
-        try {
-          const response = await axios.get(
-            "https://koicaresystemapi.azurewebsites.net/api/Account/Profile",
-            {
-              // Gọi API để lấy thông tin người dùng
-              headers: {
-                Authorization: `Bearer ${token}`, // Gửi Access Token
-              },
-            }
-          );
-          console.log(response.data);
-          setUserInfo({
-            fullName: response.data.name || "",
-            email: response.data.email || "",
-            phone: response.data.phone || "",
-            address: response.data.address || "",
-            image: response.data.image || "",
-          }); // Thiết lập thông tin người dùng vào trạng thái
-          console.log(userInfo);
-        } catch (error) {
-          console.error("Error fetching user info:", error);
-          if (error.response && error.response.status === 401) {
-            // Nếu token không hợp lệ hoặc hết hạn
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            navigate("/login"); // Chuyển hướng về trang đăng nhập
+    if (token) {
+      try {
+        const response = await axios.get(
+          "https://koicaresystemapi.azurewebsites.net/api/Account/Profile",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
+        );
+        setImageUrl(response.data.image || "");
+        setUserInfo({
+          fullName: response.data.name || "",
+          email: response.data.email || "",
+          phone: response.data.phone || "",
+          address: response.data.address || "",
+          image: response.data.image || "",
+        });
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          navigate("/login");
         }
-      } else {
-        navigate("/profile"); // Chuyển hướng về trang đăng nhập khi không có token
       }
-    };
+    } else {
+      navigate("/profile");
+    }
+  };
 
-    fetchUserInfo();
+  useEffect(() => {
+    fetchUserInfo(); // Gọi hàm này khi component được tải
   }, [navigate]);
 
   const handleEditToggle = () => {
@@ -104,22 +134,27 @@ function Profile() {
       formData.append("name", userInfo.fullName);
       formData.append("phone", userInfo.phone);
       formData.append("address", userInfo.address);
+
+      // Kiểm tra và thêm hình ảnh vào formData
       if (image) {
-        formData.append("image", image); // name tên trong API
+        formData.append("image", image); // Sử dụng hình ảnh đã tải lên
+      } else if (imageUrl) {
+        formData.append("image", imageUrl); // Sử dụng URL hình ảnh hiện có
       } else {
-        formData.append("image", "");
+        formData.append("image", ""); // Nếu không có hình ảnh
       }
 
-      const respone = await axios.put(
+      const response = await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/Account/Profile?accId=${accId}`,
         formData,
-        //API
         { headers: { "Content-Type": "application/json" } }
       );
-      console.log(respone.data.message);
-      if (respone.status === 200) {
+
+      if (response.status === 200) {
         message.success("Update successfully!");
         setIsEditing(false);
+        // Gọi lại fetchUserInfo để cập nhật thông tin người dùng bao gồm hình ảnh
+        fetchUserInfo();
       }
     } catch (error) {
       message.error("Failed to update information");
@@ -148,9 +183,19 @@ function Profile() {
   };
 
   const handleImageUpload = (file) => {
-    setImage(URL.createObjectURL(file));
-    return false;
+    const blobUrl = URL.createObjectURL(file); // Tạo URL blob
+    setImage(file); // Lưu tệp hình ảnh
+    setPreviewImage(blobUrl); // Lưu URL blob để xem trước
+    return false; // Ngăn không cho tự động tải lên
   };
+
+  useEffect(() => {
+    return () => {
+      if (previewImage) {
+        URL.revokeObjectURL(previewImage); // Giải phóng URL blob khi component unmount
+      }
+    };
+  }, [previewImage]);
 
   // Log out và xóa all thông tin qua localStorage
   const handleLogout = async () => {
@@ -207,12 +252,17 @@ function Profile() {
                   if (key === "4") handleLogout();
                 }}
               >
-                <Menu.Item key={1}>Account Settings</Menu.Item>
-                <Menu.Item key={2}>Your Order</Menu.Item>
+                <Menu.Item className="accountSetting" key={1}>
+                  Account Settings
+                </Menu.Item>
+                <Menu.Item key={2} onClick={fetchOrders}>
+                  Your Order
+                </Menu.Item>
+
                 <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
                   Reset Password
                 </Menu.Item>
-                <Menu.Item key={4}>Log out</Menu.Item>
+                {/* <Menu.Item key={4}>Log out</Menu.Item> */}
               </Menu>
             </Sider>
 
@@ -225,6 +275,49 @@ function Profile() {
 
               {/*Divider */}
               <div className="profile_divider"></div>
+
+              {/* Modal Order */}
+              <Modal
+                title="Your Orders"
+                visible={isOrderModalOpen}
+                onCancel={() => setIsOrderModalOpen(false)}
+                footer={null}
+                width={700}
+              >
+                <List
+                  itemLayout="horizontal"
+                  dataSource={orders}
+                  renderItem={(order) => (
+                    <List.Item>
+                      <List.Item.Meta
+                        title={`Order ID: ${order.orderId}`}
+                        description={`Date: ${order.date}, Status: ${order.statusOrder}, Payment: ${order.statusPayment}`}
+                      />
+                      <div>
+                        Total Amount: {formatCurrency(order.totalAmount)}
+                      </div>
+                      {/* Hiển thị chi tiết các sản phẩm trong đơn hàng */}
+                      {order.orderDetailsTbls &&
+                        order.orderDetailsTbls.$values.length > 0 && (
+                          <List
+                            itemLayout="horizontal"
+                            dataSource={order.orderDetailsTbls.$values}
+                            renderItem={(detail) => (
+                              <List.Item>
+                                <List.Item.Meta
+                                  title={`Product: ${detail.productName}}
+                                  description={Quantity: ${
+                                    detail.quantity
+                                  }, Price: ${formatCurrency(detail.price)}`}
+                                />
+                              </List.Item>
+                            )}
+                          />
+                        )}
+                    </List.Item>
+                  )}
+                />
+              </Modal>
 
               {/*Modal Membership*/}
               <Modal
@@ -355,9 +448,13 @@ function Profile() {
                     <Button icon={<UploadOutlined />}>Upload Image</Button>
                   </Upload>
 
-                  {image && (
+                  {(imageUrl || previewImage) && (
                     <div>
-                      <img src={image} alt="Uploaded" width="20%" />
+                      <img
+                        src={previewImage || imageUrl}
+                        alt="Uploaded"
+                        width="20%"
+                      />
                     </div>
                   )}
                 </Form>

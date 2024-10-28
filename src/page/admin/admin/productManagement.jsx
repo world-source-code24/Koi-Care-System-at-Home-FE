@@ -7,10 +7,11 @@ import {
   Avatar,
   Radio,
   Space,
+  Button,
   Typography,
 } from "antd";
 import axios from "axios";
-
+import "./productManagement.scss";
 const EditableCell = ({
   editing,
   dataIndex,
@@ -42,10 +43,10 @@ const EditableCell = ({
 function ProductManagement() {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
-  // Fetch data when component mounts
   useEffect(() => {
-    // Fetch product data from API
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -65,6 +66,7 @@ function ProductManagement() {
             status: product.status,
           }));
           setData(formattedData);
+          setFilteredData(formattedData);
         } else {
           console.error("Unexpected data format:", products);
         }
@@ -75,18 +77,25 @@ function ProductManagement() {
     fetchData();
   }, []);
 
-  // Function to handle status change
+  const handleSearch = () => {
+    const filtered = data.filter((item) =>
+      item.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredData(filtered);
+    setSearchText(""); // Reset searchText after search
+  };
+
   const handleStatusChange = async (key, newStatus) => {
     try {
       await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/Product/edit-status${key}?status=${newStatus}`
       );
 
-      // Update the product status in the table after successful API call
       const updatedData = data.map((item) =>
         item.key === key ? { ...item, status: newStatus } : item
       );
       setData(updatedData);
+      setFilteredData(updatedData);
 
       message.success(
         `Product ${newStatus ? "unbanned" : "banned"} successfully`
@@ -96,7 +105,6 @@ function ProductManagement() {
     }
   };
 
-  // Columns for the table
   const columns = [
     {
       title: "Image",
@@ -167,13 +175,24 @@ function ProductManagement() {
   });
 
   return (
-    <Space direction="vertical">
-      <Typography.Title level={2}>Product Management</Typography.Title>
+    <Space direction="vertical" style={{ width: "100%" }}>
+      <h1 className="vertical">Product Management</h1>
+      <Space style={{ marginBottom: 16 }}>
+        <Input
+          placeholder="Search by Name"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 200 }}
+        />
+        <Button type="primary" className="search__product" onClick={handleSearch}>
+          Search
+        </Button>
+      </Space>
       <Form form={form} component={false}>
         <Table
           components={{ body: { cell: EditableCell } }}
           bordered
-          dataSource={data}
+          dataSource={filteredData}
           columns={mergedColumns}
           rowClassName="editable-row"
           pagination={{ pageSize: 5 }}
