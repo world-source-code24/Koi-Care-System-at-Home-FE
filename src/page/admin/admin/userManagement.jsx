@@ -151,7 +151,7 @@ function UserManagement() {
       title: "Role",
       dataIndex: "role",
       width: 100,
-      editable: false,
+      editable: true,
     },
     {
       title: "Address",

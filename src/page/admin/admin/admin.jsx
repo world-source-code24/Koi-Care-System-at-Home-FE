@@ -77,7 +77,6 @@ function Admin() {
     <div className="Admin">
       <h1 className="admin__header">Admin Page</h1>
       <div className="Header">
-        {user && <Image width={50} src={user.image} />}
         <br />
       </div>
       <div className="SideMenuAndContent">
