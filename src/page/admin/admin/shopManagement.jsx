@@ -7,7 +7,7 @@ import {
   Popconfirm,
   message,
   Space,
-  Flex,
+  Button,
 } from "antd";
 import axios from "axios";
 
@@ -41,32 +41,34 @@ const EditableCell = ({
 
 function ShopManagement() {
   const [form] = Form.useForm();
-  const [data, setData] = useState([]); // Quản lý state của dữ liệu cửa hàng
-  const [editingKey, setEditingKey] = useState(""); // Quản lý trạng thái chỉnh sửa
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [editingKey, setEditingKey] = useState("");
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    // Fetch dữ liệu từ API khi component được render lần đầu
     const fetchData = async () => {
       try {
         const response = await axios.get(
           "https://koicaresystemapi.azurewebsites.net/api/Shop/get-all"
         );
-        const shops = response.data.shops.$values; // Giả sử cấu trúc này dựa trên JSON đã được cung cấp
+        const shops = response.data.shops.$values;
         const formattedData = shops.map((shop) => ({
           key: shop.shopId.toString(),
           name: shop.name,
           phone: shop.phone,
           address: shop.address,
         }));
-        setData(formattedData); // Cập nhật state với dữ liệu đã được format
+        setData(formattedData);
+        setFilteredData(formattedData);
       } catch (error) {
         console.error("Failed to fetch shop data:", error);
       }
     };
     fetchData();
-  }, []); // Chỉ gọi useEffect một lần khi component được mount
+  }, []);
 
-  const isEditing = (record) => record.key === editingKey; // Kiểm tra xem mục có đang được chỉnh sửa không
+  const isEditing = (record) => record.key === editingKey;
 
   const edit = (record) => {
     form.setFieldsValue({
@@ -75,41 +77,37 @@ function ShopManagement() {
       address: "",
       ...record,
     });
-    setEditingKey(record.key); // Thiết lập trạng thái chỉnh sửa
+    setEditingKey(record.key);
   };
 
   const cancel = () => {
-    setEditingKey(""); // Hủy chỉnh sửa
+    setEditingKey("");
   };
 
   const save = async (key) => {
     try {
-      const row = await form.validateFields(); // Validate dữ liệu trong form
+      const row = await form.validateFields();
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.key);
-
-      // Chuẩn bị dữ liệu để cập nhật
       const updatedShop = {
-        shopId: key, // shopId từ key
+        shopId: key,
         name: row.name,
         phone: row.phone,
         address: row.address,
       };
 
       const apiUrl = `https://koicaresystemapi.azurewebsites.net/api/Shop/update${key}`;
-
-      // Gửi yêu cầu cập nhật API
       await axios.put(apiUrl, updatedShop, {
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      // Cập nhật dữ liệu trong UI sau khi lưu thành công
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
         setData(newData);
+        setFilteredData(newData);
         setEditingKey("");
         message.success("Update successful");
       }
@@ -118,7 +116,6 @@ function ShopManagement() {
     }
   };
 
-  // Hàm xóa mục
   const handleDelete = async (key) => {
     try {
       await axios.delete(
@@ -126,10 +123,19 @@ function ShopManagement() {
       );
       const newData = data.filter((item) => item.key !== key);
       setData(newData);
+      setFilteredData(newData);
       message.success("Deleted successfully");
     } catch (error) {
       message.error("Delete failed: " + error.message);
     }
+  };
+
+  const handleSearch = () => {
+    const filtered = data.filter((item) =>
+      item.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredData(filtered);
+    setSearchText("");
   };
 
   const columns = [
@@ -211,13 +217,28 @@ function ShopManagement() {
   });
 
   return (
-    <Space direction="vertical">
+    <Space direction="vertical" style={{ width: "100%" }}>
       <h1 className="vertical">Shop Management</h1>
+      <Space style={{ marginBottom: 16 }}>
+        <Input
+          placeholder="Search by Name"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 200, marginRight: 8 }}
+        />
+        <Button
+          type="primary"
+          className="search__product"
+          onClick={handleSearch}
+        >
+          Search
+        </Button>
+      </Space>
       <Form form={form} component={false}>
         <Table
           components={{ body: { cell: EditableCell } }}
           bordered
-          dataSource={data}
+          dataSource={filteredData}
           columns={mergedColumns}
           rowClassName="editable-row"
           pagination={{ pageSize: 5 }}

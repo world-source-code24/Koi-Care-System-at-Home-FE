@@ -8,21 +8,14 @@ import { MenuOutlined } from "@ant-design/icons";
 function Header() {
   const [visible, setVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false); // Trạng thái để kiểm tra Admin
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token || localStorage.getItem("accId")) {
-      setIsLoggedIn(true); // Đã đăng nhập
-      const user = JSON.parse(localStorage.getItem("user"));
-      console.log(user.role);
-      if (user && user.role === "admin") {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false);
-      }
     } else {
-      setIsLoggedIn(false); // Chưa đăng nhập
+      setIsLoggedIn(false);
     }
   }, []);
 
@@ -35,11 +28,10 @@ function Header() {
   };
 
   const handleLogout = () => {
-    // Xóa token và thông tin người dùng khỏi localStorage khi logout
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    setIsAdmin(false);
     setIsLoggedIn(false);
-    setIsAdmin(false); // Reset trạng thái Admin
     navigate("/login");
   };
 
@@ -62,12 +54,15 @@ function Header() {
             Blog and News
           </Link>
 
+          <Link to="/cart" className="nav__news">
+            Cart
+          </Link>
           {isLoggedIn ? (
             <>
               <Link to="/profile" className="nav__profile">
                 Profile
               </Link>
-              {isAdmin && ( // Nếu người dùng là Admin, hiển thị nút Manager
+              {isAdmin && (
                 <Link to="/admin/dashboard" className="nav__manager">
                   Manager
                 </Link>
@@ -81,11 +76,9 @@ function Header() {
               <Link to="/login" className="nav__login">
                 Login
               </Link>
+              {/* <Link to="/login" className='nav__login'>Login</Link> */}
             </>
           )}
-          <Link to="/cart" className="nav__news">
-            Cart
-          </Link>
 
           <span className="nav__menu">
             <Button onClick={handleMenu}>

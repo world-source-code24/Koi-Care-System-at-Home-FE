@@ -1,440 +1,355 @@
-import Header from "../../components/header/header";
 import "./mykoi.scss";
-import koiwall from "../../img/koi2.jpg";
+import Header from "../../components/header/header";
 import {
-  DownCircleOutlined,
-  FilterOutlined,
-  PlusCircleOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+  Button,
+  Col,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Select,
+  Tooltip,
+  Upload,
+} from "antd";
+import { FilterOutlined, UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { Divider, Form, Image, Input, Modal, Select, Upload } from "antd";
-import { useForm } from "antd/es/form/Form";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+const { Option } = Select;
 
-function MyKoi() {
-  const { Option } = Select;
+function Mykoi() {
+  const [form] = Form.useForm();
+  const [showFilters, setShowFilters] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [ponds, setPonds] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái modal
-  const [isClicked, setIsClicked] = useState(false);
-  const [sortValue, setSortValue] = useState("In pond since (newest first)");
-  const [pondValue, setPondValue] = useState("All");
-  const [sexValue, setSexValue] = useState("All");
-  const [stateValue, setStateValue] = useState("All");
-  const [koiList, setKoiList] = useState([]);
-  const [form] = useForm();
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
+  const [koiData, setKoiData] = useState([]);
+  const [selectedPond, setSelectedPond] = useState(null);
+  const [image, setImage] = useState(null);
   const [fileList, setFileList] = useState([]);
+  const navigate = useNavigate();
 
-  // Khi trang load, kiểm tra và lấy dữ liệu từ localStorage
   useEffect(() => {
-    const storedKoiList = localStorage.getItem("koiList");
-    if (storedKoiList) {
-      setKoiList(JSON.parse(storedKoiList));
+    const storedKoiData = localStorage.getItem("koiData");
+    if (storedKoiData) {
+      setKoiData(JSON.parse(storedKoiData));
     }
   }, []);
 
   useEffect(() => {
-    const fetchPonds = async () => {
+    console.log("Danh sách cá Koi với pondId:", koiData);
+  }, [koiData]);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const accId = localStorage.getItem("userId");
+
+    if (!user || !accId) {
+      console.error("Thiếu user hoặc accId trong localStorage");
+      alert("Vui lòng đăng nhập trước khi truy cập trang này.");
+      navigate("/login");
+      return;
+    }
+
+    const fetchKoiData = async () => {
       try {
-        const accID = localStorage.getItem("userId");
         const response = await axios.get(
-          `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accID}`
+          `https://koicaresystemapi.azurewebsites.net/api/user/${user}/Koi?accId=${accId}`
         );
-        setPonds(response.data.listPond["$values"]); // Lưu danh sách hồ vào state
+        const koiList = response.data.$values.map((koi) => ({
+          koiId: koi.koiId,
+          name: koi.name,
+          age: koi.age,
+          breed: koi.breed,
+          image: koi.image,
+          length: koi.length,
+          pondId: koi.pondId,
+        }));
+        setKoiData(koiList);
       } catch (error) {
-        console.error("Error fetching ponds", error);
+        console.error("Lỗi khi lấy danh sách cá Koi:", error);
       }
     };
 
-    if (isModalVisible) {
-      fetchPonds(); // Gọi API khi modal mở
+    fetchKoiData();
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchPonds = async () => {
+      try {
+        const accId = localStorage.getItem("userId");
+        const response = await axios.get(
+          `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accId}`
+        );
+        setPonds(response.data.listPond["$values"]);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách hồ", error);
+      }
+    };
+    fetchPonds();
+
+    const storedKoiData = localStorage.getItem("koiData");
+    if (storedKoiData) {
+      setKoiData(JSON.parse(storedKoiData));
     }
-  }, [isModalVisible]);
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
+  }, []);
 
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-  };
-
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-
-  // Hàm cho Down Icon
-  const scrollToContent = () => {
-    const contentSection = document.getElementById("content-section");
-    if (contentSection) {
-      contentSection.scrollIntoView({ behavior: "smooth" });
-    }
-    setIsClicked(true);
-    setTimeout(() => setIsClicked(false), 300);
-  };
-
-  // Các hàm cho Sort
-  const handleSortChange = (value) => {
-    setSortValue(value);
-  };
-
-  const handlePondChange = (value) => {
-    setPondValue(value);
-  };
-
-  const handleSexChange = (value) => {
-    setSexValue(value);
-  };
-
-  const handleStateChange = (value) => {
-    setStateValue(value);
-  };
-
-  // Modal
   const showModal = () => {
     setIsModalVisible(true);
   };
 
-  // Hàm lưu dữ liệu vào localStorage sau khi submit form
-  const handleOk = () => {
-    form.validateFields().then(async (values) => {
+  const handleOk = async () => {
+    try {
+      const values = await form.validateFields();
+
+      if (!selectedPond) {
+        console.error("Vui lòng chọn hồ trước khi thêm cá koi.");
+        return;
+      }
+
       const newKoi = {
+        koiId: 0,
         name: values.name,
-        length: values.length,
-        weight: values.weight,
-        sex: values.sex,
-        pondId: values.pond, // Đảm bảo pondId có giá trị hợp lệ
-        breeder: values.breeder,
-        variety: values.variety,
-        physique: values.physique,
-        image: fileList.length ? fileList[0].thumbUrl : null, // Đảm bảo fileList không rỗng
+        image: image,
+        physique: values.physique || "string",
+        age: values.age || 0,
+        length: values.length || 0,
+        weight: values.weight || 0,
+        sex: values.sex === "male",
+        breed: values.breed || "string",
+        pondId: selectedPond,
       };
 
-      try {
-        const response = await axios.post(
-          `https://koicaresystemapi.azurewebsites.net/api/pond/${newKoi.pondId}/Koi`,
-          newKoi
-        );
-        console.log("New Koi added successfully:", response.data);
+      const response = await fetch(
+        `https://koicaresystemapi.azurewebsites.net/api/pond/${selectedPond}/Koi`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newKoi),
+        }
+      );
 
-        const updatedKoiList = [...koiList, response.data];
-        setKoiList(updatedKoiList);
-        localStorage.setItem("koiList", JSON.stringify(updatedKoiList));
+      if (response.ok) {
+        console.log("Cá koi đã được thêm thành công vào hồ.");
+        const data = await response.json();
+
+        // Cập nhật koiData và lưu vào localStorage
+        const updatedKoiData = [...koiData, data];
+        setKoiData(updatedKoiData);
+        localStorage.setItem("koiData", JSON.stringify(updatedKoiData));
 
         form.resetFields();
-        setFileList([]);
         setIsModalVisible(false);
-      } catch (error) {
-        console.error("Error adding new Koi", error);
+        setFileList([]);
+        setImage(null);
+      } else {
+        const errorData = await response.json();
+        console.error("Lỗi khi thêm cá vào hồ:", errorData);
       }
-    });
+    } catch (error) {
+      console.log("Validation failed or API error:", error);
+    }
+  };
+
+  const handlePondChange = (value) => {
+    setSelectedPond(value);
+    localStorage.setItem("selectedPondId", value);
+    console.log(value);
   };
 
   const handleCancel = () => {
-    form.resetFields(); // Reset các trường trong form
-    setFileList([]); // Reset fileList nếu cần
-    setIsModalVisible(false); // Đóng modal
+    setIsModalVisible(false);
+    setImage(null);
+    setFileList([]);
   };
 
-  const uploadButton = (
-    <button
-      style={{
-        border: 0,
-        background: "none",
-      }}
-      type="button"
-    >
-      <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </button>
-  );
-
-  const handleFinish = (values) => {
-    console.log("Form values: ", values);
-    console.log("Weight: ", values.weight); // Log ra giá trị weight
-    setIsModalVisible(false); // Đóng modal sau khi hoàn thành
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
   };
 
-  const koiCount = 0; // Bạn có thể cập nhật giá trị này dựa trên số lượng cá Koi hiện có
+  const handleImageUpload = (file) => {
+    const imageUrl = URL.createObjectURL(file);
+    setImage(imageUrl);
+    setFileList([file]);
+    return false;
+  };
+
+  const handleNavigateToKoiDetail = (koi) => {
+    if (koi.koiId) {
+      navigate(`/koidetail/${koi.koiId}`, {
+        state: { pondId: koi.pondId },
+      });
+    } else {
+      console.error("Pond ID is undefined for this koi.");
+    }
+  };
+
   return (
     <>
       <Header />
-      {/*Phần Head */}
-      <div className="my_wall">
-        <img src={koiwall} alt="Royal Koi" />
-        <div className="overlay">
-          <h1>Royal Koi</h1>
-          <p>Let us help you care for your koi fish.</p>
-          <DownCircleOutlined
-            className={`down-icon ${isClicked ? "clicked" : ""}`}
-            onClick={scrollToContent}
-          />
-        </div>
+      <div className="mykoi_background"></div>
+      <div className="mykoi_title">
+        <h1>My Koi Fish</h1>
       </div>
-
-      <div className="my_title">
-        <h1>My Koi </h1>
-      </div>
-
-      <div className="my_divider">
+      <div className="mykoi_divider">
         <Divider />
       </div>
 
-      <div className="my_sort_container">
-        <div className="my_sidebar">
-          <div className="my_icon_filter">
-            <FilterOutlined className="filter_icon" />
-          </div>
-          <Divider />
+      <div className="mykoi_area">
+        <Button type="primary" onClick={showModal}>
+          Add new koi
+        </Button>
 
-          {/* Dropdown for Sort */}
-          <div className="sort_dropdown">
-            <label>Sort by: </label>
-            <Select value={sortValue} onChange={handleSortChange}>
-              <Option value="In pond since (newest first)">
-                In pond since (newest first)
-              </Option>
-              <Option value="In pond since (oldest first)">
-                In pond since (oldest first)
-              </Option>
-              <Option value="Name (A-Z)">Name (A-Z)</Option>
-              <Option value="Name (Z-A)">Name (Z-A)</Option>
-              <Option value="Length (descending)">Length (descending)</Option>
-              <Option value="Length (ascending)">Length (ascending)</Option>
-              <Option value="Age (descending)">Age (descending)</Option>
-              <Option value="Age (ascending)">Age (ascending)</Option>
-            </Select>
-          </div>
+        <Tooltip title="Filter">
+          <Button
+            type="default"
+            shape="circle"
+            icon={<FilterOutlined />}
+            onClick={toggleFilters}
+            style={{ marginLeft: 10 }}
+          />
+        </Tooltip>
+      </div>
 
-          <Divider />
-
-          {/*Pond: */}
-          <div className="sort_dropdown">
-            <label>Pond: </label>
-            <Select value={pondValue} onChange={handlePondChange}>
-              <Option>All</Option>
-            </Select>
-          </div>
-
-          <Divider />
-
-          {/*Sex: */}
-          <Form.Item
-            label="Sex:"
-            name="sex"
-            initialValue="Not specified"
-            required
+      {/* Hiển thị danh sách cá koi */}
+      <div className="koi_list">
+        {koiData.map((koi, index) => (
+          <div
+            key={index}
+            className="koi_item"
+            onClick={() => handleNavigateToKoiDetail(koi)}
+            style={{ cursor: "pointer" }}
           >
-            <Select>
-              <Option value="Not specified">Not specified</Option>
-              <Option value="Male">Male</Option>
-              <Option value="Female">Female</Option>
-            </Select>
-          </Form.Item>
-
-          <Divider />
-
-          {/*State of life: */}
-          <div className="sort_dropdown">
-            <label>State of life: </label>
-            <Select value={stateValue} onChange={handleStateChange}>
-              <Option>All</Option>
-              <Option>Alive</Option>
-              <Option>Dead</Option>
-            </Select>
-          </div>
-        </div>
-
-        {/*Content*/}
-        <div className="my_content">
-          {/* Kiểm tra và ẩn h1 và p trong my_content nếu koiList không trống */}
-          <div className="koi_noti">
-            {koiList.length === 0 && (
-              <>
-                <h1>No Koi Fish Added Yet</h1>
-                <p>Add your first Koi fish to start.</p>
-              </>
+            {koi.image && koi.image.startsWith("blob:") ? (
+              <p>Image not available</p>
+            ) : (
+              <img
+                src={koi.image}
+                alt={koi.name}
+                style={{ width: 100, height: 100 }}
+              />
             )}
-          </div>
-
-          {/* Container chung cho các modal nhỏ và nút plus */}
-          <div className="koi-content-container container">
-            <div className="row koi-list">
-              {koiList.map((koi, index) => (
-                <div className="col-md-3 koi-card" key={index}>
-                  {koi.image && (
-                    <Image
-                      src={koi.image}
-                      alt={koi.name}
-                      className="img-fluid"
-                    />
-                  )}
-                  <div className="info_container">
-                    <h3>Name: {koi.name}</h3>
-                    <p>Age: {koi.age}</p>
-                    <p>Variety: {koi.variety}</p>
-                    <p>Length: {koi.length} cm</p>
-                  </div>
-                </div>
-              ))}
+            <div className="koi_info">
+              <p>
+                <strong>Name:</strong> {koi.name}
+              </p>
+              <p>
+                <strong>Age:</strong> {koi.age || "-"}
+              </p>
+              <p>
+                <strong>Variety:</strong> {koi.variety || "-"}
+              </p>
+              <p>
+                <strong>Length:</strong> {koi.length} cm
+              </p>
             </div>
           </div>
-
-          {/* Symbol and Koi */}
-          <div className="add-koi-container">
-            <PlusCircleOutlined className="plus-icon" onClick={showModal} />
-            <span className="koi-count">Koi: {koiCount}</span>
-          </div>
-
-          {/*Modal add*/}
-          <Modal
-            title="Add new Koi"
-            open={isModalVisible}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            width={1000}
-          >
-            <Form layout="vertical" form={form} onFinish={handleFinish}>
-              <div className="form-columns">
-                <div className="form-column">
-                  <Form.Item label="koi_ava" name="image" required>
-                    <Upload
-                      action="API/koi"
-                      listType="picture-card"
-                      fileList={fileList}
-                      onPreview={handlePreview}
-                      onChange={handleChange}
-                      maxCount={1}
-                    >
-                      Click here to upload
-                      {fileList.length >= 1 ? null : uploadButton}
-                    </Upload>
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Physique: "
-                    name="physique"
-                    initialValue="Normal"
-                    required
-                  >
-                    <Select>
-                      <Option value="Slim">Slim</Option>
-                      <Option value="Normal">Normal</Option>
-                      <Option value="Corpulent">Corpulent</Option>
-                    </Select>
-                  </Form.Item>
-
-                  <Form.Item label="Length: " name="length" required>
-                    <Input
-                      placeholder="Enter length of your Koi fish "
-                      type="number"
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Sex:"
-                    name="sex"
-                    initialValue="Not specified"
-                    required
-                  >
-                    <Select>
-                      <Option value="Not specified">Not specified</Option>
-                      <Option value="Male">Male</Option>
-                      <Option value="Female">Female</Option>
-                    </Select>
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Pond: "
-                    name="pond"
-                    initialValue={
-                      ponds.length > 0 ? ponds[0].pondId : undefined
-                    }
-                    required
-                  >
-                    <Select placeholder="Select Pond">
-                      {ponds.map((pond) =>
-                        pond.pondId && pond.name ? (
-                          <Option key={pond.pondId} value={pond.pondId}>
-                            {pond.name}
-                          </Option>
-                        ) : null
-                      )}
-                    </Select>
-                  </Form.Item>
-
-                  <Form.Item label="Breeder: " name="breeder" required>
-                    <Input placeholder="Enter Breeder" />
-                  </Form.Item>
-                </div>
-
-                <div className="form-column">
-                  <Form.Item label="Koi fish name:" name="name" required>
-                    <Input placeholder="Enter name of your Koi fish" />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Age: "
-                    name="age"
-                    initialValue="Not specified"
-                    required
-                  >
-                    <Select>
-                      <Option value="Not specified">Not specified</Option>
-                      <Option value="0 year">0 year</Option>
-                      <Option value="1 year">1 year</Option>
-                      {/* Add more years here as needed */}
-                    </Select>
-                  </Form.Item>
-
-                  <Form.Item label="Weight:" name="weight" required>
-                    <Input
-                      placeholder="Enter weight of your Koi fish"
-                      type="number"
-                    />
-                  </Form.Item>
-
-                  <Form.Item label="Variety: " name="variety">
-                    <Input placeholder="Enter Notes" />
-                  </Form.Item>
-
-                  <Form.Item label="Purchase price: ">
-                    <Input placeholder="Enter Price" />
-                  </Form.Item>
-                </div>
-              </div>
-            </Form>
-          </Modal>
-          {previewImage && (
-            <Image
-              wrapperStyle={{
-                display: "none",
-              }}
-              preview={{
-                visible: previewOpen,
-                onVisibleChange: (visible) => setPreviewOpen(visible),
-                afterOpenChange: (visible) => !visible && setPreviewImage(""),
-              }}
-              src={previewImage}
-            />
-          )}
-        </div>
+        ))}
       </div>
+
+      {/* Modal */}
+      <Modal
+        title="Add new koi"
+        open={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <Form form={form} layout="vertical">
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Image"
+                name="imageUrl"
+                rules={[{ required: true, message: "Please upload an image" }]}
+              >
+                <Upload
+                  beforeUpload={handleImageUpload}
+                  listType="picture"
+                  fileList={fileList}
+                  onRemove={() => {
+                    setFileList([]);
+                    setImage(null);
+                  }}
+                >
+                  <Button icon={<UploadOutlined />}>Upload Image</Button>
+                </Upload>
+              </Form.Item>
+              {image && <img src={image} alt="Uploaded preview" width="100%" />}
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Name"
+                name="name"
+                rules={[{ required: true, message: "Please enter the name" }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          {/* Các trường nhập khác */}
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Physique" name="physique">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Age" name="age">
+                <Input type="number" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Length (cm)" name="length">
+                <Input type="number" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Weight (g)" name="weight">
+                <Input type="number" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Sex" name="sex">
+                <Select>
+                  <Option value="male">Male</Option>
+                  <Option value="female">Female</Option>
+                  <Option value="not_specified">Not specified</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Breed" name="breed">
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Pond" name="pond">
+                <Select onChange={handlePondChange}>
+                  {ponds.map((pond) => (
+                    <Option key={pond.pondId} value={pond.pondId}>
+                      {pond.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
     </>
   );
 }
 
-export default MyKoi;
+export default Mykoi;

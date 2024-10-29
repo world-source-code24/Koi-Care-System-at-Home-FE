@@ -17,7 +17,9 @@ import Admin from "./page/admin/admin/admin";
 import AdminRoutes from "./components/admin/admin/routes";
 import Food from "./page/food/food";
 import PaymentSuccess from "./page/payment/payment/payment";
-import Register from "./page/register/register";
+import Koidetail from "./page/koidetail/koidetail";
+import Register from "./page/register/register/register";
+
 function Koi() {
   const router = createBrowserRouter([
     {
@@ -40,6 +42,7 @@ function Koi() {
       path: "/view/:id",
       element: <Viewpond />,
     },
+
     {
       path: "/viewproduct",
       element: <Viewproduct />,
@@ -96,6 +99,14 @@ function Koi() {
           ),
         },
       ],
+    },
+    {
+      path: "/koidetail/:koiId",
+      element: <Koidetail />,
+    },
+    {
+      path: "/register",
+      element: <Register />,
     },
   ]);
 

@@ -11,8 +11,8 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
+import bg from "../../../img/news.jpg";
 import AdminRoutes from "../../../components/admin/admin/routes";
-
 function Admin() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();

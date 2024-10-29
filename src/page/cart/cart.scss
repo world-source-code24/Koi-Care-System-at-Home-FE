@@ -11,8 +11,13 @@
     }
 }
 
+.button_delete{
+    position: relative;
+    left: 150px;
+}
+
 .cart__container {
-    width: 80%;
+    width: 50%;
     margin: 0 auto;
     padding: 20px 0;
 
@@ -65,7 +70,7 @@
                 object-fit: contain;
                 border-radius: 10px; // Bo tròn ảnh sản phẩm
                 transition: transform 0.3s ease;
-
+                margin-left: 10px;
                 &:hover {
                     transform: scale(1.1); // Phóng to ảnh khi hover
                 }
@@ -110,10 +115,10 @@
         display: flex;
         justify-content: space-between;
         font-size: 24px;
-        font-weight: bold;
+font-weight: bold;
         color: #d00000;
         font-family: 'Gowun Batang', serif;
-padding: 10px 0;
+        padding: 10px 0;
         border-top: 1px solid #d00000;
     }
 

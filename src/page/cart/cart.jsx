@@ -6,6 +6,8 @@ import bg from "../../img/news.jpg";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Listproduct } from "../../share/listproduct";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
@@ -77,7 +79,7 @@ function Cart() {
 
   const handleCheckout = async () => {
     const accId = localStorage.getItem("userId");
-    const totalAmount = getTotalPrice();
+const totalAmount = getTotalPrice();
 
     const orderPayload = {
       userId: accId,
@@ -136,8 +138,11 @@ function Cart() {
                     <p>Quantity: {item.cart.quantity}</p>
                     <p>Price: {item.cartDetails.price}.000 VND</p>
                   </div>
-                  <button onClick={() => handleRemove(item.cart.productId)}>
-                    :heavy_multiplication_x:
+                  <button
+                    className="button_delete"
+                    onClick={() => handleRemove(item.cart.productId)}
+                  >
+                    <i className="bi bi-archive"></i>
                   </button>
                 </div>
               ))}
