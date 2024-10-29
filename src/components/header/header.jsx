@@ -14,6 +14,7 @@ function Header() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token || localStorage.getItem("accId")) {
+      setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
     }
