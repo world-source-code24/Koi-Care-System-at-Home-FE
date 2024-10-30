@@ -162,9 +162,17 @@ function Profile() {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
+    try {
+      await axios.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Account/membership${accId}`
+      );
+      message.success("You are now a member");
+    } catch (error) {
+      message.error("Failed to update membership");
+      console.error("Error updating membership:", error);
+    }
     setIsModalOpen(false);
-    message.success("You have selected: " + selectedPackage);
   };
 
   const handleCancel = () => {
@@ -309,43 +317,9 @@ function Profile() {
                 title="Membership Packages"
                 visible={isModalOpen}
                 onOk={handleOk}
+                okText="Buy Now"
                 onCancel={handleCancel}
-                footer={[
-                  <Button key="buy" type="primary" onClick={handleOk}>
-                    Buy Now
-                  </Button>,
-                  <Button
-                    key="cart"
-                    onClick={() => message.success("Added to cart")}
-                  >
-                    Add to Cart
-                  </Button>,
-                ]}
-              >
-                <Radio.Group
-                  onChange={(e) => setSelectedPackage(e.target.value)}
-                  value={selectedPackage}
-                >
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
-                    value="1-month"
-                  >
-                    1 Month / 109k
-                  </Radio>
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
-                    value="3-months"
-                  >
-                    3 Months / 259k
-                  </Radio>
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
-                    value="12-months"
-                  >
-                    12 Months / 799k
-                  </Radio>
-                </Radio.Group>
-              </Modal>
+              ></Modal>
 
               {/*Modal reset password */}
               <Modal

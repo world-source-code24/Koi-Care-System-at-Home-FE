@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // URL của API
-const API_BASE_URL = 'https://localhost:5001';
+const API_BASE_URL = 'https://koicaresystemapi.azurewebsites.net';
 
 // Tạo một instance của Axios
 const axiosInstance = axios.create({
@@ -15,21 +15,23 @@ const axiosInstance = axios.create({
 // Hàm refreshToken gọi đến API `/api/User/RefreshToken` để lấy token mới
 async function refreshToken() {
   try {
+    const storedAccessToken = localStorage.getItem('accessToken');
     const storedRefreshToken = localStorage.getItem('refreshToken');
     if (!storedRefreshToken) throw new Error('Không tìm thấy refreshToken');
 
     // Gọi API refresh token
     const response = await axios.post(`${API_BASE_URL}/api/User/RefreshToken`, {
+      accessToken: storedAccessToken,
       refreshToken: storedRefreshToken,
     });
 
-    const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
 
     // Lưu lại accessToken và refreshToken mới
-    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('accessToken', newAccessToken);
     localStorage.setItem('refreshToken', newRefreshToken);
 
-    return accessToken;
+    return newAccessToken;
   } catch (error) {
     console.error('Lỗi khi refresh token:', error);
     throw error;

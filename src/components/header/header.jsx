@@ -12,8 +12,8 @@ function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token || localStorage.getItem("accId")) {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);

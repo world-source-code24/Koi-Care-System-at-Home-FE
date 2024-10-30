@@ -4,7 +4,6 @@ import logo from "../../img/logo.png.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Input, Button } from "antd";
 
-import axios from "axios";
 import { useState } from "react";
 import api from "../../config/axios";
 import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
@@ -23,8 +22,9 @@ function Login() {
       console.log(response); // Kiểm tra dữ liệu trả về từ API
 
       if (response.data.success) {
-        localStorage.setItem("token", response.data.data.accessToken);
-        const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
+        localStorage.setItem("accessToken", response.data.data.accessToken);
+        localStorage.setItem("refreshToken", response.data.data.refreshToken);
+        const token = localStorage.getItem("accessToken");
         console.log(token);
         if (token) {
           const userResponse = await api.get("Account/Profile", {
