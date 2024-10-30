@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
-
+.confirm{
+    color: #28a745;
+}
 h2{
         font-size: 80px;
         font-weight: 600;
@@ -144,8 +146,7 @@ h2{
             color: gray;
             font-family: gowun patang;
         }
-
-        .modal-price {
+.modal-price {
             font-size: 24px;
             color: red;
             margin: 10px 0;
@@ -167,7 +168,7 @@ h2{
                     margin-bottom: 5px;
                     font-family: gowun patang;
                     &:before {
-                        content: '✔';
+                        content: ':heavy_check_mark:';
                         color: green;
                         margin-right: 5px;
                     }
@@ -224,7 +225,7 @@ h2{
 
             .modal-add-cart {
                 background-color: orange;
-                width: 180px;
+                width: 100%;
             }
 
             a{
@@ -263,7 +264,7 @@ h2{
 
 .notification {
     position: fixed;
-    top: 10px;
+top: 10px;
     right: 10px;
     padding: 5px 10px;
     background-color: #28a745;

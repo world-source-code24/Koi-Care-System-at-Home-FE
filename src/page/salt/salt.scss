@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+
+.salt_background_form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-image: url('../../img/foodwall.jpg');
+  background-size: cover;
+}
+
+.salt_container {
+  width: 80%;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.salt_title {
+  font-size: 40px;
+  color: red;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  font-weight: bold;
+  font-family: Gowun Batang;
+  margin-bottom: 0px;
+}
+
+.salt_form-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 600px;
+}
+
+.salt_left_form,
+.salt_right_form {
+  width: 48%; 
+  padding: 20px;
+}
+
+.salt_left_form {
+  background-color: white;
+}
+
+.salt_right_form {
+  background-color: white;
+}
+
+.salt_disclaimer {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.salt_disclaimer h3 {
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.salt_disclaimer p {
+  font-size: 19px;
+  line-height: 1.5;
+  color: #856404;
+}
+
+.salt_current,
+.salt_disired {
+  margin-bottom: 20px;
+}
+
+.ant-slider {
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .salt_container {
+    flex-direction: column;
+  }
+
+  .salt_left_form,
+  .salt_right_form {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+
+.salt_result {
+  background-color: #333; /* Nền đen */
+  color: #fff; /* Chữ trắng */
+  padding: 20px;
+  border-radius: 20px; /* Góc bo tròn lớn hơn */
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column; /* Hiển thị dọc */
+  align-items: center; /* Căn giữa */
+  width: 100%; /* Chiếm hết chiều ngang */
+}
+
+.result_item {
+  display: flex;
+  justify-content: space-between; /* Đặt nội dung sang 2 bên */
+  width: 100%;
+  padding: 5px 0; /* Thêm khoảng cách trên dưới */
+  font-size: 18px; /* Kích cỡ chữ lớn hơn */
+}
+
+.result_item span:first-child {
+  font-size: 16px;
+}
+
+.result_item span:last-child {
+  font-size: 18px; /* Cỡ chữ lớn hơn cho giá trị */
+  font-weight: bold;
+  text-align: right;
+  margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+  .salt_result {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .result_item {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}

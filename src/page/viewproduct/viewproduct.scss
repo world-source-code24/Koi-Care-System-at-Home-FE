@@ -133,8 +133,8 @@
                     margin-bottom: 5px;
                     font-family: gowun patang;
                     &:before {
-                        content: '✔';
-                        color: green;
+                        content: ':heavy_check_mark:';
+color: green;
                         margin-right: 5px;
                     }
                 }
@@ -225,4 +225,3 @@
     border-radius: 5px;
     z-index: 999;
 }
-
