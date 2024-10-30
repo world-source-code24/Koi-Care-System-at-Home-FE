@@ -21,6 +21,7 @@ import { useAsyncError, useNavigate } from "react-router-dom";
 import { UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
+import axiosInstance from "../../api/axiosInstance";
 
 function Profile() {
   const { Sider, Content } = Layout;
@@ -83,36 +84,23 @@ function Profile() {
 
   // Lấy thông tin để show ra ở profile
   const fetchUserInfo = async () => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      try {
-        const response = await axios.get(
-          "https://koicaresystemapi.azurewebsites.net/api/Account/Profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setImageUrl(response.data.image || "");
-        setUserInfo({
-          fullName: response.data.name || "",
-          email: response.data.email || "",
-          phone: response.data.phone || "",
-          address: response.data.address || "",
-          image: response.data.image || "",
-        });
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-        if (error.response && error.response.status === 401) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          navigate("/login");
-        }
+    try {
+      const response = await axiosInstance.get("/api/Account/Profile");
+      setImageUrl(response.data.image || "");
+      setUserInfo({
+        fullName: response.data.name || "",
+        email: response.data.email || "",
+        phone: response.data.phone || "",
+        address: response.data.address || "",
+        image: response.data.image || "",
+      });
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
       }
-    } else {
-      navigate("/profile");
     }
   };
 
