@@ -16,6 +16,7 @@ import { FilterOutlined, UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 const { Option } = Select;
 
 function Mykoi() {
@@ -29,18 +30,7 @@ function Mykoi() {
   const [fileList, setFileList] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedKoiData = localStorage.getItem("koiData");
-    if (storedKoiData) {
-      setKoiData(JSON.parse(storedKoiData));
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log("Danh sách cá Koi với pondId:", koiData);
-  }, [koiData]);
-
-  useEffect(() => {
+  const fetchKoiData = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const accId = localStorage.getItem("userId");
 
@@ -51,48 +41,42 @@ function Mykoi() {
       return;
     }
 
-    const fetchKoiData = async () => {
-      try {
-        const response = await axios.get(
-          `https://koicaresystemapi.azurewebsites.net/api/user/${user}/Koi?accId=${accId}`
-        );
-        const koiList = response.data.$values.map((koi) => ({
-          koiId: koi.koiId,
-          name: koi.name,
-          age: koi.age,
-          breed: koi.breed,
-          image: koi.image,
-          length: koi.length,
-          pondId: koi.pondId,
-        }));
-        setKoiData(koiList);
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách cá Koi:", error);
-      }
-    };
+    try {
+      const response = await axios.get(
+        `https://koicaresystemapi.azurewebsites.net/api/user/${accId}/Koi?accId=${accId}`
+      );
+      const koiList = response.data.$values.map((koi) => ({
+        koiId: koi.koiId,
+        name: koi.name,
+        age: koi.age,
+        breed: koi.breed,
+        image: koi.image,
+        length: koi.length,
+        pondId: koi.pondId, 
+      }));
+      setKoiData(koiList);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách cá Koi:", error);
+    }
+  };
 
-    fetchKoiData();
-  }, [navigate]);
+  const fetchPonds = async () => {
+    try {
+      const accId = localStorage.getItem("userId");
+      const response = await axios.get(
+        `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accId}`
+      );
+      const pondList = response.data.listPond["$values"]; // Lưu danh sách hồ từ API
+      setPonds(pondList);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách hồ", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchPonds = async () => {
-      try {
-        const accId = localStorage.getItem("userId");
-        const response = await axios.get(
-          `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accId}`
-        );
-        setPonds(response.data.listPond["$values"]);
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách hồ", error);
-      }
-    };
-    fetchPonds();
-
-    const storedKoiData = localStorage.getItem("koiData");
-    if (storedKoiData) {
-      setKoiData(JSON.parse(storedKoiData));
-    }
-  }, []);
+    fetchKoiData(); // Gọi API để lấy danh sách Koi khi component render
+    fetchPonds(); // Gọi API để lấy danh sách hồ
+  }, [navigate]);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -117,7 +101,7 @@ function Mykoi() {
         weight: values.weight || 0,
         sex: values.sex === "male",
         breed: values.breed || "string",
-        pondId: selectedPond,
+        pondId: selectedPond, // Sử dụng pondId đã chọn
       };
 
       const response = await fetch(
@@ -133,12 +117,7 @@ function Mykoi() {
 
       if (response.ok) {
         console.log("Cá koi đã được thêm thành công vào hồ.");
-        const data = await response.json();
-
-        // Cập nhật koiData và lưu vào localStorage
-        const updatedKoiData = [...koiData, data];
-        setKoiData(updatedKoiData);
-        localStorage.setItem("koiData", JSON.stringify(updatedKoiData));
+        fetchKoiData(); // Gọi lại hàm fetchKoiData để cập nhật danh sách Koi
 
         form.resetFields();
         setIsModalVisible(false);
@@ -154,8 +133,7 @@ function Mykoi() {
   };
 
   const handlePondChange = (value) => {
-    setSelectedPond(value);
-    localStorage.setItem("selectedPondId", value);
+    setSelectedPond(value); // Lưu giá trị pondId khi chọn hồ
     console.log(value);
   };
 
@@ -178,8 +156,9 @@ function Mykoi() {
 
   const handleNavigateToKoiDetail = (koi) => {
     if (koi.koiId) {
+      console.log("Navigating to KoiDetail with pondId:", koi.pondId);
       navigate(`/koidetail/${koi.koiId}`, {
-        state: { pondId: koi.pondId },
+        state: { pondId: koi.pondId }, // Truyền pondId vào navigate
       });
     } else {
       console.error("Pond ID is undefined for this koi.");
@@ -239,7 +218,7 @@ function Mykoi() {
                 <strong>Age:</strong> {koi.age || "-"}
               </p>
               <p>
-                <strong>Variety:</strong> {koi.variety || "-"}
+                <strong>Variety:</strong> {koi.breed || "-"}
               </p>
               <p>
                 <strong>Length:</strong> {koi.length} cm
