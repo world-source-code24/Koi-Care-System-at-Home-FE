@@ -44,7 +44,7 @@
 }
   
 .koide_title {
-    font-size: 40px;
+    font-size: 50px;
     color: red;
     text-align: center;
     margin-bottom: 20px;
@@ -75,14 +75,35 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    .ant-form-item-label > label {
+        font-size: 18px;
+        font-family: Gowun Batang;
+        font-weight: bold;
+    }
+
+    .ant-input {
+        height: 40px;
+        font-family: Gowun Batang;
+        font-size: 18px;
+    }
+
+    .ant-select {
+        height: 40px;
+    }
+    
+    .ant-select-selector {
+        font-size: 18px;
+        font-family: Gowun Batang;
+    }
 }
 
 .koide_right {
-    flex: 1 ; 
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #fff;
+    background-color: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -93,5 +114,74 @@
     justify-content: center;
     gap: 10px;
     margin-top: 20px;
+}
+
+.koide_button_1 {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    padding-bottom: 35px;
+    width: 800px;
+    gap: 10px;
+
+    .ant-btn {
+        font-size: 22px;
+        font-family: Gowun Batang;
+        font-weight: bold;
+        background-color: rgb(207, 4, 4);
+        height: 40px;   
+    }
+}
+
+// Tùy chỉnh chung cho Modal
+.custom-modal .ant-modal-content {
+    background-color: #f9f9f9; 
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.custom-modal .ant-modal-header {
+    background-color: #f1f1f1; 
+    border-bottom: none;
+    text-align: center; 
+}
+
+.custom-modal .ant-modal-title {
+    font-size: 18px; 
+    font-weight: bold;
+    color: #333; 
+}
+
+.custom-modal .ant-modal-footer {
+    border-top: none; 
+    display: flex;
+    justify-content: center; 
+    gap: 10px;
+}
+
+.modal-content-text {
+    font-size: 16px;
+    color: #555;
+    text-align: center;
+}
+
+.modal-cancel-button {
+    background-color: #e0e0e0;
+    color: #333;
+    border-radius: 5px;
+    font-size: 16px;
+    &:hover {
+        background-color: #ccc;
+    }
+}
+
+.modal-delete-button {
+    background-color: #d9534f;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 16px;
+    &:hover {
+        background-color: #c9302c;
+    }
 }
 

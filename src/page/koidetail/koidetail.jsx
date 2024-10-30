@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./koidetail.scss";
 import Header from "../../components/header/header";
+import Footer from "../../components/footer/footer";
 import { Divider, Form, Input, Button, Upload, Modal, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { Line } from "react-chartjs-2";
@@ -30,7 +31,7 @@ ChartJS.register(
 function KoiDetail() {
   const { koiId } = useParams();
   const location = useLocation();
-  const pondId = location.state?.pondId; // Kiểm tra rằng pondId có sẵn
+  const pondId = location.state?.pondId;
   const [selectedPond, setSelectedPond] = useState(null);
   const [koiDetails, setKoiDetails] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -41,9 +42,7 @@ function KoiDetail() {
   const [ponds, setPonds] = useState([]);
   const [isDelete, setIsDelete] = useState(false);
   const { Option } = Select;
-
   const [originalChartData, setOriginalChartData] = useState([]);
-  const [updatedChartData, setUpdatedChartData] = useState([]);
 
   const fetchPonds = async () => {
     try {
@@ -51,7 +50,7 @@ function KoiDetail() {
       const response = await axios.get(
         `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accId}`
       );
-      const pondList = response.data.listPond["$values"]; // Lưu danh sách hồ từ API
+      const pondList = response.data.listPond["$values"];
       setPonds(pondList);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách hồ", error);
@@ -59,7 +58,7 @@ function KoiDetail() {
   };
 
   const handlePondChange = (value) => {
-    setSelectedPond(value); // Lưu giá trị pondId khi chọn hồ
+    setSelectedPond(value);
     console.log(value);
   };
 
@@ -76,7 +75,7 @@ function KoiDetail() {
       setKoiDetails(response.data);
       form.setFieldsValue({
         ...response.data,
-        pond: response.data.pondId, // Set default value for pond
+        pond: response.data.pondId,
       });
       setImage(response.data.image);
     } catch (error) {
@@ -157,33 +156,6 @@ function KoiDetail() {
     }
   };
 
-  // const handleDelete = () => {
-  //   Modal.confirm({
-  //     title: "Xác nhận xoá",
-  //     content: "Bạn có chắc chắn muốn xoá Cá Koi này không?",
-  //     okText: "Xoá",
-  //     cancelText: "Hủy",
-  //     onOk: async () => {
-  //       try {
-  //         const response = await axios.delete(
-  //           `https://koicaresystemapi.azurewebsites.net/api/Koi/${koiId}`
-  //         );
-
-  //         if (response.status === 200) {
-  //           console.log("Xóa thành công");
-  //           navigate("/mykoi");
-  //         } else {
-  //           console.error("Lỗi khi xóa cá Koi:", response.data);
-  //         }
-  //       } catch (error) {
-  //         console.error("Lỗi khi xoá Cá Koi:", error);
-  //       }
-  //     },
-  //     onCancel() {
-  //       console.log("Hủy xóa cá Koi");
-  //     },
-  //   });
-  // };
   const onDelete = async () => {
     try {
       const response = await axios.delete(
@@ -226,6 +198,14 @@ function KoiDetail() {
         title: {
           display: true,
           text: "Date",
+          font: {
+            size: 16,
+          },
+        },
+        ticks: {
+          font: {
+            size: 14,
+          },
         },
       },
       y1: {
@@ -234,6 +214,14 @@ function KoiDetail() {
         title: {
           display: true,
           text: "Length (cm)",
+          font: {
+            size: 16,
+          },
+        },
+        ticks: {
+          font: {
+            size: 14,
+          },
         },
       },
       y2: {
@@ -242,9 +230,34 @@ function KoiDetail() {
         title: {
           display: true,
           text: "Weight (g)",
+          font: {
+            size: 16,
+          },
+        },
+        ticks: {
+          font: {
+            size: 14,
+          },
         },
         grid: {
           drawOnChartArea: false,
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        labels: {
+          font: {
+            size: 16,
+          },
+        },
+      },
+      tooltip: {
+        titleFont: {
+          size: 14,
+        },
+        bodyFont: {
+          size: 12,
         },
       },
     },
@@ -264,21 +277,31 @@ function KoiDetail() {
         visible={isDelete}
         onCancel={() => setIsDelete(false)}
         footer={[
-          <Button key="cancel" onClick={() => setIsDelete(false)}>
+          <Button
+            key="cancel"
+            onClick={() => setIsDelete(false)}
+            className="modal-cancel-button"
+          >
             Cancel
           </Button>,
-          <Button key="ok" type="primary" onClick={onDelete}>
+          <Button
+            key="ok"
+            type="primary"
+            onClick={onDelete}
+            className="modal-delete-button"
+          >
             Delete
           </Button>,
         ]}
+        className="custom-modal"
       >
-        <p>You want to delete this Koi fish ?</p>
+        <p className="modal-content-text">You want to delete this Koi fish ?</p>
       </Modal>
       <Header />
       <div className="koide_background"></div>
       <div className="koide_header">
         <button className="koide_button" onClick={() => navigate("/mykoi")}>
-          <span className="koide_back">← Back</span>
+          <span className="koide_back">←Back</span>
         </button>
         <div className="koide_title">Koi Details</div>
       </div>
@@ -289,7 +312,7 @@ function KoiDetail() {
       <div className="koide_form_wrapper">
         <div className="koide_left">
           <Form form={form} layout="vertical">
-            <Form.Item label="Image">
+            <Form.Item label="Image: ">
               {isEditing ? (
                 <Upload
                   beforeUpload={handleImageUpload}
@@ -313,26 +336,26 @@ function KoiDetail() {
               )}
             </Form.Item>
 
-            <Form.Item label="Name" name="name">
+            <Form.Item label="Name:" name="name">
               <Input disabled={!isEditing} />
             </Form.Item>
 
-            <Form.Item label="Age" name="age">
+            <Form.Item label="Age: " name="age">
               <Input type="number" disabled={!isEditing} />
             </Form.Item>
 
-            <Form.Item label="Length (cm)" name="length">
+            <Form.Item label="Length (cm): " name="length">
               <Input type="number" disabled={!isEditing} />
             </Form.Item>
 
-            <Form.Item label="Physique" name="physique">
+            <Form.Item label="Physique: " name="physique">
               <Input disabled={!isEditing} />
             </Form.Item>
 
-            <Form.Item label="Weight (g)" name="weight">
+            <Form.Item label="Weight (g): " name="weight">
               <Input type="number" disabled={!isEditing} />
             </Form.Item>
-            <Form.Item label="Pond" name="pond">
+            <Form.Item label="Pond: " name="pond">
               <Select onChange={handlePondChange} disabled={!isEditing}>
                 {ponds.map((pond) => (
                   <Option key={pond.pondId} value={pond.pondId}>
@@ -349,25 +372,28 @@ function KoiDetail() {
         </div>
       </div>
       {/*Button*/}
-      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+      <div className="koide_button_1">
         {isEditing ? (
           <>
             <Button type="primary" onClick={handleSave}>
               Save
             </Button>
-            <Button onClick={() => setIsEditing(false)}>Cancel</Button>
+            <Button type="primary" onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
           </>
         ) : (
           <>
             <Button type="primary" onClick={() => setIsEditing(true)}>
               Edit
             </Button>
-            <Button type="danger" onClick={() => setIsDelete(true)}>
+            <Button type="primary" onClick={() => setIsDelete(true)}>
               Delete
             </Button>
           </>
         )}
       </div>
+      <Footer />
     </>
   );
 }

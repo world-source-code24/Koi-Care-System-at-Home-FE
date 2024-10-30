@@ -1,5 +1,6 @@
 import "./salt.scss";
 import Header from "../../components/header/header";
+import Footer from "../../components/footer/footer";
 import { Form, Select, Slider } from "antd";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -152,6 +153,7 @@ function Salt() {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

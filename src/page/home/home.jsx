@@ -88,7 +88,7 @@ function HomePage() {
     const value = {
       AccId: parseInt(accId),
       ProductId: pro.productId,
-Quantity: num,
+      Quantity: num,
     };
 
     const exists =
@@ -186,7 +186,7 @@ Quantity: num,
             <div className="col-md-3 koi" key={product.productId}>
               <img src={product.image} alt={product.name} />{" "}
               {/* Sử dụng hình ảnh từ Listproduct */}
-<br />
+              <br />
               <Button type="secondary" onClick={() => handleOpen(product)}>
                 View product
               </Button>
@@ -211,10 +211,14 @@ Quantity: num,
               <span className="modal-stock">Status: In stock {pro.stock}</span>
               <h5 className="modal-price">Price: {pro.price}.000 VND</h5>
               <div className="modal-promotions">
-                <ul>
-                  <li>Genuine product commitment</li>
-                  <li>Cash on Delivery</li>
-                </ul>
+                <li>
+                  <i className="confirm bi bi-check-circle-fill"></i> Genuine
+                  product commitment
+                </li>
+                <li>
+                  <i className="confirm bi bi-check-circle-fill"></i> Cash on
+                  Delivery
+                </li>
               </div>
               <div className="Viewproduct__buy">
                 <h5>Quantity: </h5>
@@ -227,9 +231,9 @@ Quantity: num,
                 </p>
               </div>
               <div className="modal-actions">
-                <Link type="secondary" to={`/detail/${pro.productId}`}>
+                {/* <Link type="secondary" to={`/detail/${pro.productId}`}>
                   BUY NOW
-                </Link>
+                </Link> */}
                 <Button className="modal-add-cart" onClick={addToCart}>
                   ADD TO CART
                 </Button>

@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
-
+.confirm{
+    color: #28a745;
+}
 h2{
         font-size: 80px;
         font-weight: 600;
@@ -223,7 +225,7 @@ h2{
 
             .modal-add-cart {
                 background-color: orange;
-                width: 180px;
+                width: 100%;
             }
 
             a{

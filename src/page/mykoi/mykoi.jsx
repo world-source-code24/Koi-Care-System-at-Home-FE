@@ -1,5 +1,6 @@
 import "./mykoi.scss";
 import Header from "../../components/header/header";
+import Footer from "../../components/footer/footer";
 import {
   Button,
   Col,
@@ -52,7 +53,7 @@ function Mykoi() {
         breed: koi.breed,
         image: koi.image,
         length: koi.length,
-        pondId: koi.pondId, 
+        pondId: koi.pondId,
       }));
       setKoiData(koiList);
     } catch (error) {
@@ -66,7 +67,7 @@ function Mykoi() {
       const response = await axios.get(
         `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accId}`
       );
-      const pondList = response.data.listPond["$values"]; // Lưu danh sách hồ từ API
+      const pondList = response.data.listPond["$values"];
       setPonds(pondList);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách hồ", error);
@@ -74,8 +75,8 @@ function Mykoi() {
   };
 
   useEffect(() => {
-    fetchKoiData(); // Gọi API để lấy danh sách Koi khi component render
-    fetchPonds(); // Gọi API để lấy danh sách hồ
+    fetchKoiData();
+    fetchPonds();
   }, [navigate]);
 
   const showModal = () => {
@@ -101,7 +102,7 @@ function Mykoi() {
         weight: values.weight || 0,
         sex: values.sex === "male",
         breed: values.breed || "string",
-        pondId: selectedPond, // Sử dụng pondId đã chọn
+        pondId: selectedPond,
       };
 
       const response = await fetch(
@@ -117,8 +118,7 @@ function Mykoi() {
 
       if (response.ok) {
         console.log("Cá koi đã được thêm thành công vào hồ.");
-        fetchKoiData(); // Gọi lại hàm fetchKoiData để cập nhật danh sách Koi
-
+        fetchKoiData();
         form.resetFields();
         setIsModalVisible(false);
         setFileList([]);
@@ -133,7 +133,7 @@ function Mykoi() {
   };
 
   const handlePondChange = (value) => {
-    setSelectedPond(value); // Lưu giá trị pondId khi chọn hồ
+    setSelectedPond(value);
     console.log(value);
   };
 
@@ -158,7 +158,7 @@ function Mykoi() {
     if (koi.koiId) {
       console.log("Navigating to KoiDetail with pondId:", koi.pondId);
       navigate(`/koidetail/${koi.koiId}`, {
-        state: { pondId: koi.pondId }, // Truyền pondId vào navigate
+        state: { pondId: koi.pondId },
       });
     } else {
       console.error("Pond ID is undefined for this koi.");
@@ -194,38 +194,45 @@ function Mykoi() {
 
       {/* Hiển thị danh sách cá koi */}
       <div className="koi_list">
-        {koiData.map((koi, index) => (
-          <div
-            key={index}
-            className="koi_item"
-            onClick={() => handleNavigateToKoiDetail(koi)}
-            style={{ cursor: "pointer" }}
-          >
-            {koi.image && koi.image.startsWith("blob:") ? (
-              <p>Image not available</p>
-            ) : (
-              <img
-                src={koi.image}
-                alt={koi.name}
-                style={{ width: 100, height: 100 }}
-              />
-            )}
-            <div className="koi_info">
-              <p>
-                <strong>Name:</strong> {koi.name}
-              </p>
-              <p>
-                <strong>Age:</strong> {koi.age || "-"}
-              </p>
-              <p>
-                <strong>Variety:</strong> {koi.breed || "-"}
-              </p>
-              <p>
-                <strong>Length:</strong> {koi.length} cm
-              </p>
+        {koiData.length > 0 ? (
+          koiData.map((koi, index) => (
+            <div
+              key={index}
+              className="koi_item"
+              onClick={() => handleNavigateToKoiDetail(koi)}
+              style={{ cursor: "pointer" }}
+            >
+              {koi.image && koi.image.startsWith("blob:") ? (
+                <p>Image not available</p>
+              ) : (
+                <img
+                  src={koi.image}
+                  alt={koi.name}
+                  style={{ width: 100, height: 100 }}
+                />
+              )}
+              <div className="koi_info">
+                <p>
+                  <strong>Name:</strong> {koi.name}
+                </p>
+                <p>
+                  <strong>Age:</strong> {koi.age || "-"}
+                </p>
+                <p>
+                  <strong>Variety:</strong> {koi.breed || "-"}
+                </p>
+                <p>
+                  <strong>Length:</strong> {koi.length} cm
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="no-koi-message">
+            Oops :(( You don't have any koi yet. Press the add new koi button to
+            add new one !!!
+          </p>
+        )}
       </div>
 
       {/* Modal */}
@@ -327,6 +334,7 @@ function Mykoi() {
           </Row>
         </Form>
       </Modal>
+      <Footer />
     </>
   );
 }
