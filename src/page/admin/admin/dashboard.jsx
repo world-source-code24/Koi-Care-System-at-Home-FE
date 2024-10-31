@@ -1,4 +1,11 @@
-import { ShopOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  DollarOutlined,
+  EyeInvisibleOutlined,
+  MoneyCollectOutlined,
+  ProductOutlined,
+  ShopOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import {
   Avatar,
   Card,
@@ -16,6 +23,8 @@ import "./dashboard.scss";
 function Dashboard() {
   const [totalAccounts, setTotalAccounts] = useState(0);
   const [totalShops, setTotalShops] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalMemberRevenue, setTotalMemberRevenue] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,6 +38,16 @@ function Dashboard() {
           "https://koicaresystemapi.azurewebsites.net/api/Shop/get-all"
         );
         setTotalShops(shopRes.data.total);
+
+        const productRes = await axios.get(
+          "https://koicaresystemapi.azurewebsites.net/api/Product/get-all"
+        );
+        setTotalProducts(productRes.data.total);
+
+        const memberRevenue = await axios.get(
+          "https://localhost:5001/api/MemberRevenue"
+        );
+        setTotalMemberRevenue(memberRevenue.data.total);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -42,44 +61,76 @@ function Dashboard() {
       <Space size={20} direction="vertical">
         <h1 className="vertical">Dashboard</h1>
         <Space direction="horizontal">
-          <Space direction="vertical">
-            <Space direction="horizontal">
-              <DashboardCard
-                icon={
-                  <UserOutlined
-                    style={{
-                      color: "dark",
-                      backgroundColor: "#b3f0ff",
-                      borderRadius: 20,
-                      fontSize: 24,
-                      padding: 8,
-                    }}
-                  />
-                }
-                title={"Accounts"}
-                value={totalAccounts}
+          <DashboardCard
+            icon={
+              <UserOutlined
+                style={{
+                  color: "dark",
+                  backgroundColor: "#b3f0ff",
+                  borderRadius: 20,
+                  fontSize: 24,
+                  padding: 8,
+                }}
               />
-              <DashboardCard
-                icon={
-                  <ShopOutlined
-                    style={{
-                      color: "#666600",
-                      backgroundColor: "#ffff66",
-                      borderRadius: 20,
-                      fontSize: 24,
-                      padding: 8,
-                    }}
-                  />
-                }
-                title={"Shops"}
-                value={totalShops}
+            }
+            title={"Accounts"}
+            value={totalAccounts}
+          />
+          <DashboardCard
+            icon={
+              <ShopOutlined
+                style={{
+                  color: "#666600",
+                  backgroundColor: "#ffff66",
+                  borderRadius: 20,
+                  fontSize: 24,
+                  padding: 8,
+                }}
               />
+            }
+            title={"Shops"}
+            value={totalShops}
+          />
+          <DashboardCard
+            icon={
+              <ProductOutlined
+                style={{
+                  color: "brown",
+                  backgroundColor: "burlywood",
+                  borderRadius: 20,
+                  fontSize: 24,
+                  padding: 8,
+                }}
+              />
+            }
+            title={"Products"}
+            value={totalProducts}
+          />
+          <DashboardCard
+            icon={
+              <DollarOutlined
+                style={{
+                  color: "green",
+                  backgroundColor: "lightgreen",
+                  borderRadius: 20,
+                  fontSize: 24,
+                  padding: 8,
+                }}
+              />
+            }
+            title={"Membership Revenue (VND)"}
+            value={totalMemberRevenue}
+          />
+        </Space>
+        <Space direction="horizontal">
+          <Space direction="horizontal">
+            <Space direction="vertical">
+              <TableList />
             </Space>
-            <TableList />
-          </Space>
-          <Space direction="vertical">
-            <PieChart />
-            <BarChart />
+            <Space direction="vertical">
+              <PieChart />
+              <BarChart />
+            </Space>
           </Space>
         </Space>
       </Space>
@@ -92,7 +143,7 @@ function DashboardCard({ title, value, icon }) {
     <Card>
       <Space direction="horizontal">
         {icon}
-        <Statistic title={title} value={value} />
+        <Statistic title={title} value={value} valueStyle={{ fontSize: 24 }} />
       </Space>
     </Card>
   );
