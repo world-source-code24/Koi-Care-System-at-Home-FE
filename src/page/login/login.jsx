@@ -18,6 +18,7 @@ function Login() {
     const { email, password } = values;
 
     try {
+      localStorage.clear();
       const response = await api.post("User/Login", { email, password });
       console.log(response); // Kiểm tra dữ liệu trả về từ API
 
@@ -55,6 +56,7 @@ function Login() {
         );
       } else {
         setError("An error occurred. Please try again.");
+        localStorage.clear();
       }
     }
   };

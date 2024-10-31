@@ -29,8 +29,10 @@ function Header() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("userId");
     setIsAdmin(false);
     setIsLoggedIn(false);
     navigate("/login");

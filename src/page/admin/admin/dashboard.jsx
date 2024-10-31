@@ -109,7 +109,7 @@ function TableList() {
         "https://koicaresystemapi.azurewebsites.net/api/Account/get-all-byadmin"
       )
       .then((res) => {
-        setAdmins(res.data.accounts.$values);
+        setAdmins(res.data.accs.$values);
         setLoading(false);
       })
       .catch((error) => {

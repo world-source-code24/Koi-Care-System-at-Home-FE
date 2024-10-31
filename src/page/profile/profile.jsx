@@ -97,8 +97,7 @@ function Profile() {
     } catch (error) {
       console.error("Error fetching user info:", error);
       if (error.response && error.response.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        localStorage.clear();
         navigate("/login");
       }
     }
@@ -167,7 +166,8 @@ function Profile() {
       await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/Account/membership${accId}`
       );
-      message.success("You are now a member");
+      fetchUserInfo();
+      message.success("Register member successfully!");
     } catch (error) {
       message.error("Failed to update membership");
       console.error("Error updating membership:", error);
@@ -197,11 +197,8 @@ function Profile() {
   // Log out và xóa all thông tin qua localStorage
   const handleLogout = async () => {
     try {
-      await axios.post(""); // API
-
       // Dùng để xóa thông tin đăng nhập
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      localStorage.clear();
       message.success("Logged out successfully");
       navigate("/login");
     } catch (error) {
@@ -252,7 +249,14 @@ function Profile() {
                 <Menu.Item className="accountSetting" key={1}>
                   Account Settings
                 </Menu.Item>
-                <Menu.Item key={2} onClick={showModal}>
+                <Menu.Item
+                  key={2}
+                  onClick={() => {
+                    const user = JSON.parse(localStorage.getItem("user"));
+                    if (user && user.role !== "member") showModal();
+                    else message.info("You are already a member");
+                  }}
+                >
                   Membership
                 </Menu.Item>
                 <Menu.Item key={3} onClick={fetchOrders}>

@@ -98,9 +98,19 @@ function UserManagement() {
       };
 
       const query = new URLSearchParams(updatedUser).toString();
-      const apiUrl = `https://koicaresystemapi.azurewebsites.net/api/Account/Profile?${query}`;
+      await axios.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Account/Profile?${query}`,
+        updatedUser,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      await axios.put(apiUrl);
+      await axios.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Account/edit-role/${key}?role=${row.role}`
+      );
 
       if (index > -1) {
         const item = newData[index];
@@ -151,7 +161,7 @@ function UserManagement() {
       title: "Role",
       dataIndex: "role",
       width: 100,
-      editable: false,
+      editable: true,
     },
     {
       title: "Address",
