@@ -163,7 +163,7 @@ function Profile() {
 
   const handleOk = async () => {
     try {
-      await axios.put(
+      const response = await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/Account/membership${accId}`
       );
       fetchUserInfo();

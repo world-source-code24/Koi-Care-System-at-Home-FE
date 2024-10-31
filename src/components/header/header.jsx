@@ -29,10 +29,7 @@ function Header() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-    localStorage.removeItem("userId");
+    localStorage.clear();
     setIsAdmin(false);
     setIsLoggedIn(false);
     navigate("/login");
@@ -70,9 +67,6 @@ function Header() {
                   Manager
                 </Link>
               )}
-              <Link onClick={handleLogout} className="nav__logout">
-                Logout
-              </Link>
             </>
           ) : (
             <>
@@ -115,6 +109,15 @@ function Header() {
         <Link to="/contact" className="nav__news">
           Contact Us
         </Link>
+        {isLoggedIn ? (
+          <>
+            <Link onClick={handleLogout} className="nav__logout">
+              Logout
+            </Link>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );

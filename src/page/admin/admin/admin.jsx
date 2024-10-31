@@ -1,4 +1,4 @@
-import { Image, Menu, Typography } from "antd";
+import { Menu, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +11,6 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import bg from "../../../img/news.jpg";
 import AdminRoutes from "../../../components/admin/admin/routes";
 import axiosInstance from "../../../api/axiosInstance";
 function Admin() {
@@ -45,7 +44,8 @@ function Admin() {
 
     getUserInfor()
       .then((res) => {
-        if (res) {
+        if (res && res.role) {
+          // Kiểm tra res và res.role trước khi truy cập
           setUser(res);
           if (res.role !== "admin") {
             navigate("/login");
