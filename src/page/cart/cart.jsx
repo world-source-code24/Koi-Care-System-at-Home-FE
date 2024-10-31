@@ -62,7 +62,7 @@ function Cart() {
       console.error("Error calling delete API:", error);
     }
   };
-
+  // tính tổng giá
   const getTotalPrice = () => {
     return cartItems.reduce((acc, item) => {
       const price = item.cartDetails.price
