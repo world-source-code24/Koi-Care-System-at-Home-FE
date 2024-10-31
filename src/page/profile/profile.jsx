@@ -99,6 +99,7 @@ function Profile() {
       if (error.response && error.response.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        localStorage.removeItem("cartItems");
         localStorage.removeItem("user");
         localStorage.removeItem("userId");
         navigate("/login");
@@ -166,11 +167,19 @@ function Profile() {
 
   const handleOk = async () => {
     try {
-      await axios.put(
+      const response = await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/Account/membership${accId}`
       );
-      localStorage.setItem("role", "member");
-      message.success("You are now a member");
+
+      if (
+        response.status === 200 &&
+        localStorage.getItem("role") !== "member"
+      ) {
+        localStorage.setItem("role", "member");
+        message.success("Thank you for purchasing our membership.");
+      } else {
+        message.warning("You are now a member");
+      }
     } catch (error) {
       message.error("Failed to update membership");
       console.error("Error updating membership:", error);
@@ -200,11 +209,13 @@ function Profile() {
   // Log out và xóa all thông tin qua localStorage
   const handleLogout = async () => {
     try {
-      await axios.post(""); // API
-
       // Dùng để xóa thông tin đăng nhập
-      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("cartItems");
       localStorage.removeItem("user");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("role");
       message.success("Logged out successfully");
       navigate("/login");
     } catch (error) {

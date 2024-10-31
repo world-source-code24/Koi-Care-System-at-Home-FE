@@ -36,11 +36,11 @@ function Login() {
           const user = userResponse.data;
           localStorage.setItem("user", JSON.stringify(user));
           localStorage.setItem("userId", user.accId);
-          setUser(user);
+          localStorage.setItem("role", user.role);
 
           console.log("accId:" + user.accId);
 
-          if (user.role === "admin") {
+          if (user.accId == "admin") {
             navigate("/admin/dashboard");
           } else {
             navigate("/");

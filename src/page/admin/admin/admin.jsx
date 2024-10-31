@@ -1,4 +1,4 @@
-import { Image, Menu, Typography } from "antd";
+import { Menu, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,34 +11,28 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import bg from "../../../img/news.jpg";
 import AdminRoutes from "../../../components/admin/admin/routes";
 function Admin() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  const getUserInfor = () => {
-    const token = localStorage.getItem("token"); // Retrieve token from localStorage
-    return fetch(
-      "https://koicaresystemapi.azurewebsites.net/api/Account/Profile",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json",
-        },
+  const getUserInfor = async () => {
+    // Thêm async vào đây
+    try {
+      const response = await axiosInstance.get("/api/Account/Profile");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("user");
+        localStorage.removeItem("userId");
+        navigate("/login");
       }
-    )
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Error: ${res.status} ${res.statusText}`);
-        }
-        return res.json();
-      })
-      .catch((err) => {
-        console.error("Error fetching user info:", err);
-        return null;
-      });
+      throw error;
+    }
   };
 
   const handleLogout = () => {
@@ -60,7 +54,8 @@ function Admin() {
 
     getUserInfor()
       .then((res) => {
-        if (res) {
+        if (res && res.role) {
+          // Kiểm tra res và res.role trước khi truy cập
           setUser(res);
           if (res.role !== "admin") {
             navigate("/login");
