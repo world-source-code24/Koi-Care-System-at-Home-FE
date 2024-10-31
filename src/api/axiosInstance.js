@@ -20,7 +20,7 @@ async function refreshToken() {
     if (!storedRefreshToken) throw new Error('Không tìm thấy refreshToken');
 
     // Gọi API refresh token
-    const response = await axios.post(`${API_BASE_URL}/api/User/RefreshToken`, {
+    const response = await axios.post(`${API_BASE_URL}/api/User/RefeshToken`, {
       accessToken: storedAccessToken,
       refreshToken: storedRefreshToken,
     });

@@ -97,8 +97,10 @@ function Profile() {
     } catch (error) {
       console.error("Error fetching user info:", error);
       if (error.response && error.response.status === 401) {
-        localStorage.removeItem("token");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         localStorage.removeItem("user");
+        localStorage.removeItem("userId");
         navigate("/login");
       }
     }
@@ -167,6 +169,7 @@ function Profile() {
       await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/Account/membership${accId}`
       );
+      localStorage.setItem("role", "member");
       message.success("You are now a member");
     } catch (error) {
       message.error("Failed to update membership");
