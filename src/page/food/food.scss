@@ -1,18 +1,71 @@
-.Food_background {
-    width: 100%;
-    img {
-      width: 100%;
-      max-height: 500px;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+
+.food_background_form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-image: url('../../img/foodwall.jpg');
+  background-size: cover;
 }
 
-.Food_title {
-    display: flex;
-    justify-content: center;
-    h3 {
-        font-size:  50px;
-        color: rgb(203, 0, 0);
-        margin-top: 15px;
+.food_container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%; 
+  margin: 0 auto;
+}
+
+.food_title {
+  font-size: 40px;
+  font-family: Gowun Batang;
+  font-weight: bold;
+  color: rgb(208, 0, 0);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.food_form_wrapper {
+  display: flex;
+  justify-content: space-between; 
+  gap: 20px;
+}
+
+.food_left_form {
+  align-items: center;
+  flex: 1;
+  width: 50%; 
+
+  .ant-form-item {
+    margin-bottom: 10px; // Giảm khoảng cách giữa các Form.Item nếu cần
+
+    .ant-form-item-label > label {
+      font-size: 17px;
+      font-family: Gowun Batang;
+      font-weight: bold;
     }
+
+    .growth-buttons,
+    .temperature-buttons {
+      display: flex;
+      gap: 4px; // Khoảng cách giữa các nút bấm nhỏ hơn
+      margin-top: -14px; // Đảm bảo không có khoảng cách phía trên của các nút bấm
+
+    }
+  }
+
+  .ant-btn {
+    font-size: 18px; 
+    font-family: Gowun Batang;
+  }
+}
+
+.food_right_form {
+  flex: 1;
+  width: 40%; 
+  padding: 20px;
+  text-align: left;
+  border-left: 2px solid black;
 }
 

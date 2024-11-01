@@ -13,15 +13,19 @@ import {
   Radio,
   Upload,
   Form,
+  List,
+  Space,
 } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useAsyncError, useNavigate } from "react-router-dom";
 
 import { UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
+import api from "../../config/axios";
+import axiosInstance from "../../components/api/axiosInstance";
 
 function Profile() {
   const { Sider, Content } = Layout;
-
+  const [accId, setAccId] = useState(localStorage.getItem("userId"));
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -29,6 +33,38 @@ function Profile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [imageUrl, setImageUrl] = useState("");
+  const formatCurrency = (value) => {
+    if (typeof value !== "number" || isNaN(value)) {
+      return "0 VND";
+    }
+    return ` ${new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+    }).format(value * 1000)}`;
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(
+        `https://koicaresystemapi.azurewebsites.net/GetAll/${accId}`
+      );
+      const userOrders = response.data.orders.$values || [];
+      if (userOrders.length === 0) {
+        message.info("You have no orders yet.");
+      } else {
+        setOrders(userOrders);
+        setIsOrderModalOpen(true);
+      }
+    } catch (error) {
+      message.error("Failed to fetch orders");
+      console.error("Error fetching orders:", error);
+    }
+  };
+
   const [passwords, setPasswords] = useState({
     currentPassword: "",
     newPassword: "",
@@ -40,50 +76,35 @@ function Profile() {
     email: "",
     phone: "",
     address: "",
+    image: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
   // Lấy thông tin để show ra ở profile
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
-
-      if (token) {
-        try {
-          const response = await axios.get(
-            "https://localhost:5001/api/Account/Profile",
-            {
-              // Gọi API để lấy thông tin người dùng
-              headers: {
-                Authorization: `Bearer ${token}`, // Gửi Access Token
-              },
-            }
-          );
-
-          setUserInfo({
-            fullName: response.data.name || "",
-            email: response.data.email || "",
-            phone: response.data.phone || "",
-            address: response.data.address || "",
-          }); // Thiết lập thông tin người dùng vào trạng thái
-          console.log(userInfo);
-        } catch (error) {
-          console.error("Error fetching user info:", error);
-          if (error.response && error.response.status === 401) {
-            // Nếu token không hợp lệ hoặc hết hạn
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            navigate("/login"); // Chuyển hướng về trang đăng nhập
-          }
-        }
-      } else {
-        navigate("/profile"); // Chuyển hướng về trang đăng nhập khi không có token
+  const fetchUserInfo = async () => {
+    try {
+      const response = await axiosInstance.get("/api/Account/Profile");
+      setImageUrl(response.data.image || "");
+      setUserInfo({
+        fullName: response.data.name || "",
+        email: response.data.email || "",
+        phone: response.data.phone || "",
+        address: response.data.address || "",
+        image: response.data.image || "",
+      });
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      if (error.response && error.response.status === 401) {
+        localStorage.clear();
+        navigate("/login");
       }
-    };
+    }
+  };
 
-    fetchUserInfo();
+  useEffect(() => {
+    fetchUserInfo(); // Gọi hàm này khi component được tải
   }, [navigate]);
 
   const handleEditToggle = () => {
@@ -98,22 +119,31 @@ function Profile() {
   const handleSave = async () => {
     try {
       const formData = new FormData();
-      formData.append("fullName", userInfo.fullName);
+      formData.append("name", userInfo.fullName);
       formData.append("phone", userInfo.phone);
       formData.append("address", userInfo.address);
+
+      // Kiểm tra và thêm hình ảnh vào formData
       if (image) {
-        formData.append("", image); // name tên trong API
+        formData.append("image", image); // Sử dụng hình ảnh đã tải lên
+      } else if (imageUrl) {
+        formData.append("image", imageUrl); // Sử dụng URL hình ảnh hiện có
+      } else {
+        formData.append("image", ""); // Nếu không có hình ảnh
       }
 
-      await axios.put("https://localhost:5001/api/Account/Profile", formData, {
-        //API
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Account/Profile?accId=${accId}`,
+        formData,
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-      setSuccessMessage("Update Successfully !!!");
-      setIsEditing(false);
+      if (response.status === 200) {
+        message.success("Update successfully!");
+        setIsEditing(false);
+        // Gọi lại fetchUserInfo để cập nhật thông tin người dùng bao gồm hình ảnh
+        fetchUserInfo();
+      }
     } catch (error) {
       message.error("Failed to update information");
     }
@@ -131,9 +161,18 @@ function Profile() {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
+    try {
+      const response = await axios.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Account/membership${accId}`
+      );
+      fetchUserInfo();
+      message.success("Register member successfully!");
+    } catch (error) {
+      message.error("Failed to update membership");
+      console.error("Error updating membership:", error);
+    }
     setIsModalOpen(false);
-    message.success("You have selected: " + selectedPackage);
   };
 
   const handleCancel = () => {
@@ -141,18 +180,25 @@ function Profile() {
   };
 
   const handleImageUpload = (file) => {
-    setImage(URL.createObjectURL(file));
-    return false;
+    const blobUrl = URL.createObjectURL(file); // Tạo URL blob
+    setImage(file); // Lưu tệp hình ảnh
+    setPreviewImage(blobUrl); // Lưu URL blob để xem trước
+    return false; // Ngăn không cho tự động tải lên
   };
+
+  useEffect(() => {
+    return () => {
+      if (previewImage) {
+        URL.revokeObjectURL(previewImage); // Giải phóng URL blob khi component unmount
+      }
+    };
+  }, [previewImage]);
 
   // Log out và xóa all thông tin qua localStorage
   const handleLogout = async () => {
     try {
-      await axios.post(""); // API
-
       // Dùng để xóa thông tin đăng nhập
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      localStorage.clear();
       message.success("Logged out successfully");
       navigate("/login");
     } catch (error) {
@@ -168,21 +214,16 @@ function Profile() {
     }
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        "https://localhost:5001/api/Account/ResetPassword", // API reset password
-        {
-          currentPassword: passwords.currentPassword,
-          newPassword: passwords.newPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Gửi token để xác thực
-          },
-        }
+      console.log(accId);
+      console.log(passwords.confirmNewPassword);
+      const respones = await api.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Account/change-password${accId}?changePassword=${passwords.confirmNewPassword}` // API reset password
       );
-      message.success("Password reset successfully!");
-      setIsResetModalOpen(false); // Đóng modal khi thành công
+
+      if (respones.status === 200) {
+        message.success("Password reset successfully!");
+        setIsResetModalOpen(false); // Đóng modal khi thành công
+      }
     } catch (error) {
       message.error("Failed to reset password. Please try again.");
     }
@@ -192,6 +233,7 @@ function Profile() {
       <div>
         <Header />
       </div>
+      <br />
       <div className="profile_background">
         <div className="profile_container">
           {/* Sider */}
@@ -202,70 +244,86 @@ function Profile() {
                 defaultSelectedKeys={[1]}
                 className="profile_menu"
                 onClick={({ key }) => {
-                  if (key === "4") handleLogout();
+                  if (key === "5") handleLogout();
                 }}
               >
-                <Menu.Item key={1}>Account Settings</Menu.Item>
-                <Menu.Item key={2}>Your Order</Menu.Item>
-                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
+                <Menu.Item className="accountSetting" key={1}>
+                  Account Settings
+                </Menu.Item>
+                <Menu.Item
+                  key={2}
+                  onClick={() => {
+                    const user = JSON.parse(localStorage.getItem("user"));
+                    if (user && user.role !== "member") showModal();
+                    else message.info("You are already a member");
+                  }}
+                >
+                  Membership
+                </Menu.Item>
+                <Menu.Item key={3} onClick={fetchOrders}>
+                  Your Order
+                </Menu.Item>
+
+                <Menu.Item key={4} onClick={() => setIsResetModalOpen(true)}>
                   Reset Password
                 </Menu.Item>
-                <Menu.Item key={4}>Log out</Menu.Item>
               </Menu>
             </Sider>
 
             <Content className="profile_content">
               <h5>Account Settings</h5>
 
-              <p onClick={showModal} className="membership-button">
-                Membership
-              </p>
-
-              {/*Divider */}
-              <div className="profile_divider"></div>
+              {/* Modal Order */}
+              <Modal
+                title="Your Orders"
+                visible={isOrderModalOpen}
+                onCancel={() => setIsOrderModalOpen(false)}
+                footer={null}
+                width={700}
+              >
+                <List
+                  itemLayout="horizontal"
+                  dataSource={orders}
+                  renderItem={(order) => (
+                    <List.Item>
+                      <List.Item.Meta
+                        title={`Order ID: ${order.orderId}`}
+                        description={`Date: ${order.date}, Status: ${order.statusOrder}, Payment: ${order.statusPayment}`}
+                      />
+                      <div>
+                        Total Amount: {formatCurrency(order.totalAmount)}
+                      </div>
+                      {/* Hiển thị chi tiết các sản phẩm trong đơn hàng */}
+                      {order.orderDetailsTbls &&
+                        order.orderDetailsTbls.$values.length > 0 && (
+                          <List
+                            itemLayout="horizontal"
+                            dataSource={order.orderDetailsTbls.$values}
+                            renderItem={(detail) => (
+                              <List.Item>
+                                <List.Item.Meta
+                                  title={`Product: ${detail.productName}}
+                                  description={Quantity: ${
+                                    detail.quantity
+                                  }, Price: ${formatCurrency(detail.price)}`}
+                                />
+                              </List.Item>
+                            )}
+                          />
+                        )}
+                    </List.Item>
+                  )}
+                />
+              </Modal>
 
               {/*Modal Membership*/}
               <Modal
                 title="Membership Packages"
                 visible={isModalOpen}
                 onOk={handleOk}
+                okText="Buy Now"
                 onCancel={handleCancel}
-                footer={[
-                  <Button key="buy" type="primary" onClick={handleOk}>
-                    Buy Now
-                  </Button>,
-                  <Button
-                    key="cart"
-                    onClick={() => message.success("Added to cart")}
-                  >
-                    Add to Cart
-                  </Button>,
-                ]}
-              >
-                <Radio.Group
-                  onChange={(e) => setSelectedPackage(e.target.value)}
-                  value={selectedPackage}
-                >
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
-                    value="1-month"
-                  >
-                    1 Month / 109k
-                  </Radio>
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
-                    value="3-months"
-                  >
-                    3 Months / 259k
-                  </Radio>
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
-                    value="12-months"
-                  >
-                    12 Months / 799k
-                  </Radio>
-                </Radio.Group>
-              </Modal>
+              ></Modal>
 
               {/*Modal reset password */}
               <Modal
@@ -347,19 +405,6 @@ function Profile() {
               </Modal>
 
               <div className="profile_body_form">
-                <Form className="avatar">
-                  <div className="title">Avatar Profile: </div>
-                  <Upload beforeUpload={handleImageUpload}>
-                    <Button icon={<UploadOutlined />}>Upload Image</Button>
-                  </Upload>
-
-                  {image && (
-                    <div>
-                      <img src={image} alt="Uploaded" width="20%" />
-                    </div>
-                  )}
-                </Form>
-
                 <Form name="fullName">
                   <div className="title">Full Name: </div>
                   <Input
@@ -368,7 +413,9 @@ function Profile() {
                     value={userInfo.fullName}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    style={{ backgroundColor: isEditing ? "white" : "#f0f0f0" }}
+                    style={{
+                      backgroundColor: isEditing ? "white" : "#f0f0f0",
+                    }}
                   />
                 </Form>
 
@@ -380,7 +427,9 @@ function Profile() {
                     value={userInfo.phone}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    style={{ backgroundColor: isEditing ? "white" : "#f0f0f0" }}
+                    style={{
+                      backgroundColor: isEditing ? "white" : "#f0f0f0",
+                    }}
                   />
                 </Form>
 
@@ -404,7 +453,9 @@ function Profile() {
                     value={userInfo.address}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    style={{ backgroundColor: isEditing ? "white" : "#f0f0f0" }}
+                    style={{
+                      backgroundColor: isEditing ? "white" : "#f0f0f0",
+                    }}
                   />
                 </Form>
               </div>

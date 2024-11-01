@@ -16,15 +16,6 @@ function Viewproduct() {
   const [filteredStore, setFilteredStore] = useState([]);
   const [notification, setNotification] = useState(false);
 
-  // const [cartItems, setCartItems] = useState(() => {
-  //   const storedCart = localStorage.getItem("cartItems");
-  //   return storedCart ? JSON.parse(storedCart) : [];
-  // });
-
-  // useEffect(() => {
-  //   localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  // }, [cartItems]);
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -202,10 +193,14 @@ function Viewproduct() {
             <p>{pro.productInfo}</p>
             <p>Stock :{pro.stock} products</p>
             <div className="modal-promotions">
-              <ul>
-                <li>Genuine product commitment</li>
-                <li>Cash on Delivery</li>
-              </ul>
+              <li>
+                <i className="confirm bi bi-check-circle-fill"></i> Genuine
+                product commitment
+              </li>
+              <li>
+                <i className="confirm bi bi-check-circle-fill"></i> Cash on
+                Delivery
+              </li>
             </div>
 
             <h5 className="modal-price">Price: {pro.price}.000 VND</h5>
@@ -222,7 +217,7 @@ function Viewproduct() {
             </div>
 
             <div className="modal-actions">
-              <Link to={`/detail/${pro.productId}`}>BUY NOW</Link>
+              {/* <Link to={`/detail/${pro.productId}`}>BUY NOW</Link> */}
               <Button className="modal-add-cart" onClick={handleQuantity}>
                 ADD TO CART
               </Button>

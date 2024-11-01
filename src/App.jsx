@@ -1,25 +1,24 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from "./page/login/login";
 import HomePage from "./page/home/home";
-import AddPage from "./page/add/add";
-import FoodPage from "./page/food/food";
 import Environment from "./page/environment/environment";
 import Viewpond from "./page/view/viewpond";
 import Viewproduct from "./page/viewproduct/viewproduct";
 import Cart from "./page/cart/cart";
-
 import Contact from "./page/contact/contact";
 import News from "./page/news/news";
-
 import Profile from "./page/profile/profile";
 import Mykoi from "./page/mykoi/mykoi";
-import List from "./page/list/list";
 import Detail from "./page/detail/detail";
-import Checkout from "./page/checkout/checkout";
-import PaymentSuccess from "./page/payment/payment";
-import Register from "./page/register/register";
-import Admin from "./page/admin/admin";
-import AdminRoutes from "./components/admin/routes";
+import Expert from "./page/expert/expert";
+import Salt from "./page/salt/salt";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute/ProtectedRoute";
+import Admin from "./page/admin/admin/admin";
+import AdminRoutes from "./components/admin/admin/routes";
+import Food from "./page/food/food";
+import PaymentSuccess from "./page/payment/payment/payment";
+import Koidetail from "./page/koidetail/koidetail";
+import Register from "./page/register/register/register";
 
 function Koi() {
   const router = createBrowserRouter([
@@ -32,16 +31,12 @@ function Koi() {
       element: <Login />,
     },
     {
-      path: "/add",
-      element: <AddPage />,
-    },
-    {
       path: "/food",
-      element: <FoodPage />,
+      element: <ProtectedRoute element={<Food />} requiredRole="member" />,
     },
     {
       path: "/environment",
-      element: <Environment />,
+      element: <Environment />
     },
     {
       path: "/view/:id",
@@ -73,34 +68,40 @@ function Koi() {
       element: <Mykoi />,
     },
     {
-      path: "/list",
-      element: <List />,
-    },
-    {
       path: "/detail/:id",
       element: <Detail />,
     },
     {
-      path: "/checkout",
-      element: <Checkout />,
+      path: "/expert",
+      element: <Expert />,
+    },
+    {
+      path: "/salt",
+      element: <ProtectedRoute element={<Salt />} requiredRole="member" />,
     },
     {
       path: "/payment",
       element: <PaymentSuccess />,
     },
     {
-      path: "/register",
-      element: <Register />,
-    },
-    {
       path: "/admin",
-      element: <Admin />,
+      element: <ProtectedRoute element={<Admin />} requiredRole="admin" />,
       children: [
         {
           path: "/admin/*",
-          element: <AdminRoutes />,
+          element: (
+            <ProtectedRoute element={<AdminRoutes />} requiredRole="admin" />
+          ),
         },
       ],
+    },
+    {
+      path: "/koidetail/:koiId",
+      element: <Koidetail />,
+    },
+    {
+      path: "/register",
+      element: <Register/>,
     },
   ]);
 

@@ -16,7 +16,7 @@ import Footer from "../../components/footer/footer";
 import { UploadOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import debounce from "lodash/debounce";
-
+import ca from "../../img/hoca.jpg";
 function Environment() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
@@ -41,7 +41,6 @@ function Environment() {
 
         const user = JSON.parse(storedUser);
         const userId = user.accId;
-        console.log("Fetched user ID:", userId);
 
         const response = await fetch(
           `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${userId}`
@@ -52,22 +51,17 @@ function Environment() {
         }
 
         const data = await response.json();
-        console.log("Fetched pond data:", data);
+        const koiCountByPond =
+          JSON.parse(localStorage.getItem("koiCountByPond")) || {};
 
-        if (data && data.listPond && data.listPond.$values) {
-          if (data.listPond.$values.length > 0) {
-            setPondDataList(data.listPond.$values);
-            setOriginalPondDataList(data.listPond.$values);
-          } else {
-            console.log("No ponds found for this user.");
-            setPondDataList([]);
-            setOriginalPondDataList([]);
-          }
-        } else {
-          console.error("Unexpected data format:", data);
-          setPondDataList([]);
-          setOriginalPondDataList([]);
-        }
+        // Add koi count to each pond object
+        const updatedPondDataList = data.listPond.$values.map((pond) => ({
+          ...pond,
+          koiCount: koiCountByPond[pond.pondId] || 0, // Use stored count
+        }));
+
+        setPondDataList(updatedPondDataList);
+        setOriginalPondDataList(updatedPondDataList);
       } catch (error) {
         console.error("Error fetching pond data:", error);
         setPondDataList([]);
@@ -146,7 +140,7 @@ function Environment() {
 
       if (isEditing) {
         response = await fetch(
-          `https://koicaresystemapi.azurewebsites.net/api/Pond/Update-Pond/${pondDataList[editingIndex].pondId}`,
+          `https://koicaresystemapi.azurewebsites.net/api/Update-Pond/${pondDataList[editingIndex].pondId}`,
           {
             method: "PUT",
             headers: {
@@ -168,6 +162,7 @@ function Environment() {
             body: JSON.stringify(newPondData),
           }
         );
+        console.log(response.data);
       }
 
       if (!response.ok) {
@@ -270,7 +265,6 @@ function Environment() {
         pondDataList.map((pondData, index) => (
           <div key={index} className="uploaded__pond__info">
             <h3>
-              Pond{" "}
               {pondData.name
                 ? pondData.name.toUpperCase()
                 : "No Name Available"}
@@ -278,7 +272,7 @@ function Environment() {
             <Row gutter={16}>
               <Col md={12} xs={24} className="uploaded__pond__info__left">
                 <img
-                  src={pondData.image}
+                  src={pondData.image ? pondData.image : ca}
                   alt={`Pond ${pondData.name}`}
                   style={{ width: "90%" }}
                 />
@@ -292,6 +286,9 @@ function Environment() {
                     </p>
                     <p>
                       <strong>Drain Count:</strong> {pondData.drainCount}
+                    </p>
+                    <p>
+                      <strong>Number of Koi:</strong> {pondData.koiCount}
                     </p>
                   </Col>
                   <Col span={12} className="pond__infor">

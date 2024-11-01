@@ -7,11 +7,13 @@ import { Form, Input, Button } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import api from "../../config/axios";
+import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
 
 function Login() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [error, setError] = useState("");
+  const { setUser } = useUser(); // Lấy hàm setUser từ context để cập nhật người dùng
 
   const handleLogin = async (values) => {
     const { email, password } = values;
@@ -26,16 +28,23 @@ function Login() {
         console.log(token);
         if (token) {
           const userResponse = await api.get("Account/Profile", {
-            // Gọi API để lấy thông tin người dùng
             headers: {
-              Authorization: `Bearer ${token}`, // Gửi Access Token
+              Authorization: `Bearer ${token}`,
             },
           });
-          localStorage.setItem("user", JSON.stringify(userResponse.data)); // Giả sử thông tin user nằm trong response.data.user
+
           const user = userResponse.data;
+          localStorage.setItem("user", JSON.stringify(user));
           localStorage.setItem("userId", user.accId);
+          setUser(user);
+
           console.log("accId:" + user.accId);
-          navigate("/");
+
+          if (user.role === "admin") {
+            navigate("/admin/dashboard");
+          } else {
+            navigate("/");
+          }
         }
       }
     } catch (error) {

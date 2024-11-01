@@ -52,18 +52,6 @@ function HomePage() {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // const addToCart = () => {
-  //   const productToAdd = { ...pro, quantity: num };
-  //   setCartItems([...cartItems, productToAdd]);
-  // setVisible(false);
-  // setNotification(true);
-  //   console.log("Product to add:", productToAdd);
-
-  // setTimeout(() => {
-  //   setNotification(false);
-  // }, 3000);
-  // };
-
   const addToCart = async () => {
     const accId = localStorage.getItem("userId");
 
@@ -184,9 +172,7 @@ function HomePage() {
         <div className="row HomePage__body">
           {products.map((product) => (
             <div className="col-md-3 koi" key={product.productId}>
-              <img src={product.image} alt={product.name} />{" "}
-              {/* Sử dụng hình ảnh từ Listproduct */}
-              <br />
+              <img src={product.image} alt={product.name} /> <br />
               <Button type="secondary" onClick={() => handleOpen(product)}>
                 View product
               </Button>
@@ -195,7 +181,7 @@ function HomePage() {
         </div>
 
         <div className="HomePage__viewmore">
-          <Link to="/viewproduct">View More [+]</Link>
+          <Link to="/viewproduct">View More</Link>
         </div>
 
         {notification && <div className="notification">Add successfully!</div>}
@@ -211,10 +197,14 @@ function HomePage() {
               <span className="modal-stock">Status: In stock {pro.stock}</span>
               <h5 className="modal-price">Price: {pro.price}.000 VND</h5>
               <div className="modal-promotions">
-                <ul>
-                  <li>Genuine product commitment</li>
-                  <li>Cash on Delivery</li>
-                </ul>
+                <li>
+                  <i className="confirm bi bi-check-circle-fill"></i> Genuine
+                  product commitment
+                </li>
+                <li>
+                  <i className="confirm bi bi-check-circle-fill"></i> Cash on
+                  Delivery
+                </li>
               </div>
               <div className="Viewproduct__buy">
                 <h5>Quantity: </h5>
@@ -227,9 +217,6 @@ function HomePage() {
                 </p>
               </div>
               <div className="modal-actions">
-                <Link type="secondary" to={`/detail/${pro.productId}`}>
-                  BUY NOW
-                </Link>
                 <Button className="modal-add-cart" onClick={addToCart}>
                   ADD TO CART
                 </Button>

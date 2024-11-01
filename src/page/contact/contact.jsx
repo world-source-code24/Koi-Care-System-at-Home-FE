@@ -2,13 +2,26 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import bg from "../../img/news.jpg";
 import "./contact.scss";
-import { Button, Form, Input, notification } from "antd"; // Sử dụng notification để hiển thị thông báo sau khi gửi
-import axios from "axios"; // Thêm axios
+import { Button, Form, Input, notification, Table } from "antd";
+import axios from "axios";
 import CarouselContact from "../../components/carouselContact/carouselContact";
-import { useEffect } from "react";
-
+import { useState, useEffect } from "react";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 function Contact() {
-  const [form] = Form.useForm(); // Sử dụng form từ Ant Design để quản lý form
+  const [form] = Form.useForm();
+  const [submissions, setSubmissions] = useState([]);
+
+  // Load submissions from localStorage on component mount
+  useEffect(() => {
+    const savedSubmissions =
+      JSON.parse(localStorage.getItem("submissions")) || [];
+    setSubmissions(savedSubmissions);
+  }, []);
+
+  // Update localStorage whenever submissions change
+  useEffect(() => {
+    localStorage.setItem("submissions", JSON.stringify(submissions));
+  }, [submissions]);
 
   const onFinish = async (values) => {
     const accId = localStorage.getItem("userId");
@@ -24,13 +37,17 @@ function Contact() {
         `https://koicaresystemapi.azurewebsites.net/api/Note?accId=${accId}`,
         payload
       );
-      console.log(response);
+
       if (response.status === 200) {
         notification.success({
           message: "Submission Successful",
           description: "Your message has been sent successfully!",
         });
-        form.resetFields(); // Reset form sau khi gửi thành công
+        form.resetFields();
+
+        // Add new message and update local storage
+        const newSubmission = { name: values.Name, message: values.Message };
+        setSubmissions([...submissions, newSubmission]);
       } else {
         notification.error({
           message: "Submission Failed",
@@ -46,6 +63,42 @@ function Contact() {
     }
   };
 
+  // Handle message deletion
+  const handleDelete = (index) => {
+    const updatedSubmissions = submissions.filter((_, i) => i !== index);
+    setSubmissions(updatedSubmissions);
+    notification.info({
+      message: "Message Deleted",
+      description: "The message has been successfully deleted.",
+    });
+  };
+
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Message",
+      dataIndex: "message",
+      key: "message",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record, index) => (
+        <DeleteForeverIcon
+          style={{ cursor: "pointer" }}
+          type="link"
+          onClick={() => handleDelete(index)}
+        >
+          Delete
+        </DeleteForeverIcon>
+      ),
+    },
+  ];
+
   return (
     <>
       <Header />
@@ -59,7 +112,6 @@ function Contact() {
 
       <div className="ContactPage">
         <div className="ContactPage__left">
-          {/* Form xử lý dữ liệu khi submit */}
           <Form form={form} onFinish={onFinish}>
             <p>Name</p>
             <Form.Item
@@ -102,6 +154,16 @@ function Contact() {
             ></iframe>
           </div>
         </div>
+      </div>
+
+      <div className="ContactPage__submissions">
+        <h3>Submitted Messages</h3>
+        <Table
+          dataSource={submissions}
+          columns={columns}
+          rowKey={(record, index) => index}
+          style={{ width: "80%", margin: "0 auto" }}
+        />
       </div>
 
       <div className="ContactPage__popular">
