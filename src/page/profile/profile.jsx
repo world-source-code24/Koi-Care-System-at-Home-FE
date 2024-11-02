@@ -78,6 +78,7 @@ function Profile() {
     phone: "",
     address: "",
     image: "",
+    role: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -86,7 +87,12 @@ function Profile() {
   // Lấy thông tin để show ra ở profile
   const fetchUserInfo = async () => {
     try {
-      const response = await axiosInstance.get("/api/Account/Profile");
+      const token = localStorage.getItem("accessToken");
+      const response = await api.get("Account/Profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setImageUrl(response.data.image || "");
       setUserInfo({
         fullName: response.data.name || "",
@@ -94,6 +100,7 @@ function Profile() {
         phone: response.data.phone || "",
         address: response.data.address || "",
         image: response.data.image || "",
+        role: response.data.role || "",
       });
     } catch (error) {
       console.error("Error fetching user info:", error);
@@ -164,11 +171,23 @@ function Profile() {
   const handleOk = async () => {
     try {
       const response = await axios.post(
-        `https://localhost:5001/api/Payment/checkout?accId=${accId}`
+        `https://koicaresystemapi.azurewebsites.net/api/Payment/checkout?accId=${accId}`
       );
       // Check if paymentUrl is returned correctly
       if (response.data && response.data.paymentUrl) {
         window.location.href = response.data.paymentUrl;
+        window.addEventListener("message", async (event) => {
+          if (event.data) {
+            const callbackResponse = await fetch(
+              "https://koicaresystemapi.azurewebsites.net/api/Payment/checkout"
+            );
+            if (callbackResponse.ok) {
+              navigate("/payment");
+            } else {
+              message.error("Payment failed. Please try again.");
+            }
+          }
+        });
       } else {
         throw new Error("Payment URL not found in response");
       }
@@ -270,19 +289,23 @@ function Profile() {
                 <h5>Account Settings</h5>
                 <Button
                   onClick={() => {
-                    const user = JSON.parse(localStorage.getItem("user"));
-                    if (user && user.role !== "member") showModal();
+                    if (
+                      userInfo &&
+                      userInfo.role.toLocaleLowerCase() !== "member"
+                    )
+                      showModal();
                     else message.info("You are already a member");
                   }}
                   className={
-                    JSON.parse(localStorage.getItem("user"))?.role === "member"
+                    userInfo?.role.toLocaleLowerCase() === "member"
                       ? "btn_membership"
                       : "btn_non_membership"
                   }
                 >
                   Membership
-                  {JSON.parse(localStorage.getItem("user"))?.role ===
-                    "member" && <StarOutlined />}
+                  {userInfo?.role.toLocaleLowerCase() === "member" && (
+                    <StarOutlined />
+                  )}
                 </Button>
               </Space>
               {/* Modal Order */}
