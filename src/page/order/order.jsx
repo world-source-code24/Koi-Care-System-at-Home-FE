@@ -1,9 +1,9 @@
 import { Button, Result } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import "./payment.scss";
+import "./order.scss";
 
-function PaymentSuccess() {
+function OrderSuccess() {
   return (
     <div className="payment-success-container">
       <div className="sparkling-background"></div>
@@ -15,7 +15,11 @@ function PaymentSuccess() {
               style={{ color: "#28a745", fontSize: "80px" }}
             />
           }
-          title={<span className="gradient-text">Payment Successful!</span>}
+          title={
+            <span className="gradient-text">
+              You have sent your order successfully
+            </span>
+          }
           subTitle="Thank you for your order! We have received your payment and sent a confirmation email."
           extra={[
             <Link to="/profile" key="orders">
@@ -25,7 +29,7 @@ function PaymentSuccess() {
                 shape="round"
                 className="animate-button"
               >
-                View My Member
+                View My Orders
               </Button>
             </Link>,
             <Link to="/viewproduct" key="home">
@@ -34,7 +38,7 @@ function PaymentSuccess() {
                 shape="round"
                 className="animate-button-secondary"
               >
-                Come Home!
+                Continue Shopping
               </Button>
             </Link>,
           ]}
@@ -52,4 +56,4 @@ function PaymentSuccess() {
   );
 }
 
-export default PaymentSuccess;
+export default OrderSuccess;

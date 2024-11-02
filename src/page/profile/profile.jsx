@@ -18,7 +18,7 @@ import {
 } from "antd";
 import { useAsyncError, useNavigate } from "react-router-dom";
 
-import { UploadOutlined } from "@ant-design/icons";
+import { StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
 import axiosInstance from "../../api/axiosInstance";
@@ -36,6 +36,7 @@ function Profile() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [orders, setOrders] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
+
   const formatCurrency = (value) => {
     if (typeof value !== "number" || isNaN(value)) {
       return "0 VND";
@@ -141,7 +142,6 @@ function Profile() {
       if (response.status === 200) {
         message.success("Update successfully!");
         setIsEditing(false);
-        // Gọi lại fetchUserInfo để cập nhật thông tin người dùng bao gồm hình ảnh
         fetchUserInfo();
       }
     } catch (error) {
@@ -163,14 +163,19 @@ function Profile() {
 
   const handleOk = async () => {
     try {
-      const response = await axios.put(
-        `https://koicaresystemapi.azurewebsites.net/api/Account/membership${accId}`
+      const response = await axios.post(
+        `https://localhost:5001/api/Payment/checkout?accId=${accId}`
       );
-      fetchUserInfo();
-      message.success("Register member successfully!");
+      // Check if paymentUrl is returned correctly
+      if (response.data && response.data.paymentUrl) {
+        window.location.href = response.data.paymentUrl;
+      } else {
+        throw new Error("Payment URL not found in response");
+      }
+      message.success("Redirecting to payment...");
     } catch (error) {
-      message.error("Failed to update membership");
-      console.error("Error updating membership:", error);
+      message.error("Failed to initiate payment");
+      console.error("Error initiating payment:", error);
     }
     setIsModalOpen(false);
   };
@@ -243,36 +248,43 @@ function Profile() {
                 defaultSelectedKeys={[1]}
                 className="profile_menu"
                 onClick={({ key }) => {
-                  if (key === "5") handleLogout();
+                  if (key === "4") handleLogout();
                 }}
               >
                 <Menu.Item className="accountSetting" key={1}>
                   Account Settings
                 </Menu.Item>
-                <Menu.Item
-                  key={2}
+                <Menu.Item key={2} onClick={fetchOrders}>
+                  Your Order
+                </Menu.Item>
+
+                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
+                  Reset Password
+                </Menu.Item>
+                <Menu.Item key={4}>Log out</Menu.Item>
+              </Menu>
+            </Sider>
+
+            <Content className="profile_content">
+              <Space direction="horizontal">
+                <h5>Account Settings</h5>
+                <Button
                   onClick={() => {
                     const user = JSON.parse(localStorage.getItem("user"));
                     if (user && user.role !== "member") showModal();
                     else message.info("You are already a member");
                   }}
+                  className={
+                    JSON.parse(localStorage.getItem("user"))?.role === "member"
+                      ? "btn_membership"
+                      : "btn_non_membership"
+                  }
                 >
                   Membership
-                </Menu.Item>
-                <Menu.Item key={3} onClick={fetchOrders}>
-                  Your Order
-                </Menu.Item>
-
-                <Menu.Item key={4} onClick={() => setIsResetModalOpen(true)}>
-                  Reset Password
-                </Menu.Item>
-                <Menu.Item key={5}>Log out</Menu.Item>
-              </Menu>
-            </Sider>
-
-            <Content className="profile_content">
-              <h5>Account Settings</h5>
-
+                  {JSON.parse(localStorage.getItem("user"))?.role ===
+                    "member" && <StarOutlined />}
+                </Button>
+              </Space>
               {/* Modal Order */}
               <Modal
                 title="Your Orders"
