@@ -1,6 +1,5 @@
 import "./mykoi.scss";
 import Header from "../../components/header/header";
-import Footer from "../../components/footer/footer";
 import {
   Button,
   Col,
@@ -11,13 +10,13 @@ import {
   Row,
   Select,
   Tooltip,
-  Upload,
 } from "antd";
-import { FilterOutlined, UploadOutlined } from "@ant-design/icons";
+import { FilterOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import ca from "../../img/a1.jpg";
+import Footer from "../../components/footer/footer";
 const { Option } = Select;
 
 function Mykoi() {
@@ -53,9 +52,15 @@ function Mykoi() {
         breed: koi.breed,
         image: koi.image,
         length: koi.length,
-        pondId: koi.pondId,
+        pondId: koi.pondId, // Lưu pondId từ API Koi
       }));
+      const koiCountByPond = koiList.reduce((count, koi) => {
+        count[koi.pondId] = (count[koi.pondId] || 0) + 1;
+        return count;
+      }, {});
+
       setKoiData(koiList);
+      localStorage.setItem("koiCountByPond", JSON.stringify(koiCountByPond));
     } catch (error) {
       console.error("Lỗi khi lấy danh sách cá Koi:", error);
     }
@@ -67,7 +72,7 @@ function Mykoi() {
       const response = await axios.get(
         `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accId}`
       );
-      const pondList = response.data.listPond["$values"];
+      const pondList = response.data.listPond["$values"]; // Lưu danh sách hồ từ API
       setPonds(pondList);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách hồ", error);
@@ -75,8 +80,8 @@ function Mykoi() {
   };
 
   useEffect(() => {
-    fetchKoiData();
-    fetchPonds();
+    fetchKoiData(); // Gọi API để lấy danh sách Koi khi component render
+    fetchPonds(); // Gọi API để lấy danh sách hồ
   }, [navigate]);
 
   const showModal = () => {
@@ -102,7 +107,7 @@ function Mykoi() {
         weight: values.weight || 0,
         sex: values.sex === "male",
         breed: values.breed || "string",
-        pondId: selectedPond,
+        pondId: selectedPond, // Sử dụng pondId đã chọn
       };
 
       const response = await fetch(
@@ -118,7 +123,8 @@ function Mykoi() {
 
       if (response.ok) {
         console.log("Cá koi đã được thêm thành công vào hồ.");
-        fetchKoiData();
+        fetchKoiData(); // Gọi lại hàm fetchKoiData để cập nhật danh sách Koi
+
         form.resetFields();
         setIsModalVisible(false);
         setFileList([]);
@@ -133,7 +139,7 @@ function Mykoi() {
   };
 
   const handlePondChange = (value) => {
-    setSelectedPond(value);
+    setSelectedPond(value); // Lưu giá trị pondId khi chọn hồ
     console.log(value);
   };
 
@@ -145,13 +151,6 @@ function Mykoi() {
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
-  };
-
-  const handleImageUpload = (file) => {
-    const imageUrl = URL.createObjectURL(file);
-    setImage(imageUrl);
-    setFileList([file]);
-    return false;
   };
 
   const handleNavigateToKoiDetail = (koi) => {
@@ -194,7 +193,14 @@ function Mykoi() {
 
       {/* Hiển thị danh sách cá koi */}
       <div className="koi_list">
-        {koiData.length > 0 ? (
+        {koiData.length === 0 ? (
+          <div className="empty_message">
+            <p>
+              Oops :(( You don't add any koi yet. Press "Add new koi" button to
+              add the new one !!!
+            </p>
+          </div>
+        ) : (
           koiData.map((koi, index) => (
             <div
               key={index}
@@ -202,15 +208,7 @@ function Mykoi() {
               onClick={() => handleNavigateToKoiDetail(koi)}
               style={{ cursor: "pointer" }}
             >
-              {koi.image && koi.image.startsWith("blob:") ? (
-                <p>Image not available</p>
-              ) : (
-                <img
-                  src={koi.image}
-                  alt={koi.name}
-                  style={{ width: 100, height: 100 }}
-                />
-              )}
+              <img src={ca} style={{ width: 200, height: 100 }} />
               <div className="koi_info">
                 <p>
                   <strong>Name:</strong> {koi.name}
@@ -227,11 +225,6 @@ function Mykoi() {
               </div>
             </div>
           ))
-        ) : (
-          <p className="no-koi-message">
-            Oops :(( You don't have any koi yet. Press the add new koi button to
-            add new one !!!
-          </p>
         )}
       </div>
 
@@ -241,87 +234,38 @@ function Mykoi() {
         open={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
+        className="mykoi_modal"
       >
+        <Divider />
+
         <Form form={form} layout="vertical">
+          <div className="add_image">
+            <img src={ca} style={{ width: 200, height: 100 }} />
+          </div>
+          {/* Row cho các trường Name và Pond */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="Image"
-                name="imageUrl"
-                rules={[{ required: true, message: "Please upload an image" }]}
-              >
-                <Upload
-                  beforeUpload={handleImageUpload}
-                  listType="picture"
-                  fileList={fileList}
-                  onRemove={() => {
-                    setFileList([]);
-                    setImage(null);
-                  }}
-                >
-                  <Button icon={<UploadOutlined />}>Upload Image</Button>
-                </Upload>
-              </Form.Item>
-              {image && <img src={image} alt="Uploaded preview" width="100%" />}
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Name"
+                label="Name:"
                 name="name"
-                rules={[{ required: true, message: "Please enter the name" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter your Koi fish name !",
+                  },
+                ]}
               >
                 <Input />
               </Form.Item>
             </Col>
-          </Row>
-
-          {/* Các trường nhập khác */}
-          <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Physique" name="physique">
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Age" name="age">
-                <Input type="number" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Length (cm)" name="length">
-                <Input type="number" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Weight (g)" name="weight">
-                <Input type="number" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Sex" name="sex">
-                <Select>
-                  <Option value="male">Male</Option>
-                  <Option value="female">Female</Option>
-                  <Option value="not_specified">Not specified</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Breed" name="breed">
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Pond" name="pond">
+              <Form.Item
+                label="Pond:"
+                name="pond"
+                rules={[
+                  { required: true, message: "Please choose your pond !" },
+                ]}
+              >
                 <Select onChange={handlePondChange}>
                   {ponds.map((pond) => (
                     <Option key={pond.pondId} value={pond.pondId}>
@@ -332,8 +276,92 @@ function Mykoi() {
               </Form.Item>
             </Col>
           </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Physique:" name="physique">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Age:" name="age">
+                <Input type="number" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <span>
+                    Length (cm):{" "}
+                    <Tooltip title="Length must be a positive number !">
+                      <InfoCircleOutlined
+                        style={{ color: "black" }}
+                      />
+                    </Tooltip>
+                  </span>
+                }
+                name="length"
+                rules={[
+                  { required: true, message: "Please enter the length !" },
+                  {
+                    type: "number",
+                    min: 0.01,
+                    transform: (value) => Number(value),
+                  },
+                ]}
+              >
+                <Input type="number" min={0.01} step={0.01} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <span>
+                    Weight (g):{" "}
+                    <Tooltip title="Weight must be a positive number !">
+                      <InfoCircleOutlined
+                        style={{ color: "black" }}
+                      />
+                    </Tooltip>
+                  </span>
+                }
+                name="weight"
+                rules={[
+                  { required: true, message: "Please enter the weight !" },
+                  {
+                    type: "number",
+                    min: 0.01,
+                    transform: (value) => Number(value),
+                  },
+                ]}
+              >
+                <Input type="number" min={0.01} step={0.01} />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Sex:" name="sex">
+                <Select>
+                  <Option value="male">Male</Option>
+                  <Option value="female">Female</Option>
+                  <Option value="not_specified">Not specified</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Breed:" name="breed">
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
+      <br />
       <Footer />
     </>
   );

@@ -14,12 +14,15 @@ import {
   Upload,
   Form,
   List,
+  Space,
 } from "antd";
 import { useAsyncError, useNavigate } from "react-router-dom";
 
 import { UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
+import axiosInstance from "../../components/api/axiosInstance";
+
 
 function Profile() {
   const { Sider, Content } = Layout;
@@ -82,36 +85,22 @@ function Profile() {
 
   // Lấy thông tin để show ra ở profile
   const fetchUserInfo = async () => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      try {
-        const response = await axios.get(
-          "https://koicaresystemapi.azurewebsites.net/api/Account/Profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setImageUrl(response.data.image || "");
-        setUserInfo({
-          fullName: response.data.name || "",
-          email: response.data.email || "",
-          phone: response.data.phone || "",
-          address: response.data.address || "",
-          image: response.data.image || "",
-        });
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-        if (error.response && error.response.status === 401) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          navigate("/login");
-        }
+    try {
+      const response = await axiosInstance.get("/api/Account/Profile");
+      setImageUrl(response.data.image || "");
+      setUserInfo({
+        fullName: response.data.name || "",
+        email: response.data.email || "",
+        phone: response.data.phone || "",
+        address: response.data.address || "",
+        image: response.data.image || "",
+      });
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      if (error.response && error.response.status === 401) {
+        localStorage.clear();
+        navigate("/login");
       }
-    } else {
-      navigate("/profile");
     }
   };
 
@@ -173,9 +162,18 @@ function Profile() {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
+    try {
+      const response = await axios.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Account/membership${accId}`
+      );
+      fetchUserInfo();
+      message.success("Register member successfully!");
+    } catch (error) {
+      message.error("Failed to update membership");
+      console.error("Error updating membership:", error);
+    }
     setIsModalOpen(false);
-    message.success("You have selected: " + selectedPackage);
   };
 
   const handleCancel = () => {
@@ -200,11 +198,8 @@ function Profile() {
   // Log out và xóa all thông tin qua localStorage
   const handleLogout = async () => {
     try {
-      await axios.post(""); // API
-
       // Dùng để xóa thông tin đăng nhập
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      localStorage.clear();
       message.success("Logged out successfully");
       navigate("/login");
     } catch (error) {
@@ -249,32 +244,35 @@ function Profile() {
                 defaultSelectedKeys={[1]}
                 className="profile_menu"
                 onClick={({ key }) => {
-                  if (key === "4") handleLogout();
+                  if (key === "5") handleLogout();
                 }}
               >
                 <Menu.Item className="accountSetting" key={1}>
                   Account Settings
                 </Menu.Item>
-                <Menu.Item key={2} onClick={fetchOrders}>
+                <Menu.Item
+                  key={2}
+                  onClick={() => {
+                    const user = JSON.parse(localStorage.getItem("user"));
+                    if (user && user.role !== "member") showModal();
+                    else message.info("You are already a member");
+                  }}
+                >
+                  Membership
+                </Menu.Item>
+                <Menu.Item key={3} onClick={fetchOrders}>
                   Your Order
                 </Menu.Item>
 
-                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
+                <Menu.Item key={4} onClick={() => setIsResetModalOpen(true)}>
                   Reset Password
                 </Menu.Item>
-                {/* <Menu.Item key={4}>Log out</Menu.Item> */}
+                <Menu.Item key={5}>Log out</Menu.Item>
               </Menu>
             </Sider>
 
             <Content className="profile_content">
               <h5>Account Settings</h5>
-
-              <p onClick={showModal} className="membership-button">
-                Membership
-              </p>
-
-              {/*Divider */}
-              <div className="profile_divider"></div>
 
               {/* Modal Order */}
               <Modal
@@ -324,43 +322,9 @@ function Profile() {
                 title="Membership Packages"
                 visible={isModalOpen}
                 onOk={handleOk}
+                okText="Buy Now"
                 onCancel={handleCancel}
-                footer={[
-                  <Button key="buy" type="primary" onClick={handleOk}>
-                    Buy Now
-                  </Button>,
-                  <Button
-                    key="cart"
-                    onClick={() => message.success("Added to cart")}
-                  >
-                    Add to Cart
-                  </Button>,
-                ]}
-              >
-                <Radio.Group
-                  onChange={(e) => setSelectedPackage(e.target.value)}
-                  value={selectedPackage}
-                >
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
-                    value="1-month"
-                  >
-                    1 Month / 109k
-                  </Radio>
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
-                    value="3-months"
-                  >
-                    3 Months / 259k
-                  </Radio>
-                  <Radio
-                    style={{ display: "block", marginBottom: "8px" }}
-                    value="12-months"
-                  >
-                    12 Months / 799k
-                  </Radio>
-                </Radio.Group>
-              </Modal>
+              ></Modal>
 
               {/*Modal reset password */}
               <Modal
@@ -467,7 +431,9 @@ function Profile() {
                     value={userInfo.fullName}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    style={{ backgroundColor: isEditing ? "white" : "#f0f0f0" }}
+                    style={{
+                      backgroundColor: isEditing ? "white" : "#f0f0f0",
+                    }}
                   />
                 </Form>
 
@@ -479,7 +445,9 @@ function Profile() {
                     value={userInfo.phone}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    style={{ backgroundColor: isEditing ? "white" : "#f0f0f0" }}
+                    style={{
+                      backgroundColor: isEditing ? "white" : "#f0f0f0",
+                    }}
                   />
                 </Form>
 
@@ -503,7 +471,9 @@ function Profile() {
                     value={userInfo.address}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    style={{ backgroundColor: isEditing ? "white" : "#f0f0f0" }}
+                    style={{
+                      backgroundColor: isEditing ? "white" : "#f0f0f0",
+                    }}
                   />
                 </Form>
               </div>

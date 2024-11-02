@@ -51,3 +51,65 @@
     gap: 10px; /* Space between buttons */
     margin-top: 20px; /* Adjust vertical spacing from the form */
 }
+.out-of-standard{
+    color: red;
+}
+.Warning {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  
+    h3 {
+      font-size: 1.5em;
+      color: #333;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+  
+    .warning-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+  
+      p {
+        font-size: 1em;
+        color: #333;
+        display: flex;
+        align-items: center;
+        margin: 0;
+  
+        strong {
+          margin-right: 5px;
+        }
+  
+        .icon-warning {
+          color: #ff6347; 
+          margin-right: 5px;
+        }
+  
+        .out-of-standard {
+          color: #d9534f;
+          border-radius: 4px;
+          font-weight: bold;
+        }
+  
+        .in-standard {
+          color: #28a745;
+          border-radius: 4px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+  
+  .buymembership {
+    color: red;
+    font-family: gowun batang;
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 20px;
+  }

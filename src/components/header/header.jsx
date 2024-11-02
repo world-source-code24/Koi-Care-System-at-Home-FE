@@ -13,9 +13,9 @@ function Header() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      setIsLoggedIn(true); // Đã đăng nhập
+      setIsLoggedIn(true); // Logged in
     } else {
-      setIsLoggedIn(false); // Chưa đăng nhập
+      setIsLoggedIn(false); // Not logged in
     }
   }, []);
 
@@ -28,7 +28,7 @@ function Header() {
   };
 
   const handleLogout = () => {
-    // Xóa token và thông tin người dùng khỏi localStorage khi logout
+    // Remove token and user info from localStorage when logging out
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
@@ -39,7 +39,7 @@ function Header() {
     <>
       <div className="header">
         <div className="header__logo">
-          <img className="" src={koi} alt="Koi" width={80} />
+          <img src={koi} alt="Koi" width={80} />
           <h2>Royal Koi</h2>
         </div>
 
@@ -47,35 +47,25 @@ function Header() {
           <Link to="/" className="nav__news">
             Home
           </Link>
-
           <Link to="/news" className="nav__news">
             Blog and News
           </Link>
-
           <Link to="/cart" className="nav__news">
             Cart
           </Link>
           {isLoggedIn ? (
-            <>
-              <Link to="/profile" className="nav__profile">
-                Profile
-              </Link>
-              <Link onClick={handleLogout} className="nav__logout">
-                Logout
-              </Link>
-            </>
+            <Link to="/profile" className="nav__profile">
+              Profile
+            </Link>
           ) : (
-            <>
-              <Link to="/login" className="nav__login">
-                Profile
-              </Link>
-              {/* <Link to="/login" className='nav__login'>Login</Link> */}
-            </>
+            <Link to="/login" className="nav__login">
+              Login
+            </Link>
           )}
 
           <span className="nav__menu">
             <Button onClick={handleMenu}>
-              <MenuOutlined className="" />
+              <MenuOutlined />
             </Button>
           </span>
         </div>
@@ -102,6 +92,11 @@ function Header() {
         <Link to="/contact" className="nav__news">
           Contact Us
         </Link>
+        {isLoggedIn && (
+          <Link onClick={handleLogout} className="nav__logout">
+            Logout
+          </Link>
+        )}
       </div>
     </>
   );
