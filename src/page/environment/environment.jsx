@@ -27,48 +27,48 @@ function Environment() {
   const [image, setImage] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [editingIndex, setEditingIndex] = useState(null);
+  // const [editingIndex, setEditingIndex] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("user"));
 
-  useEffect(() => {
-    const fetchPondData = async () => {
-      try {
-        const storedUser = localStorage.getItem("user");
-        if (!storedUser) {
-          throw new Error("No user found in localStorage");
-        }
-
-        const user = JSON.parse(storedUser);
-        const userId = user.accId;
-
-        const response = await fetch(
-          `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${userId}`
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch pond data");
-        }
-
-        const data = await response.json();
-        const koiCountByPond =
-          JSON.parse(localStorage.getItem("koiCountByPond")) || {};
-
-        // Add koi count to each pond object
-        const updatedPondDataList = data.listPond.$values.map((pond) => ({
-          ...pond,
-          koiCount: koiCountByPond[pond.pondId] || 0, // Use stored count
-        }));
-
-        setPondDataList(updatedPondDataList);
-        setOriginalPondDataList(updatedPondDataList);
-      } catch (error) {
-        console.error("Error fetching pond data:", error);
-        setPondDataList([]);
-        setOriginalPondDataList([]);
+  const fetchPondData = async () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) {
+        throw new Error("No user found in localStorage");
       }
-    };
 
+      const user = JSON.parse(storedUser);
+      const userId = user.accId;
+
+      const response = await fetch(
+        `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${userId}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch pond data");
+      }
+
+      const data = await response.json();
+      const koiCountByPond =
+        JSON.parse(localStorage.getItem("koiCountByPond")) || {};
+
+      // Gắn số lượng koi vào từng hồ cá
+      const updatedPondDataList = data.listPond.$values.map((pond) => ({
+        ...pond,
+        koiCount: koiCountByPond[pond.pondId] || 0,
+      }));
+
+      setPondDataList(updatedPondDataList);
+      setOriginalPondDataList(updatedPondDataList);
+    } catch (error) {
+      console.error("Error fetching pond data:", error);
+      setPondDataList([]);
+      setOriginalPondDataList([]);
+    }
+  };
+
+  useEffect(() => {
     fetchPondData();
   }, []);
 
@@ -122,7 +122,7 @@ function Environment() {
     environmentForm.setFieldsValue(pondToEdit);
     setUpdatePond(pondToEdit);
     setImage(pondToEdit.image);
-    setEditingIndex(index);
+    // setEditingIndex(index);
     setIsEditing(true);
     setIsModalUpdateVisible(true);
   };
@@ -140,7 +140,7 @@ function Environment() {
 
       if (isEditing) {
         response = await fetch(
-          `https://koicaresystemapi.azurewebsites.net/api/Update-Pond/${pondDataList[editingIndex].pondId}`,
+          `https://koicaresystemapi.azurewebsites.net/api/Update-Pond/${updatePond.pondId}`,
           {
             method: "PUT",
             headers: {
@@ -162,7 +162,6 @@ function Environment() {
             body: JSON.stringify(newPondData),
           }
         );
-        console.log(response.data);
       }
 
       if (!response.ok) {
@@ -175,18 +174,10 @@ function Environment() {
         placement: "topRight",
       });
 
-      const data = await response.json();
+      // Gọi lại fetchPondData để cập nhật danh sách hồ cá
+      await fetchPondData();
 
-      if (isEditing) {
-        const updatedPondDataList = [...pondDataList];
-        updatedPondDataList[editingIndex] = data;
-        setPondDataList(updatedPondDataList);
-        setOriginalPondDataList(updatedPondDataList);
-      } else {
-        setPondDataList((prev) => [...prev, data]);
-        setOriginalPondDataList((prev) => [...prev, data]);
-      }
-
+      // Đóng modal và reset form
       setIsModalVisible(false);
       setIsModalUpdateVisible(false);
       environmentForm.resetFields();
@@ -335,24 +326,73 @@ function Environment() {
           <Form.Item
             label="Pond Name"
             name="name"
-            rules={[{ required: true, message: "Please input the pond name!" }]}
+            rules={[
+              {
+                required: true,
+                message: "Please input the pond name!",
+              },
+            ]}
           >
             <Input />
           </Form.Item>
 
-          <Form.Item label="Pump Capacity (L/min)" name="pumpCapacity">
+          <Form.Item
+            label="Pump Capacity (L/min)"
+            name="pumpCapacity"
+            rules={[
+              {
+                type: "number",
+                min: 0,
+                message: "Pump Capacity must be 0 or greater!",
+                transform: (value) => Number(value),
+              },
+            ]}
+          >
             <Input type="number" />
           </Form.Item>
 
-          <Form.Item label="Depth (m)" name="depth">
+          <Form.Item
+            label="Depth (m)"
+            name="depth"
+            rules={[
+              {
+                type: "number",
+                min: 0,
+                message: "Depth must be 0 or greater!",
+                transform: (value) => Number(value),
+              },
+            ]}
+          >
             <Input type="number" />
           </Form.Item>
 
-          <Form.Item label="Volume (m³)" name="volume">
+          <Form.Item
+            label="Volume (m³)"
+            name="volume"
+            rules={[
+              {
+                type: "number",
+                min: 0,
+                message: "Volume must be 0 or greater!",
+                transform: (value) => Number(value),
+              },
+            ]}
+          >
             <Input type="number" />
           </Form.Item>
 
-          <Form.Item label="Drain Count" name="drainCount">
+          <Form.Item
+            label="Drain Count"
+            name="drainCount"
+            rules={[
+              {
+                type: "number",
+                min: 0,
+                message: "Drain Count must be 0 or greater!",
+                transform: (value) => Number(value),
+              },
+            ]}
+          >
             <Input type="number" />
           </Form.Item>
 
