@@ -1,9 +1,10 @@
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
-import bg from "../../img/background.jpg";
+import bg from "../../img/a10.jpg";
 import "./viewpond.scss";
 import { Form, Input, Row, Col, Button, Select, notification } from "antd";
 import { useEffect, useState } from "react";
+
 import {
   LineChart,
   Line,
@@ -15,16 +16,21 @@ import {
   Legend,
 } from "recharts";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const { Option } = Select;
 
 function Viewpond() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [waterParamsForm] = Form.useForm();
   const [chartData, setChartData] = useState([]);
   const [pondData, setPondData] = useState([]);
   const [selectedParameter, setSelectedParameter] = useState("temperature");
+  const [isMember, setIsMember] = useState(false);
+  const [outOfStandard, setOutOfStandard] = useState({});
+
+  // Khởi tạo các giá trị ban đầu là null
   const [currentParameter, setCurrentParameter] = useState({
     temperature: null,
     salt: null,
@@ -36,8 +42,10 @@ function Viewpond() {
     no3Level: null,
   });
 
-  const [isEditing, setIsEditing] = useState(false); // State to manage view/edit mode
+  const [isEditing, setIsEditing] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user"));
 
+  // gán thông số tiêu chuẩn cho các thông số
   const standardData = {
     temperature: { min: 5, max: 26 },
     salt: { min: 0, max: 0.1 },
@@ -49,8 +57,14 @@ function Viewpond() {
     no3Level: { min: 0, max: 20 },
   };
 
-  // Fetch parameter data when component mounts or ID changes
+  // render lại kiểm tra tài khoản có phải member không
   useEffect(() => {
+    if (user.role.toLocaleLowerCase() === "member") {
+      setIsMember(true);
+    } else {
+      setIsMember(false);
+    }
+    console.log(isMember);
     const fetchParamData = async () => {
       try {
         const response = await axios.get(
@@ -77,14 +91,14 @@ function Viewpond() {
     fetchParamData();
   }, [id]);
 
-  // Sync form fields with current parameter data
+  // Thiết lập giá trị mới nhất cho mực nước
   useEffect(() => {
     if (currentParameter) {
-      waterParamsForm.setFieldsValue(currentParameter); // Update form with current parameter values
+      waterParamsForm.setFieldsValue(currentParameter);
     }
   }, [currentParameter, waterParamsForm]);
 
-  // Fetch pond data and generate chart when the ID or selected parameter changes
+  // Thiết lập các giá trị cho chart
   useEffect(() => {
     const fetchPondData = async () => {
       try {
@@ -105,6 +119,7 @@ function Viewpond() {
     fetchPondData();
   }, [id, selectedParameter]);
 
+  // Hàm tạo chart
   const createChartData = (updatedValues, selectedParam) => {
     if (!Array.isArray(updatedValues)) {
       console.error("Expected array, but got:", updatedValues);
@@ -122,12 +137,37 @@ function Viewpond() {
     });
   };
 
+  // Kiểm tra thông số có đạt tiêu chuẩn hay không
+  const checkAllParameters = () => {
+    let newOutOfStandard = {};
+    Object.keys(currentParameter).forEach((param) => {
+      const value = currentParameter[param];
+      if (value !== null && standardData[param]) {
+        if (value < standardData[param].min) {
+          newOutOfStandard[param] = `below standard by ${
+            standardData[param].min - value
+          }`;
+        } else if (value > standardData[param].max) {
+          newOutOfStandard[param] = `above standard by ${
+            value - standardData[param].max
+          }`;
+        }
+      }
+    });
+    setOutOfStandard(newOutOfStandard);
+  };
+  useEffect(() => {
+    checkAllParameters();
+  }, [currentParameter]);
+
+  // thiết lập lựa chọn các thông số
   const handleParameterChange = (value) => {
     setSelectedParameter(value);
     const updatedChartData = createChartData(pondData, value);
     setChartData(updatedChartData);
   };
 
+  // Hàm submit form
   const handleWaterParamsFormFinish = async (values) => {
     const pondId = pondData.length > 0 ? pondData[0].pondId : values.pondId;
 
@@ -187,7 +227,7 @@ function Viewpond() {
     }
   };
 
-  // Toggle between view and edit mode
+  // Chuyển đổi giữa view và edit
   const toggleEditMode = () => {
     setIsEditing(!isEditing);
   };
@@ -195,18 +235,28 @@ function Viewpond() {
   return (
     <>
       <Header />
+
       <div className="ViewPage">
         <div className="ViewPage__img">
           <img src={bg} alt="" />
         </div>
 
         <h1>Water Parameters</h1>
-
+        <i
+          className="bi bi-arrow-left-circle"
+          style={{
+            fontSize: "40px",
+            marginLeft: "100px",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate("/environment")}
+        ></i>
         <div className="ViewPage__Water">
           <Form
             form={waterParamsForm}
             className="Environment__form"
             onFinish={handleWaterParamsFormFinish}
+            onValuesChange={checkAllParameters}
             layout="vertical"
             initialValues={currentParameter}
           >
@@ -227,6 +277,11 @@ function Viewpond() {
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
+                {outOfStandard.temperature && (
+                  <p className="out-of-standard">
+                    Warning: Temperature{outOfStandard.temperature} !
+                  </p>
+                )}
 
                 <Form.Item
                   label="Salt:"
@@ -235,6 +290,11 @@ function Viewpond() {
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
+                {outOfStandard.salt && (
+                  <p className="out-of-standard">
+                    Warning: Salt{outOfStandard.salt} !
+                  </p>
+                )}
 
                 <Form.Item
                   label="PhLevel:"
@@ -243,6 +303,11 @@ function Viewpond() {
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
+                {outOfStandard.phLevel && (
+                  <p className="out-of-standard">
+                    Warning: PhLevel{outOfStandard.phLevel} !
+                  </p>
+                )}
 
                 <Form.Item
                   label="O2Level:"
@@ -251,6 +316,11 @@ function Viewpond() {
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
+                {outOfStandard.o2Level && (
+                  <p className="out-of-standard">
+                    Warning: O2Level{outOfStandard.o2Level} !
+                  </p>
+                )}
               </Col>
 
               <Col xs={24} sm={12}>
@@ -261,6 +331,11 @@ function Viewpond() {
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
+                {outOfStandard.po4Level && (
+                  <p className="out-of-standard">
+                    Warning: Po4Level{outOfStandard.po4Level} !
+                  </p>
+                )}
 
                 <Form.Item
                   label="No2Level:"
@@ -269,6 +344,13 @@ function Viewpond() {
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
+                {outOfStandard.no2Level ? (
+                  <p className="out-of-standard">
+                    Warning: No2Level{outOfStandard.no2Level} !
+                  </p>
+                ) : (
+                  ""
+                )}
 
                 <Form.Item
                   label="No3Level:"
@@ -277,6 +359,11 @@ function Viewpond() {
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
+                {outOfStandard.no3Level && (
+                  <p className="out-of-standard">
+                    Warning: No3Level{outOfStandard.no3Level} !
+                  </p>
+                )}
 
                 <Form.Item
                   label="TotalChlorines:"
@@ -285,6 +372,12 @@ function Viewpond() {
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
+                {outOfStandard.totalChlorines && (
+                  <p className="out-of-standard">
+                    Warning: TotalChlorines
+                    {outOfStandard.totalChlorines} !
+                  </p>
+                )}
               </Col>
             </Row>
 
@@ -298,55 +391,163 @@ function Viewpond() {
             </div>
           </Form>
 
-          <Select
-            value={selectedParameter}
-            style={{ width: 120 }}
-            onChange={handleParameterChange}
-          >
-            <Option value="temperature">Temperature</Option>
-            <Option value="salt">Salt</Option>
-            <Option value="phLevel">pH Level</Option>
-            <Option value="o2Level">O2 Level</Option>
-            <Option value="totalChlorines">Total Chlorines</Option>
-            <Option value="po4Level">PO4 Level</Option>
-            <Option value="no2Level">NO2 Level</Option>
-            <Option value="no3Level">NO3 Level</Option>
-          </Select>
-
-          <LineChart
-            key={JSON.stringify(chartData)}
-            width={600}
-            height={300}
-            data={chartData}
-            margin={{ top: 25, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name">
-              <Label value="Date" offset={-7} position="bottom" />
-            </XAxis>
-            <YAxis
-              domain={[
-                standardData[selectedParameter].min,
-                standardData[selectedParameter].max,
-              ]}
-            >
-              <Label
+          {isMember ? (
+            <div>
+              <Select
                 value={selectedParameter}
-                angle={-90}
-                position="insideLeft"
-              />
-            </YAxis>
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#8884d8"
-              dot={false}
-            />
-            <Line type="monotone" dataKey="min" stroke="#82ca9d" dot={false} />
-            <Line type="monotone" dataKey="max" stroke="#ff7300" dot={false} />
-            <Legend />
-          </LineChart>
+                style={{ width: 120 }}
+                onChange={handleParameterChange}
+              >
+                <Option value="temperature">Temperature</Option>
+                <Option value="salt">Salt</Option>
+                <Option value="phLevel">pH Level</Option>
+                <Option value="o2Level">O2 Level</Option>
+                <Option value="totalChlorines">Total Chlorines</Option>
+                <Option value="po4Level">PO4 Level</Option>
+                <Option value="no2Level">NO2 Level</Option>
+                <Option value="no3Level">NO3 Level</Option>
+              </Select>
+
+              <LineChart
+                key={JSON.stringify(chartData)}
+                width={600}
+                height={300}
+                data={chartData}
+                margin={{ top: 25, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name">
+                  <Label value="Date" offset={-7} position="bottom" />
+                </XAxis>
+                <YAxis
+                  domain={[
+                    standardData[selectedParameter].min,
+                    standardData[selectedParameter].max,
+                  ]}
+                >
+                  <Label
+                    value={selectedParameter}
+                    angle={-90}
+                    position="insideLeft"
+                  />
+                </YAxis>
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#8884d8"
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="min"
+                  stroke="#82ca9d"
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="max"
+                  stroke="#ff7300"
+                  dot={false}
+                />
+                <Legend />
+              </LineChart>
+              <div className="Warning">
+                <h3>Parameter Status</h3>
+                <div className="warning-content">
+                  <p>
+                    <strong>Temperature:</strong>
+                    {outOfStandard.temperature ? (
+                      <span className="out-of-standard">
+                        <i className="icon-warning"></i>{" "}
+                        {outOfStandard.temperature}
+                      </span>
+                    ) : (
+                      <span className="in-standard">Within standard range</span>
+                    )}
+                  </p>
+                  <p>
+                    <strong>Salt:</strong>
+                    {outOfStandard.salt ? (
+                      <span className="out-of-standard">
+                        <i className="icon-warning"></i> {outOfStandard.salt}
+                      </span>
+                    ) : (
+                      <span className="in-standard">Within standard range</span>
+                    )}
+                  </p>
+                  <p>
+                    <strong>pH Level:</strong>
+                    {outOfStandard.phLevel ? (
+                      <span className="out-of-standard">
+                        <i className="icon-warning"></i> {outOfStandard.phLevel}
+                      </span>
+                    ) : (
+                      <span className="in-standard">Within standard range</span>
+                    )}
+                  </p>
+                  <p>
+                    <strong>O2 Level:</strong>
+                    {outOfStandard.o2Level ? (
+                      <span className="out-of-standard">
+                        <i className="icon-warning"></i> {outOfStandard.o2Level}
+                      </span>
+                    ) : (
+                      <span className="in-standard">Within standard range</span>
+                    )}
+                  </p>
+                  <p>
+                    <strong>PO4 Level:</strong>
+                    {outOfStandard.po4Level ? (
+                      <span className="out-of-standard">
+                        <i className="icon-warning"></i>{" "}
+                        {outOfStandard.po4Level}
+                      </span>
+                    ) : (
+                      <span className="in-standard">Within standard range</span>
+                    )}
+                  </p>
+                  <p>
+                    <strong>NO2 Level:</strong>
+                    {outOfStandard.no2Level ? (
+                      <span className="out-of-standard">
+                        <i className="icon-warning"></i>{" "}
+                        {outOfStandard.no2Level}
+                      </span>
+                    ) : (
+                      <span className="in-standard">Within standard range</span>
+                    )}
+                  </p>
+                  <p>
+                    <strong>NO3 Level:</strong>
+                    {outOfStandard.no3Level ? (
+                      <span className="out-of-standard">
+                        <i className="icon-warning"></i>{" "}
+                        {outOfStandard.no3Level}
+                      </span>
+                    ) : (
+                      <span className="in-standard">Within standard range</span>
+                    )}
+                  </p>
+                  <p>
+                    <strong>Total Chlorines:</strong>
+                    {outOfStandard.totalChlorines ? (
+                      <span className="out-of-standard">
+                        <i className="icon-warning"></i>{" "}
+                        {outOfStandard.totalChlorines}
+                      </span>
+                    ) : (
+                      <span className="in-standard">Within standard range</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <b className="buymembership">
+              You must buy membership to view chart information!
+            </b>
+          )}
         </div>
       </div>
       <Footer />

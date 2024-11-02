@@ -1,5 +1,6 @@
 import { Button, Form, Select, Spin } from "antd";
 import Header from "../../components/header/header";
+import Footer from "../../components/footer/footer";
 import "./food.scss";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -151,18 +152,9 @@ function Food() {
                 <Form.Item label="Total koi weight: ">
                   {loading ? <Spin /> : <p>{koiWeight} g</p>}
                 </Form.Item>
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    onClick={() => navigate("/expert")}
-                    style={{ display: "inline-block" }}
-                  >
-                    Expert mode
-                  </Button>
-                </Form.Item>
 
                 {/*Desired Growth*/}
-                <Form.Item label="Desired Growth">
+                <Form.Item label="Desired Growth:">
                   <div className="growth-buttons">
                     <Button
                       type={growth === "low" ? "primary" : "default"}
@@ -188,7 +180,7 @@ function Food() {
                 </Form.Item>
 
                 {/* Water Temperature */}
-                <Form.Item label="Water Temperature">
+                <Form.Item label="Water Temperature:">
                   <div className="temperature-buttons">
                     <Button
                       type={temperature === "6-8" ? "primary" : "default"}
@@ -305,10 +297,20 @@ function Food() {
                   </p>
                 </div>
               )}
+              <div className="food_expert">
+                <Button
+                  type="primary"
+                  onClick={() => navigate("/expert")}
+                  style={{ display: "inline-block" }}
+                >
+                  <p>Expert Mode</p>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }
