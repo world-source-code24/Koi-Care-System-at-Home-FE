@@ -242,7 +242,6 @@ function Mykoi() {
           <div className="add_image">
             <img src={ca} style={{ width: 200, height: 100 }} />
           </div>
-          {/* Row cho các trường Name và Pond */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item

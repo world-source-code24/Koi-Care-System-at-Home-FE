@@ -1,8 +1,8 @@
 import img1 from '../img/a10.jpg';
-import img2 from '../img/a7.jpg';
-import img3 from '../img/a3.jpg';
-import img4 from '../img/a4.jpg';
-import img5 from '../img/a8.jpg';
+import img2 from '../img/news.jpg';
+import img3 from '../img/hinh3.jpg';
+import img4 from '../img/hinh2.jpg';
+import img5 from '../img/hinh1.jpg';
 import img6 from '../img/a6.jpg';
 // import ca6 from '../img/ca6.jpg';
 // import ca7 from '../img/ca7.jpg';

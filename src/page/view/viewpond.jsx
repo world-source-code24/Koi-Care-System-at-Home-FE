@@ -274,12 +274,20 @@ function Viewpond() {
                   label="Temperature:"
                   name="temperature"
                   tooltip="Please enter a value between 5 and 26 °C."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "Temperature must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.temperature && (
                   <p className="out-of-standard">
-                    Warning: Temperature{outOfStandard.temperature} !
+                    Warning: Temperature {outOfStandard.temperature} !
                   </p>
                 )}
 
@@ -287,12 +295,20 @@ function Viewpond() {
                   label="Salt:"
                   name="salt"
                   tooltip="Please enter a value between 0 and 0.1 %."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "Salt must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.salt && (
                   <p className="out-of-standard">
-                    Warning: Salt{outOfStandard.salt} !
+                    Warning: Salt {outOfStandard.salt} !
                   </p>
                 )}
 
@@ -300,12 +316,20 @@ function Viewpond() {
                   label="PhLevel:"
                   name="phLevel"
                   tooltip="Please enter a value between 6.9 and 8."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "PhLevel must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.phLevel && (
                   <p className="out-of-standard">
-                    Warning: PhLevel{outOfStandard.phLevel} !
+                    Warning: PhLevel {outOfStandard.phLevel} !
                   </p>
                 )}
 
@@ -313,12 +337,20 @@ function Viewpond() {
                   label="O2Level:"
                   name="o2Level"
                   tooltip="Please enter a value greater than 6.5 mg/l."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "O2Level must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.o2Level && (
                   <p className="out-of-standard">
-                    Warning: O2Level{outOfStandard.o2Level} !
+                    Warning: O2Level {outOfStandard.o2Level} !
                   </p>
                 )}
               </Col>
@@ -328,12 +360,20 @@ function Viewpond() {
                   label="Po4Level:"
                   name="po4Level"
                   tooltip="Please enter a value between 0 and 0.035 mg/l."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "Po4Level must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.po4Level && (
                   <p className="out-of-standard">
-                    Warning: Po4Level{outOfStandard.po4Level} !
+                    Warning: Po4Level {outOfStandard.po4Level} !
                   </p>
                 )}
 
@@ -341,12 +381,20 @@ function Viewpond() {
                   label="No2Level:"
                   name="no2Level"
                   tooltip="Please enter a value between 0 and 0.1 mg/l."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "No2Level must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.no2Level ? (
                   <p className="out-of-standard">
-                    Warning: No2Level{outOfStandard.no2Level} !
+                    Warning: No2Level {outOfStandard.no2Level} !
                   </p>
                 ) : (
                   ""
@@ -356,12 +404,20 @@ function Viewpond() {
                   label="No3Level:"
                   name="no3Level"
                   tooltip="Please enter a value between 0 and 20 mg/l."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "No3Level must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.no3Level && (
                   <p className="out-of-standard">
-                    Warning: No3Level{outOfStandard.no3Level} !
+                    Warning: No3Level {outOfStandard.no3Level} !
                   </p>
                 )}
 
@@ -369,13 +425,20 @@ function Viewpond() {
                   label="TotalChlorines:"
                   name="totalChlorines"
                   tooltip="Please enter a value between 0 and 0.001 mg/l."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "TotalChlorines must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.totalChlorines && (
                   <p className="out-of-standard">
-                    Warning: TotalChlorines
-                    {outOfStandard.totalChlorines} !
+                    Warning: TotalChlorines {outOfStandard.totalChlorines} !
                   </p>
                 )}
               </Col>
