@@ -28,7 +28,7 @@ function PaymentSuccess() {
                 View My Member
               </Button>
             </Link>,
-            <Link to="/viewproduct" key="home">
+            <Link to="/home" key="home">
               <Button
                 size="large"
                 shape="round"

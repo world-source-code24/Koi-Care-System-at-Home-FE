@@ -85,7 +85,7 @@ function Koi() {
       element: <ProtectedRoute element={<Salt />} requiredRole="member" />,
     },
     {
-      path: "/payment",
+      path: "/paymentSuccess",
       element: <PaymentSuccess />,
     },
     {

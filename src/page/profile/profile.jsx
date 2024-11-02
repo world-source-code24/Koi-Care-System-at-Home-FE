@@ -22,6 +22,7 @@ import { StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
 import axiosInstance from "../../api/axiosInstance";
+import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
 
 function Profile() {
   const { Sider, Content } = Layout;
@@ -36,6 +37,7 @@ function Profile() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [orders, setOrders] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
+  const { setUser } = useUser(); // Lấy hàm setUser từ context để cập nhật người dùng
 
   const formatCurrency = (value) => {
     if (typeof value !== "number" || isNaN(value)) {
@@ -93,6 +95,10 @@ function Profile() {
           Authorization: `Bearer ${token}`,
         },
       });
+      const user = response.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userId", user.accId);
+      setUser(user);
       setImageUrl(response.data.image || "");
       setUserInfo({
         fullName: response.data.name || "",
@@ -148,6 +154,7 @@ function Profile() {
 
       if (response.status === 200) {
         message.success("Update successfully!");
+
         setIsEditing(false);
         fetchUserInfo();
       }
@@ -171,27 +178,22 @@ function Profile() {
   const handleOk = async () => {
     try {
       const response = await axios.post(
-        `https://koicaresystemapi.azurewebsites.net/api/Payment/checkout?accId=${accId}`
+        `https://localhost:5001/api/Payment/checkout?accId=${accId}`
       );
-      // Check if paymentUrl is returned correctly
+      // Check if paymentUrl is returned correctlyx
       if (response.data && response.data.paymentUrl) {
-        window.location.href = response.data.paymentUrl;
-        window.addEventListener("message", async (event) => {
-          if (event.data) {
-            const callbackResponse = await fetch(
-              "https://koicaresystemapi.azurewebsites.net/api/Payment/checkout"
-            );
-            if (callbackResponse.ok) {
-              navigate("/payment");
-            } else {
-              message.error("Payment failed. Please try again.");
-            }
+        const paymentWindow = window.open(response.data.paymentUrl, "_blank");
+        const checkWindow = setInterval(() => {
+          if (paymentWindow.closed) {
+            clearInterval(checkWindow);
+            // Gọi lại API lấy thông tin user mới
+            fetchUserInfo();
+            message.success("Payment completed, profile updated!");
           }
-        });
+        }, 1000);
       } else {
         throw new Error("Payment URL not found in response");
       }
-      message.success("Redirecting to payment...");
     } catch (error) {
       message.error("Failed to initiate payment");
       console.error("Error initiating payment:", error);
