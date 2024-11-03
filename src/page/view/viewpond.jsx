@@ -1,5 +1,6 @@
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import bg from "../../img/a10.jpg";
 import "./viewpond.scss";
 import { Form, Input, Row, Col, Button, Select, notification } from "antd";
