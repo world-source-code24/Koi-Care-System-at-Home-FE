@@ -177,7 +177,7 @@ function Profile() {
   const handleOk = async () => {
     try {
       const response = await axios.post(
-        `https://localhost:5001/api/Payment/checkout?accId=${accId}`
+        `https://koicaresystemapi.azurewebsites.net/api/Payment/checkout?accId=${accId}`
       );
       // Check if paymentUrl is returned correctlyx
       if (response.data && response.data.paymentUrl) {
@@ -185,7 +185,6 @@ function Profile() {
         const checkWindow = setInterval(() => {
           if (paymentWindow.closed) {
             clearInterval(checkWindow);
-            // Gọi lại API lấy thông tin user mới
             fetchUserInfo();
             message.success("Payment completed, profile updated!");
           }
