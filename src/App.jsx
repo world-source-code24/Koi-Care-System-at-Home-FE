@@ -21,6 +21,7 @@ import Koidetail from "./page/koidetail/koidetail";
 import Register from "./page/register/register/register";
 import OrderSuccess from "./page/order/order";
 
+
 function Koi() {
   const router = createBrowserRouter([
     {
@@ -37,7 +38,7 @@ function Koi() {
     },
     {
       path: "/environment",
-      element: <Environment />,
+      element: <Environment />
     },
     {
       path: "/view/:id",
@@ -110,7 +111,7 @@ function Koi() {
     },
     {
       path: "/register",
-      element: <Register />,
+      element: <Register/>,
     },
   ]);
 

@@ -75,7 +75,6 @@ function ProductManagement() {
   };
 
   const isEditing = (record) => record.key === editingKey;
-
   const edit = (record) => {
     form.setFieldsValue({
       name: "",

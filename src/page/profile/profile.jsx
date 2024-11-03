@@ -38,7 +38,6 @@ function Profile() {
   const [orders, setOrders] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
   const { setUser } = useUser(); // Lấy hàm setUser từ context để cập nhật người dùng
-
   const formatCurrency = (value) => {
     if (typeof value !== "number" || isNaN(value)) {
       return "0 VND";
@@ -269,7 +268,7 @@ function Profile() {
                 defaultSelectedKeys={[1]}
                 className="profile_menu"
                 onClick={({ key }) => {
-                  if (key === "4") handleLogout();
+                  if (key === "5") handleLogout();
                 }}
               >
                 <Menu.Item className="accountSetting" key={1}>
@@ -278,11 +277,10 @@ function Profile() {
                 <Menu.Item key={2} onClick={fetchOrders}>
                   Your Order
                 </Menu.Item>
-
                 <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
                   Reset Password
                 </Menu.Item>
-                <Menu.Item key={4}>Log out</Menu.Item>
+                <Menu.Item key={5}>Log out</Menu.Item>
               </Menu>
             </Sider>
 

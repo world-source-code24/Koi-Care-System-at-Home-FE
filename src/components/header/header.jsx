@@ -13,9 +13,9 @@ function Header() {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      setIsLoggedIn(true);
+      setIsLoggedIn(true); // Logged in
     } else {
-      setIsLoggedIn(false);
+      setIsLoggedIn(false); // Not logged in
     }
   }, []);
 
@@ -47,11 +47,9 @@ function Header() {
           <Link to="/" className="nav__news">
             Home
           </Link>
-
           <Link to="/news" className="nav__news">
             Blog and News
           </Link>
-
           <Link to="/cart" className="nav__news">
             Cart
           </Link>
@@ -72,7 +70,7 @@ function Header() {
 
           <span className="nav__menu">
             <Button onClick={handleMenu}>
-              <MenuOutlined className="" />
+              <MenuOutlined />
             </Button>
           </span>
         </div>

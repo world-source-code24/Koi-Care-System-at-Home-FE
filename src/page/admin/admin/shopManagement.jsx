@@ -70,7 +70,6 @@ function ShopManagement() {
       console.error("Failed to fetch shop data:", error);
     }
   };
-
   const isEditing = (record) => record.key === editingKey;
 
   const edit = (record) => {

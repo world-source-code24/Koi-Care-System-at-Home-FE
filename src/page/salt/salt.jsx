@@ -1,5 +1,6 @@
 import "./salt.scss";
 import Header from "../../components/header/header";
+import Footer from "../../components/footer/footer";
 import { Form, Select, Slider } from "antd";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -116,10 +117,15 @@ function Salt() {
                 >
                   <Slider
                     min={0}
-                    max={totalVolume}
-                    step={8}
-                    value={waterChangeAmount}
-                    onChange={setWaterChangeAmount}
+                    max={100}
+                    step={1}
+                    value={(waterChangeAmount / totalVolume) * 100}
+                    onChange={(percent) => {
+                      const newAmount = ((percent / 100) * totalVolume).toFixed(
+                        2
+                      ); 
+                      setWaterChangeAmount(Number(newAmount)); 
+                    }}
                     tooltipVisible
                   />
                 </Form.Item>
@@ -152,6 +158,7 @@ function Salt() {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

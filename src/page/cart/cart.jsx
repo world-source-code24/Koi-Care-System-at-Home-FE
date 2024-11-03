@@ -79,7 +79,7 @@ function Cart() {
 
   const handleCheckout = async () => {
     const accId = localStorage.getItem("userId");
-    const totalAmount = getTotalPrice();
+const totalAmount = getTotalPrice();
 
     const orderPayload = {
       userId: accId,
