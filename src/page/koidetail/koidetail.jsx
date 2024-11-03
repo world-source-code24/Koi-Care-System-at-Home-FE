@@ -388,7 +388,6 @@ function KoiDetail() {
       >
         <p className="modal-content-text">You want to delete this Koi fish ?</p>
       </Modal>
-
       <Header />
       <div className="koide_background"></div>
       <div className="koide_header">
