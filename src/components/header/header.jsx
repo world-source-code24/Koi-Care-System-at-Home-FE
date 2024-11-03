@@ -8,7 +8,6 @@ import { MenuOutlined } from "@ant-design/icons";
 function Header() {
   const [visible, setVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +29,6 @@ function Header() {
 
   const handleLogout = () => {
     localStorage.clear();
-    setIsAdmin(false);
     setIsLoggedIn(false);
     navigate("/login");
   };
@@ -62,11 +60,6 @@ function Header() {
               <Link to="/profile" className="nav__profile">
                 Profile
               </Link>
-              {isAdmin && (
-                <Link to="/admin/dashboard" className="nav__manager">
-                  Manager
-                </Link>
-              )}
             </>
           ) : (
             <>

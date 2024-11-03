@@ -132,6 +132,23 @@ function UserManagement() {
     setSearchText("");
   };
 
+  const toggleStatus = async (key, currentStatus) => {
+    try {
+      const newStatus = !currentStatus;
+      await axios.put(
+        `https://koicaresystemapi.azurewebsites.net/api/Account/edit-status${key}?status=${newStatus}`
+      );
+
+      const newData = data.map((item) =>
+        item.key === key ? { ...item, status: newStatus } : item
+      );
+      setData(newData);
+      setFilteredData(newData);
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    }
+  };
+
   const columns = [
     {
       title: "Name",
@@ -167,12 +184,19 @@ function UserManagement() {
       title: "Status",
       dataIndex: "status",
       width: 100,
-      render: (status) =>
-        status ? (
-          <CheckCircleFilled style={{ fontSize: 20, color: "green" }} />
-        ) : (
-          <CloseCircleFilled style={{ fontSize: 20, color: "red" }} />
-        ),
+      render: (status, record) => (
+        <span onClick={() => toggleStatus(record.key, status)}>
+          {status ? (
+            <CheckCircleFilled
+              style={{ fontSize: 20, color: "green", cursor: "pointer" }}
+            />
+          ) : (
+            <CloseCircleFilled
+              style={{ fontSize: 20, color: "red", cursor: "pointer" }}
+            />
+          )}
+        </span>
+      ),
     },
     {
       title: "Operation",
