@@ -4,10 +4,9 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import bg from "../../img/news.jpg";
 import { Button, Input, Modal } from "antd";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import { Listproduct } from "../../share/listproduct";
-import { green } from "@mui/material/colors";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 function Viewproduct() {
   const [visible, setVisible] = useState(false);
   const [pro, setPro] = useState({});
@@ -172,6 +171,7 @@ function Viewproduct() {
           Search
         </Button>
       </div>
+      <ArrowBackIcon />
       <div className="row Viewproduct__product">
         {filteredStore.map((product) => (
           <div className="col-md-3 product" key={product.productId}>

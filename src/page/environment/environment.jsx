@@ -416,15 +416,6 @@ function Environment() {
             <Input type="number" />
           </Form.Item>
 
-          <Upload beforeUpload={handleImageUpload}>
-            <Button icon={<UploadOutlined />}>Upload Image</Button>
-          </Upload>
-          {image && (
-            <div>
-              <img src={image} alt="Uploaded" width="100%" />
-            </div>
-          )}
-
           <Form.Item>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Button type="primary" htmlType="submit" style={{ width: "48%" }}>
