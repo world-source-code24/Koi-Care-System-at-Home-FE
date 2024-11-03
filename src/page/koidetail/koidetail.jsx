@@ -4,7 +4,7 @@ import axios from "axios";
 import "./koidetail.scss";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
-import { Divider, Form, Input, Button, Upload, Modal, Select } from "antd";
+import { Divider, Form, Input, Button, Upload, Modal, Select, Table } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { Line } from "react-chartjs-2";
 import {
@@ -43,6 +43,60 @@ function KoiDetail() {
   const [isDelete, setIsDelete] = useState(false);
   const { Option } = Select;
   const [originalChartData, setOriginalChartData] = useState([]);
+  const [isReportVisible, setIsReportVisible] = useState(false);
+
+  const handleReport = () => {
+    setIsReportVisible(true);
+  };
+
+  const closeReport = () => {
+    setIsReportVisible(false);
+  };
+
+  // Tính Health Status 
+  const dataWithHealthStatus = originalChartData.map((data, index, arr) => {
+    if (index === 0) {
+      return { ...data, healthStatus: "Good" };
+    }
+
+    const prevData = arr[index - 1];
+    const weightChange = ((data.weight - prevData.weight) / prevData.weight) * 100;
+
+    let healthStatus = "Good"; // Mặc định là "Good"
+    if (weightChange > 15 || weightChange < -15) {
+      healthStatus = "Warning";
+    }
+
+    return { ...data, healthStatus };
+  });
+
+  const reportColumns = [
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+    },
+    {
+      title: "Length (cm)",
+      dataIndex: "length",
+      key: "length",
+    },
+    {
+      title: "Weight (g)",
+      dataIndex: "weight",
+      key: "weight",
+    },
+    {
+      title: "Health Status",
+      dataIndex: "healthStatus",
+      key: "healthStatus",
+      render: (text) => (
+        <span style={{ color: text === "Warning" ? "red" : "green" }}>
+          {text}
+        </span>
+      ),
+    },
+  ];
 
   const fetchPonds = async () => {
     try {
@@ -272,8 +326,45 @@ function KoiDetail() {
 
   return (
     <>
+
+      {/* Modal cho báo cáo */}
       <Modal
-        title="Xác nhận xoá"
+        title="Koi Growth Report"
+        visible={isReportVisible}
+        onCancel={closeReport}
+        footer={[
+          <Button key="close" onClick={closeReport}>
+            Close
+          </Button>,
+        ]}
+      >
+
+        <div style={{ marginBottom: "20px" }}>
+          <p style={{ color: "green", fontWeight: "bold" }}>
+            Good: Your fish are growing very well. Please continue to take care of your fish at all times!
+          </p>
+          <p style={{ color: "red", fontWeight: "bold" }}>
+            Warning: Your Koi fish's weight is increasing or decreasing by more than 15%. Review your fish feeding process or check your pond's water quality!
+          </p>
+          <p>
+            <strong>Suggestion:</strong>
+            <ul>
+              <li>You can use the Food Calculator or Salt Calculator function to calculate the amount of food or salt for your pond.</li>
+              <li>Visit the product store at Home page to buy accessories to care for your fish!</li>
+            </ul>
+          </p>
+        </div>
+
+        <Table
+          dataSource={dataWithHealthStatus}
+          columns={reportColumns}
+          rowKey="chartId"
+          pagination={false}
+        />
+      </Modal>
+
+      <Modal
+        title="Accept Delete"
         visible={isDelete}
         onCancel={() => setIsDelete(false)}
         footer={[
@@ -297,6 +388,7 @@ function KoiDetail() {
       >
         <p className="modal-content-text">You want to delete this Koi fish ?</p>
       </Modal>
+
       <Header />
       <div className="koide_background"></div>
       <div className="koide_header">
@@ -364,34 +456,38 @@ function KoiDetail() {
                 ))}
               </Select>
             </Form.Item>
+
+          {/* Các nút Edit và Delete */}
+          <div className="koide_button_1">
+            {isEditing ? (
+              <>
+                <Button type="primary" onClick={handleSave}>
+                  Save
+                </Button>
+                <Button type="primary" onClick={() => setIsEditing(false)}>
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button type="primary" onClick={() => setIsEditing(true)}>
+                  Edit
+                </Button>
+                <Button type="primary" onClick={() => setIsDelete(true)}>
+                  Delete
+                </Button>
+              </>
+            )}
+          </div>
           </Form>
         </div>
 
         <div className="koide_right">
           <Line data={chartData} options={chartOptions} />
+          <div className="report-button-container">
+            <Button type="primary" className="report-button" onClick={handleReport}>Report</Button>
+          </div>
         </div>
-      </div>
-      {/*Button*/}
-      <div className="koide_button_1">
-        {isEditing ? (
-          <>
-            <Button type="primary" onClick={handleSave}>
-              Save
-            </Button>
-            <Button type="primary" onClick={() => setIsEditing(false)}>
-              Cancel
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button type="primary" onClick={() => setIsEditing(true)}>
-              Edit
-            </Button>
-            <Button type="primary" onClick={() => setIsDelete(true)}>
-              Delete
-            </Button>
-          </>
-        )}
       </div>
       <Footer />
     </>

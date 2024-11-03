@@ -214,28 +214,6 @@ function Food() {
                     </Button>
                   </div>
                 </Form.Item>
-
-                {/*Recommend Amount */}
-                <Form.Item label="Recommended food amount: ">
-                  {loading ? (
-                    <Spin />
-                  ) : (
-                    <p>
-                      {/* Kiểm tra nếu growth là "low" và temperature là "6-8" để hiển thị khác */}
-                      {growth === "low" && temperature === "6-8"
-                        ? `${calculateRecommendedAmount(
-                            koiWeight,
-                            growth,
-                            temperature
-                          ).toFixed(2)} g per feeding`
-                        : `${calculateRecommendedAmount(
-                            koiWeight,
-                            growth,
-                            temperature
-                          ).toFixed(2)} g per day`}
-                    </p>
-                  )}
-                </Form.Item>
               </Form>
             </div>
 
@@ -307,6 +285,29 @@ function Food() {
                 </Button>
               </div>
             </div>
+          </div>
+
+          <div className="recommend_amount_section">
+              {loading ? (
+                <Spin />
+              ) : (
+                <>
+                  <p>Recommended food amount:</p>
+                  <p className="amount-value">
+                    {growth === "low" && temperature === "6-8"
+                      ? `${calculateRecommendedAmount(
+                          koiWeight,
+                          growth,
+                          temperature
+                        ).toFixed(2)} g per feeding`
+                      : `${calculateRecommendedAmount(
+                          koiWeight,
+                          growth,
+                          temperature
+                        ).toFixed(2)} g per day`}
+                  </p>
+                </>
+              )}
           </div>
         </div>
       </div>
