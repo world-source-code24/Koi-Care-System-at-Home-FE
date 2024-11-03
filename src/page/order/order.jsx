@@ -16,9 +16,7 @@ function OrderSuccess() {
             />
           }
           title={
-            <span className="gradient-text">
-              You have sent your order successfully
-            </span>
+            <span className="gradient-text">Your order is proccessing!</span>
           }
           subTitle="Thank you for your order! We have received your payment and sent a confirmation email."
           extra={[

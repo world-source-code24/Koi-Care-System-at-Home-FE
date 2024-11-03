@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import api from "../../config/axios";
 import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
 import axiosInstance from "../../api/axiosInstance";
+import { DiamondOutlined } from "@mui/icons-material";
 
 function Profile() {
   const { Sider, Content } = Layout;
@@ -32,7 +33,6 @@ function Profile() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState(null);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [orders, setOrders] = useState([]);
@@ -138,9 +138,9 @@ function Profile() {
 
       // Kiểm tra và thêm hình ảnh vào formData
       if (image) {
-        formData.append("image", image); // Sử dụng hình ảnh đã tải lên
+        formData.append("image", "string"); // Sử dụng hình ảnh đã tải lên
       } else if (imageUrl) {
-        formData.append("image", imageUrl); // Sử dụng URL hình ảnh hiện có
+        formData.append("image", "string"); // Sử dụng URL hình ảnh hiện có
       } else {
         formData.append("image", ""); // Nếu không có hình ảnh
       }
@@ -202,14 +202,6 @@ function Profile() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-
-  const handleImageUpload = (file) => {
-    const blobUrl = URL.createObjectURL(file); // Tạo URL blob
-    setImage(file); // Lưu tệp hình ảnh
-    setPreviewImage(blobUrl); // Lưu URL blob để xem trước
-    return false; // Ngăn không cho tự động tải lên
-  };
-
   useEffect(() => {
     return () => {
       if (previewImage) {
@@ -217,18 +209,6 @@ function Profile() {
       }
     };
   }, [previewImage]);
-
-  // Log out và xóa all thông tin qua localStorage
-  const handleLogout = async () => {
-    try {
-      // Dùng để xóa thông tin đăng nhập
-      localStorage.clear();
-      message.success("Logged out successfully");
-      navigate("/login");
-    } catch (error) {
-      message.error("Failed to log out. Please try again.");
-    }
-  };
 
   // Reset password
   const handleResetPassword = async () => {
@@ -266,9 +246,6 @@ function Profile() {
                 mode="vertical"
                 defaultSelectedKeys={[1]}
                 className="profile_menu"
-                onClick={({ key }) => {
-                  if (key === "5") handleLogout();
-                }}
               >
                 <Menu.Item className="accountSetting" key={1}>
                   Account Settings
@@ -279,7 +256,6 @@ function Profile() {
                 <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
                   Reset Password
                 </Menu.Item>
-                <Menu.Item key={5}>Log out</Menu.Item>
               </Menu>
             </Sider>
 
@@ -352,12 +328,14 @@ function Profile() {
 
               {/*Modal Membership*/}
               <Modal
-                title="Membership Packages"
+                title="Membership"
                 visible={isModalOpen}
                 onOk={handleOk}
                 okText="Buy Now"
                 onCancel={handleCancel}
-              ></Modal>
+              >
+                <p>99.000 (VND) / 6 months </p>
+              </Modal>
 
               {/*Modal reset password */}
               <Modal
@@ -439,23 +417,6 @@ function Profile() {
               </Modal>
 
               <div className="profile_body_form">
-                <Form className="avatar">
-                  <div className="title">Avatar Profile: </div>
-                  <Upload beforeUpload={handleImageUpload}>
-                    <Button icon={<UploadOutlined />}>Upload Image</Button>
-                  </Upload>
-
-                  {(imageUrl || previewImage) && (
-                    <div>
-                      <img
-                        src={previewImage || imageUrl}
-                        alt="Uploaded"
-                        width="20%"
-                      />
-                    </div>
-                  )}
-                </Form>
-
                 <Form name="fullName">
                   <div className="title">Full Name: </div>
                   <Input

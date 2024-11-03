@@ -7,6 +7,7 @@ import { Button, Input, Modal } from "antd";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Listproduct } from "../../share/listproduct";
+import { green } from "@mui/material/colors";
 function Viewproduct() {
   const [visible, setVisible] = useState(false);
   const [pro, setPro] = useState({});
@@ -191,7 +192,7 @@ function Viewproduct() {
             <h3>{pro.name}</h3>
             <span className="modal-sku">Product code: {pro.productId}</span>
             <p>{pro.productInfo}</p>
-            <p>Stock :{pro.stock} products</p>
+            <p>Status: Available</p>
             <div className="modal-promotions">
               <li>
                 <i className="confirm bi bi-check-circle-fill"></i> Genuine

@@ -119,7 +119,7 @@ function Dashboard() {
               />
             }
             title={"Membership Revenue (VND)"}
-            value={totalMemberRevenue}
+            value={totalMemberRevenue * 1000}
           />
         </Space>
         <Space direction="horizontal">

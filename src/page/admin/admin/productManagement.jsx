@@ -149,12 +149,6 @@ function ProductManagement() {
       editable: true,
     },
     {
-      title: "Stock",
-      dataIndex: "stock",
-      width: 200,
-      editable: true,
-    },
-    {
       title: "Category",
       dataIndex: "category",
       width: 200,
