@@ -7,6 +7,7 @@ import { Form, Input, Button } from "antd";
 import { useState } from "react";
 import api from "../../config/axios";
 import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
+import axiosInstance from "../../api/axiosInstance";
 
 function Login() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ function Login() {
         const token = localStorage.getItem("accessToken");
         console.log(token);
         if (token) {
-          const userResponse = await api.get("Account/Profile", {
+          const userResponse = await axiosInstance.get("Account/Profile", {
             headers: {
               Authorization: `Bearer ${token}`,
             },

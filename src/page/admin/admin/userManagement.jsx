@@ -134,12 +134,6 @@ function UserManagement() {
 
   const columns = [
     {
-      title: "Avatar",
-      dataIndex: "image",
-      width: 80,
-      render: (image) => <Avatar src={image} alt="avatar" />,
-    },
-    {
       title: "Name",
       dataIndex: "name",
       width: 200,

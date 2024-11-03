@@ -45,7 +45,7 @@ function Dashboard() {
         setTotalProducts(productRes.data.total);
 
         const memberRevenue = await axios.get(
-          "https://localhost:5001/api/MemberRevenue"
+          "https://koicaresystemapi.azurewebsites.net/api/MemberRevenue"
         );
         setTotalMemberRevenue(memberRevenue.data.total);
       } catch (error) {
@@ -186,14 +186,6 @@ function TableList() {
         <Typography.Text level={4}>Admins</Typography.Text>
         <Table
           columns={[
-            {
-              title: "Image",
-              dataIndex: "image",
-              render: (link) => {
-                return <Avatar src={link} />;
-              },
-              width: 80,
-            },
             { title: "Account ID", dataIndex: "accId", width: 120 },
             {
               title: "Name",
@@ -323,11 +315,13 @@ function BarChart() {
           "https://koicaresystemapi.azurewebsites.net/api/MemberRevenue"
         );
 
-        const formattedData = response.data.$values.map((item) => ({
-          year: item.year,
-          month: item.month - 1, // Adjust month to 0-based index (0 for January, 11 for December)
-          revenue: item.totalRevenue,
-        }));
+        const formattedData = response.data.membershipRevenue.$values.map(
+          (item) => ({
+            year: item.year,
+            month: item.month - 1, // Adjust month to 0-based index (0 for January, 11 for December)
+            revenue: item.totalRevenue,
+          })
+        );
 
         setAllData(formattedData); // Store all data
 

@@ -19,7 +19,16 @@ function Admin() {
 
   const getUserInfor = async () => {
     try {
-      await axiosInstance.get("/api/Account/Profile");
+      const token = localStorage.getItem("accessToken");
+      const response = await axiosInstance.get("Account/Profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const user = response.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userId", user.accId);
+      setUser(user);
     } catch (error) {
       console.error("Error fetching user info:", error);
       if (error.response && error.response.status === 401) {

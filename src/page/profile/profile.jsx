@@ -21,8 +21,8 @@ import { useAsyncError, useNavigate } from "react-router-dom";
 import { StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
-import axiosInstance from "../../api/axiosInstance";
 import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
+import axiosInstance from "../../api/axiosInstance";
 
 function Profile() {
   const { Sider, Content } = Layout;
@@ -90,7 +90,7 @@ function Profile() {
   const fetchUserInfo = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await api.get("Account/Profile", {
+      const response = await axiosInstance.get("Account/Profile", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
