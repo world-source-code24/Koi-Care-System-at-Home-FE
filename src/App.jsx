@@ -20,7 +20,7 @@ import PaymentSuccess from "./page/payment/payment/payment";
 import Koidetail from "./page/koidetail/koidetail";
 import Register from "./page/register/register/register";
 import OrderSuccess from "./page/order/order";
-
+import PaymentFail from "./page/paymentFail/paymentFail";
 
 function Koi() {
   const router = createBrowserRouter([
@@ -38,7 +38,7 @@ function Koi() {
     },
     {
       path: "/environment",
-      element: <Environment />
+      element: <Environment />,
     },
     {
       path: "/view/:id",
@@ -90,6 +90,10 @@ function Koi() {
       element: <PaymentSuccess />,
     },
     {
+      path: "/paymentFail",
+      element: <PaymentFail />,
+    },
+    {
       path: "/order",
       element: <OrderSuccess />,
     },
@@ -111,7 +115,7 @@ function Koi() {
     },
     {
       path: "/register",
-      element: <Register/>,
+      element: <Register />,
     },
   ]);
 
