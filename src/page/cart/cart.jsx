@@ -105,6 +105,9 @@ const totalAmount = getTotalPrice();
       if (response.status === 200) {
         console.log("Order created successfully", response.data);
         localStorage.setItem("checkout", JSON.stringify(totalAmount));
+        await axios.delete(
+          `https://koicaresystemapi.azurewebsites.net/api/Delete-All-User-Carts?userID=${accId}`
+        );
       } else {
         console.error("Error creating order", response.data);
       }
@@ -158,7 +161,7 @@ const totalAmount = getTotalPrice();
             </div>
             <Link to="/viewproduct">Continue shopping</Link>
             <div className="cart__checkout">
-              <Link to={"/payment"} onClick={handleCheckout}>
+              <Link to={"/order"} onClick={handleCheckout}>
                 Checkout
               </Link>
             </div>
