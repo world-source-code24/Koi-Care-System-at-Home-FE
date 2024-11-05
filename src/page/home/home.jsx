@@ -52,6 +52,18 @@ function HomePage() {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  // const addToCart = () => {
+  //   const productToAdd = { ...pro, quantity: num };
+  //   setCartItems([...cartItems, productToAdd]);
+  // setVisible(false);
+  // setNotification(true);
+  //   console.log("Product to add:", productToAdd);
+
+  // setTimeout(() => {
+  //   setNotification(false);
+  // }, 3000);
+  // };
+
   const addToCart = async () => {
     const accId = localStorage.getItem("userId");
 
@@ -172,7 +184,9 @@ function HomePage() {
         <div className="row HomePage__body">
           {products.map((product) => (
             <div className="col-md-3 koi" key={product.productId}>
-              <img src={product.image} alt={product.name} /> <br />
+              <img src={product.image} alt={product.name} />{" "}
+              {/* Sử dụng hình ảnh từ Listproduct */}
+              <br />
               <Button type="secondary" onClick={() => handleOpen(product)}>
                 View product
               </Button>
@@ -181,7 +195,7 @@ function HomePage() {
         </div>
 
         <div className="HomePage__viewmore">
-          <Link to="/viewproduct">View More</Link>
+          <Link to="/viewproduct">View More [+]</Link>
         </div>
 
         {notification && <div className="notification">Add successfully!</div>}
@@ -217,6 +231,9 @@ function HomePage() {
                 </p>
               </div>
               <div className="modal-actions">
+                {/* <Link type="secondary" to={`/detail/${pro.productId}`}>
+                  BUY NOW
+                </Link> */}
                 <Button className="modal-add-cart" onClick={addToCart}>
                   ADD TO CART
                 </Button>

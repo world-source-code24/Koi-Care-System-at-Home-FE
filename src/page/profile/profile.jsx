@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import api from "../../config/axios";
 import axiosInstance from "../../components/api/axiosInstance";
 
+
 function Profile() {
   const { Sider, Content } = Layout;
   const [accId, setAccId] = useState(localStorage.getItem("userId"));
@@ -233,7 +234,6 @@ function Profile() {
       <div>
         <Header />
       </div>
-      <br />
       <div className="profile_background">
         <div className="profile_container">
           {/* Sider */}
@@ -267,6 +267,7 @@ function Profile() {
                 <Menu.Item key={4} onClick={() => setIsResetModalOpen(true)}>
                   Reset Password
                 </Menu.Item>
+                <Menu.Item key={5}>Log out</Menu.Item>
               </Menu>
             </Sider>
 
@@ -405,6 +406,23 @@ function Profile() {
               </Modal>
 
               <div className="profile_body_form">
+                <Form className="avatar">
+                  <div className="title">Avatar Profile: </div>
+                  <Upload beforeUpload={handleImageUpload}>
+                    <Button icon={<UploadOutlined />}>Upload Image</Button>
+                  </Upload>
+
+                  {(imageUrl || previewImage) && (
+                    <div>
+                      <img
+                        src={previewImage || imageUrl}
+                        alt="Uploaded"
+                        width="20%"
+                      />
+                    </div>
+                  )}
+                </Form>
+
                 <Form name="fullName">
                   <div className="title">Full Name: </div>
                   <Input

@@ -18,7 +18,7 @@ function News() {
         <div className="NewsPage__body">
           <div className="NewsPage__left">
             <iframe
-              width="750"
+              width="1000"
               height="422"
               src="https://www.youtube.com/embed/CpBp2HFD6cU"
               title='Koi: "Swimming jewels"'

@@ -19,6 +19,7 @@ import Food from "./page/food/food";
 import PaymentSuccess from "./page/payment/payment/payment";
 import Koidetail from "./page/koidetail/koidetail";
 import Register from "./page/register/register/register";
+import YourOrder from "./page/yourorder/yourOrder";
 
 function Koi() {
   const router = createBrowserRouter([
@@ -103,6 +104,11 @@ function Koi() {
       path: "/register",
       element: <Register/>,
     },
+    {
+      path: "/yourorder",
+      element: <YourOrder/>,
+    },
+    
   ]);
 
   return <RouterProvider router={router} />;

@@ -13,9 +13,9 @@ function Header() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      setIsLoggedIn(true);
+      setIsLoggedIn(true); // Logged in
     } else {
-      setIsLoggedIn(false);
+      setIsLoggedIn(false); // Not logged in
     }
   }, []);
 
@@ -28,6 +28,7 @@ function Header() {
   };
 
   const handleLogout = () => {
+    // Remove token and user info from localStorage when logging out
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
@@ -51,6 +52,9 @@ function Header() {
           </Link>
           <Link to="/cart" className="nav__news">
             Cart
+          </Link>
+          <Link to="/yourorder" className="nav__news">
+            Your orders
           </Link>
           {isLoggedIn ? (
             <Link to="/profile" className="nav__profile">
