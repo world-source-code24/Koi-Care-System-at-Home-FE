@@ -1,4 +1,4 @@
-import { Image, Menu, Typography } from "antd";
+import { Menu, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,48 +11,42 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import bg from "../../../img/news.jpg";
 import AdminRoutes from "../../../components/admin/admin/routes";
+import axiosInstance from "../../../components/api/axiosInstance";
+
 function Admin() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  const getUserInfor = () => {
-    const token = localStorage.getItem("token"); // Retrieve token from localStorage
-    return fetch(
-      "https://koicaresystemapi.azurewebsites.net/api/Account/Profile",
-      {
-        method: "GET",
+  const getUserInfor = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axiosInstance.get("Account/Profile", {
         headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      }
-    )
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Error: ${res.status} ${res.statusText}`);
-        }
-        return res.json();
-      })
-      .catch((err) => {
-        console.error("Error fetching user info:", err);
-        return null;
       });
+      const user = response.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userId", user.accId);
+      setUser(user);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      if (error.response && error.response.status === 401) {
+        localStorage.clear();
+        navigate("/login");
+      }
+    }
   };
 
   const handleLogout = () => {
     // Clear token and other local storage data
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("cartItems");
-    localStorage.removeItem("role");
+    localStorage.clear();
     navigate("/login", { replace: true }); // Use replace to prevent going back
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     if (!token) {
       navigate("/login"); // Redirect if not authenticated
       return;
@@ -60,7 +54,8 @@ function Admin() {
 
     getUserInfor()
       .then((res) => {
-        if (res) {
+        if (res && res.role) {
+          // Kiểm tra res và res.role trước khi truy cập
           setUser(res);
           if (res.role !== "admin") {
             navigate("/login");

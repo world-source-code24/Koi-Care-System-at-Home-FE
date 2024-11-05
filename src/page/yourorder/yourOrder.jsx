@@ -35,17 +35,31 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 function YourOrder() {
-  const [orders, setOrders] = useState([]); // Chỉ cần state cho orders
+  const [orders, setOrders] = useState([]);
+  const [orderDetails, setOrderDetails] = useState([]);
+
+  // Fetch orders khi component mount
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  // Fetch order details sau khi orders được thiết lập
+  useEffect(() => {
+    if (orders.length > 0) {
+      fetchOrderDetails();
+    }
+  }, [orders]);
 
   const fetchOrders = async () => {
-    const userId = localStorage.getItem("userId"); // Lấy userId từ localStorage
+    const user = localStorage.getItem("userId");
+
     try {
       const response = await axios.get(
-        `https://koicaresystemapi.azurewebsites.net/GetAll/${userId}`
+        `https://koicaresystemapi.azurewebsites.net/GetAll/${user}`
       );
 
-      if (response.status === 200 && response.data.success) {
-        // Lưu thông tin đơn hàng vào state
+      if (response.status === 200 && response.data.orders.$values) {
+        console.log("Orders API Response:", response.data.orders.$values); // Log kiểm tra
         setOrders(response.data.orders.$values);
       } else {
         console.error("Error fetching orders:", response.data);
@@ -54,10 +68,52 @@ function YourOrder() {
       console.error("Error calling order API:", error);
     }
   };
-  
-  useEffect(() => {
-    fetchOrders(); // Gọi API khi component được mount
-  }, []);
+
+  const fetchOrderDetails = async () => {
+    try {
+      const orderDetailsList = [];
+
+      // Lặp qua tất cả các orderId từ `orders` và lấy chi tiết từng đơn hàng
+      for (const order of orders) {
+        const response = await axios.get(
+          `https://koicaresystemapi.azurewebsites.net/api/Get-All-Order-Details?orderId=${order.orderId}`
+        );
+
+        if (response.status === 200 && response.data.$values) {
+          console.log(
+            `Order Details for Order ID ${order.orderId}:`,
+            response.data.$values
+          );
+          orderDetailsList.push(...response.data.$values); // Thêm tất cả chi tiết vào danh sách
+        } else {
+          console.error(
+            `Error fetching details for Order ID ${order.orderId}:`,
+            response.data
+          );
+        }
+      }
+
+      // Sau khi lấy tất cả chi tiết, cập nhật `orderDetails`
+      setOrderDetails(orderDetailsList);
+    } catch (error) {
+      console.error("Error calling order details API:", error);
+    }
+  };
+
+  const combinedOrders = orders.map((order) => {
+    const detail = orderDetails.find(
+      (d) => String(d.orderId) === String(order.orderId)
+    );
+
+    return {
+      ...order,
+      productId: detail ? detail.productId : "N/A",
+      quantity: detail ? detail.quantity : "N/A",
+      totalAmount: detail ? detail.totalPrice : order.totalAmount,
+    };
+  });
+
+  console.log("Combined Orders:", combinedOrders); // Kiểm tra cuối cùng
 
   return (
     <>
@@ -65,7 +121,11 @@ function YourOrder() {
       <div>
         <Layout>
           <Sider className="order_sidebar" width={250} theme="light">
-            <Menu mode="vertical" defaultSelectedKeys={[1]} className="order_menu">
+            <Menu
+              mode="vertical"
+              defaultSelectedKeys={[1]}
+              className="order_menu"
+            >
               <Menu.Item key={1}>Danh sách đơn hàng</Menu.Item>
               <Menu.Item key={2}>Thanh toán đang chờ</Menu.Item>
               <Menu.Item key={3}>Giao hàng</Menu.Item>
@@ -80,30 +140,38 @@ function YourOrder() {
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell>Hình Ảnh Sản Phẩm</StyledTableCell>
-                    <StyledTableCell>Tên Sản Phẩm</StyledTableCell>
-                    <StyledTableCell align="right">Số Lượng</StyledTableCell>
-                    <StyledTableCell align="right">Tổng Tiền</StyledTableCell>
+                    <StyledTableCell align="left">Stt</StyledTableCell>
+                    <StyledTableCell align="left">Product ID</StyledTableCell>
+                    <StyledTableCell align="left">Quantity</StyledTableCell>
+                    <StyledTableCell align="left">
+                      Total Amount (VND)
+                    </StyledTableCell>
+                    <StyledTableCell align="left">Date</StyledTableCell>
+                    <StyledTableCell>Status Order</StyledTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {orders.map((order) => (
-                    order.orderDetailsTbls.$values.map((item) => ( // Giả sử orderDetails được lưu trong order.orderDetailsTbls
-                      <StyledTableRow key={item.productId}>
-                        <StyledTableCell>
-                          <img
-                            src={item.image}
-                            alt={item.productName}
-                            style={{ width: "50px", height: "50px" }}
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell>{item.productName}</StyledTableCell>
-                        <StyledTableCell align="right">{item.quantity}</StyledTableCell>
-                        <StyledTableCell align="right">
-                          {(item.price * item.quantity * 1000).toLocaleString()} VND
-                        </StyledTableCell>
-                      </StyledTableRow>
-                    ))
+                  {combinedOrders.map((item, index) => (
+                    <StyledTableRow key={index}>
+                      <StyledTableCell align="left">
+                        {index + 1}
+                      </StyledTableCell>
+                      <StyledTableCell align="left">
+                        {item.productId}
+                      </StyledTableCell>
+                      <StyledTableCell align="left">
+                        {item.quantity}
+                      </StyledTableCell>
+                      <StyledTableCell align="left">
+                        {(item.totalAmount * 1000).toLocaleString("vi-VN")} VND
+                      </StyledTableCell>
+                      <StyledTableCell align="left">
+                        {item.date}
+                      </StyledTableCell>
+                      <StyledTableCell align="left">
+                        {item.statusOrder}
+                      </StyledTableCell>
+                    </StyledTableRow>
                   ))}
                 </TableBody>
               </Table>

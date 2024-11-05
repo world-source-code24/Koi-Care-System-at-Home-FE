@@ -105,7 +105,7 @@ function Cart() {
         orderPayload
       );
       console.log(response.data);
-
+      localStorage.setItem("OrderId", JSON.stringify(response.data.orderId));
       if (response.status === 200) {
         console.log("Order created successfully", response.data);
         localStorage.setItem("checkout", JSON.stringify(totalAmount));
