@@ -3,14 +3,13 @@ import { Navigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import { useUser } from "../../UserProvider/UserProvider/UserProvider";
-import { message } from "antd";
 
 const ProtectedRoute = ({ element, requiredRole }) => {
   const { user } = useUser();
 
   useEffect(() => {
     if (user && requiredRole === "member" && user.role !== "member") {
-      message.warning("You must buy membership!");
+      alert("You must buy membership!");
     }
   }, [user, requiredRole]);
 

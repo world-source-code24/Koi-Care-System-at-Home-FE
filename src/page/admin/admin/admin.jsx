@@ -12,7 +12,8 @@ import {
 } from "@ant-design/icons";
 
 import AdminRoutes from "../../../components/admin/admin/routes";
-import axiosInstance from "../../../api/axiosInstance";
+import axiosInstance from "../../../components/api/axiosInstance";
+
 function Admin() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();

@@ -74,8 +74,49 @@
     display: flex;  
     align-items: center;
     flex: 1;
-    width: 40%; 
     padding: 20px;
+
+    .ant-form-item-label > label {
+        font-size: 1.2rem; 
+        font-weight: bold; 
+        font-family: gowun batang;
+      }
+    
+      .koi_weight_wrapper {
+        font-size: 1.2rem; 
+        font-weight: bold;
+        font-family: gowun batang;
+    
+        .koi_weight_value {
+          font-size: 1.2rem; 
+          font-weight: normal;
+          color: #333; 
+          font-weight: bold;
+        }
+      }
+    
+      .ant-slider {
+        width: 800px; 
+        margin-top: 10px;
+    
+        .ant-slider-track {
+          height: 6px; 
+        }
+    
+        .ant-slider-handle {
+          width: 18px; 
+          height: 18px;
+        }
+      }
+    
+      .ant-slider-mark-text {
+        font-size: 2rem;
+      }
+    
+      .current-percentage {
+        font-size: 1.5rem; 
+        font-weight: bold;
+      }
 }
 
 .koi_weight_wrapper {
@@ -98,13 +139,12 @@
     flex: 1;
     background-color: white; 
     padding: 20px;
-    border-radius: 10px;
-
+    border-left: 2px solid black;
 }
 
 .exp_warning h3 {
     color: red;
-    font-size: 22px;
+    font-size: 28px;
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -122,21 +162,24 @@
 .exp_recommendation {
     background-color: rgb(208, 0, 0);
     color: #fff;
-    padding: 30px;
+    padding: 10px 20px;
     margin-top: 30px;
     text-align: center;
-    font-size: 28px;
-    font-weight: bold;
     border-radius: 15px;
     width: 50%;
     margin: 0 auto;
+    margin-top: 10px;
 }
 
 .exp_recommendation_label {
+
     font-size: 24px;
+    font-family: gowun batang;
 }
 
 .exp_recommendation_value {
-    font-size: 36px;
-    margin-top: 10px;
+    font-weight: bold;
+    font-size: 24px;
+    font-family: gowun batang;
+    margin-top: 2px;
 }

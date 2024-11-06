@@ -11,7 +11,6 @@ import {
   Row,
   Col,
   notification,
-  Space,
 } from "antd";
 import Footer from "../../components/footer/footer";
 import { UploadOutlined } from "@ant-design/icons";

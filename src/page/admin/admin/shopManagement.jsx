@@ -8,7 +8,6 @@ import {
   message,
   Space,
   Button,
-  Modal,
 } from "antd";
 import axios from "axios";
 
@@ -46,30 +45,29 @@ function ShopManagement() {
   const [filteredData, setFilteredData] = useState([]);
   const [editingKey, setEditingKey] = useState("");
   const [searchText, setSearchText] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "https://koicaresystemapi.azurewebsites.net/api/Shop/get-all"
+        );
+        const shops = response.data.shops.$values;
+        const formattedData = shops.map((shop) => ({
+          key: shop.shopId.toString(),
+          name: shop.name,
+          phone: shop.phone,
+          address: shop.address,
+        }));
+        setData(formattedData);
+        setFilteredData(formattedData);
+      } catch (error) {
+        console.error("Failed to fetch shop data:", error);
+      }
+    };
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        "https://koicaresystemapi.azurewebsites.net/api/Shop/get-all"
-      );
-      const shops = response.data.shops.$values;
-      const formattedData = shops.map((shop) => ({
-        key: shop.shopId.toString(),
-        name: shop.name,
-        phone: shop.phone,
-        address: shop.address,
-      }));
-      setData(formattedData);
-      setFilteredData(formattedData);
-    } catch (error) {
-      console.error("Failed to fetch shop data:", error);
-    }
-  };
   const isEditing = (record) => record.key === editingKey;
 
   const edit = (record) => {
@@ -138,41 +136,6 @@ function ShopManagement() {
     );
     setFilteredData(filtered);
     setSearchText("");
-  };
-
-  const handleAdd = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = async () => {
-    try {
-      const values = await form.validateFields();
-      const newShop = {
-        name: values.name,
-        phone: values.phone,
-        address: values.address,
-      };
-
-      await axios.post(
-        "https://koicaresystemapi.azurewebsites.net/api/Shop/create",
-        newShop
-      );
-
-      // Optionally, fetch updated shop data or update state locally
-      message.success("Shop added successfully!");
-      setIsModalVisible(false);
-      form.resetFields(); // Reset the form after successful add
-
-      // Fetch new data
-      fetchData();
-    } catch (error) {
-      message.error("Failed to add shop: " + error.message);
-    }
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    form.resetFields(); // Reset form fields when cancelling
   };
 
   const columns = [
@@ -270,9 +233,6 @@ function ShopManagement() {
         >
           Search
         </Button>
-        <Button type="primary" className="add_product" onClick={handleAdd}>
-          Add Shop
-        </Button>
       </Space>
       <Form form={form} component={false}>
         <Table
@@ -284,38 +244,6 @@ function ShopManagement() {
           pagination={{ pageSize: 5 }}
         />
       </Form>
-      <Modal
-        title="Add New Shop"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <Form form={form} layout="vertical" name="addShopForm">
-          <Form.Item
-            name="name"
-            label="Shop Name"
-            rules={[{ required: true, message: "Please input the shop name!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="phone"
-            label="Phone Number"
-            rules={[
-              { required: true, message: "Please input the phone number!" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="address"
-            label="Address"
-            rules={[{ required: true, message: "Please input the address!" }]}
-          >
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal>
     </Space>
   );
 }
