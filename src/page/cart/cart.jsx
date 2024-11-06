@@ -79,7 +79,7 @@ function Cart() {
 
   const handleCheckout = async () => {
     const accId = localStorage.getItem("userId");
-const totalAmount = getTotalPrice();
+    const totalAmount = getTotalPrice();
 
     const orderPayload = {
       userId: accId,
@@ -87,9 +87,13 @@ const totalAmount = getTotalPrice();
         productId: item.cart.productId,
         quantity: item.cart.quantity,
         price: item.cartDetails.price,
+        image: item.image, // Lưu thông tin hình ảnh
+        productName: item.cartDetails.productName, // Lưu tên sản phẩm
       })),
       total: totalAmount,
     };
+    // Lưu thông tin đơn hàng vào localStorage
+    localStorage.setItem("orderDetails", JSON.stringify(orderPayload));
     setNotification(true);
     setTimeout(() => {
       setNotification(false);

@@ -53,6 +53,9 @@ function Header() {
           <Link to="/cart" className="nav__news">
             Cart
           </Link>
+          <Link to="/yourorder" className="nav__news">
+            Your orders
+          </Link>
           {isLoggedIn ? (
             <Link to="/profile" className="nav__profile">
               Profile

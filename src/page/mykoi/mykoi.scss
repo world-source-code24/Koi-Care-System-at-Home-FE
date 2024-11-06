@@ -19,7 +19,7 @@
 
   h1 {
     font-size: 50px;
-    font-family: 'Gowun Batang', serif;
+    font-family: gowun batang;
     font-weight: 520;
     color: rgb(207, 4, 4);
     margin-bottom: -3px; 
@@ -110,7 +110,7 @@
   text-align: center;
   font-size: 25px;
   color: black;
-  font-family: Gowun Batang;
+  font-family: gowun batang;
 }
 
 .koi_item {
@@ -123,7 +123,7 @@
   flex-direction: column;
   align-items: center;
   text-align: left;
-  font-family: 'Gowun Batang', serif;
+  font-family: gowun batang;
 
   img {
     width: 100px;
@@ -148,7 +148,8 @@
   }
 }
 
-.mykoi_modal {
+.mykoi_modal,
+.mykoi_filter_modal { 
   .ant-modal-content {
     border: 2px solid #d62f2f;
     border-radius: 10px;
@@ -159,7 +160,7 @@
   .ant-modal-title {
     text-align: center;
     font-family: gowun batang;
-    font-size: 29px; 
+    font-size: 29px;
     color: rgb(207, 4, 4);
   }
 
@@ -169,7 +170,7 @@
   }
 
   .ant-modal-body {
-    padding: 0 24px 20px 24px; 
+    padding: 0 24px 20px 24px;
   }
 
   .add_image {
@@ -183,7 +184,7 @@
       border-radius: 10px;
       object-fit: cover;
       border: 2px solid #d62f2f;
-      margin-bottom: 15px; 
+      margin-bottom: 15px;
     }
   }
 
@@ -200,8 +201,8 @@
   .ant-input,
   .ant-select-selector,
   .ant-select {
-    width: 100% ; 
-    height: 38px; 
+    width: 100%;
+    height: 38px;
     font-size: 20px;
     font-family: gowun batang;
   }
@@ -209,7 +210,7 @@
   .ant-modal-footer {
     display: flex;
     justify-content: center;
-    margin-top: -10px; 
+    margin-top: -10px;
   }
 
   .ant-btn {
@@ -220,7 +221,7 @@
   }
 
   .ant-btn-primary {
-    background-color: #d62f2f !important; 
+    background-color: #d62f2f !important;
     border-color: #d62f2f !important;
     color: #fff !important;
 
@@ -234,11 +235,20 @@
     font-family: gowun batang;
     font-weight: bold;
     color: #333;
-    
+
     &:hover {
       border-color: #700c0c !important;
     }
   }
 }
 
+.mykoi_modal,
+.mykoi_filter_modal {
+  // Các style khác đã có
+  .ant-form-item-label > label {
+    font-size: 18px; // Tăng kích thước font chữ cho label
+    font-weight: bold;
+    font-family: 'Gowun Batang', serif;
+  }
+}
 

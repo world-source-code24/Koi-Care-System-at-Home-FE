@@ -1,10 +1,11 @@
-import { Button, Form, Select, Spin } from "antd";
+import { Button, Divider, Form, Select, Spin, Tooltip } from "antd";
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import "./food.scss";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { InfoCircleOutlined } from "@ant-design/icons";
 const { Option } = Select;
 function Food() {
   const navigate = useNavigate();
@@ -130,7 +131,9 @@ function Food() {
       <div className="food_background_form">
         <div className="food_container">
           <div className="food_title">Food Calculator</div>
-
+          <div className="food_divi">
+            <Divider />
+          </div>
           <div className="food_form_wrapper">
             {/*Left-form*/}
             <div className="food_left_form">
@@ -214,28 +217,6 @@ function Food() {
                     </Button>
                   </div>
                 </Form.Item>
-
-                {/*Recommend Amount */}
-                <Form.Item label="Recommended food amount: ">
-                  {loading ? (
-                    <Spin />
-                  ) : (
-                    <p>
-                      {/* Kiểm tra nếu growth là "low" và temperature là "6-8" để hiển thị khác */}
-                      {growth === "low" && temperature === "6-8"
-                        ? `${calculateRecommendedAmount(
-                            koiWeight,
-                            growth,
-                            temperature
-                          ).toFixed(2)} g per feeding`
-                        : `${calculateRecommendedAmount(
-                            koiWeight,
-                            growth,
-                            temperature
-                          ).toFixed(2)} g per day`}
-                    </p>
-                  )}
-                </Form.Item>
               </Form>
             </div>
 
@@ -298,15 +279,50 @@ function Food() {
                 </div>
               )}
               <div className="food_expert">
+                <div className="food_expert_info">
+                <h4>Expert mode</h4>
+                <Tooltip 
+                  title="When this mode is activated, users can adjust the percentage of food
+                  based on the total koi weight of the fish in the pond"
+                >
+                  <InfoCircleOutlined style={{ fontSize: '20px', color: 'red', marginRight: '8px' }} />
+                </Tooltip>
+                </div>
+                <p> <strong>"Expert mode"</strong> is an optional setting in the application or calculation 
+                  system designed for users 
+                  with experience in caring for Koi fish.</p>
                 <Button
                   type="primary"
                   onClick={() => navigate("/expert")}
                   style={{ display: "inline-block" }}
                 >
-                  <p>Expert Mode</p>
+                  <p>Go to expert mode</p>
                 </Button>
               </div>
             </div>
+          </div>
+
+          <div className="recommend_amount_section">
+              {loading ? (
+                <Spin />
+              ) : (
+                <>
+                  <p>Recommended food amount:</p>
+                  <p className="amount-value">
+                    {growth === "low" && temperature === "6-8"
+                      ? `${calculateRecommendedAmount(
+                          koiWeight,
+                          growth,
+                          temperature
+                        ).toFixed(2)} g per feeding`
+                      : `${calculateRecommendedAmount(
+                          koiWeight,
+                          growth,
+                          temperature
+                        ).toFixed(2)} g per day`}
+                  </p>
+                </>
+              )}
           </div>
         </div>
       </div>

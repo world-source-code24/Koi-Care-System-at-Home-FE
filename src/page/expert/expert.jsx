@@ -196,7 +196,7 @@ function Expert() {
             </div>
           </div>
           <div className="exp_recommendation">
-            <div className="exp_recommendation_label">Recommended amount</div>
+            <div className="exp_recommendation_label">Recommended amount: </div>
             <div className="exp_recommendation_value">
               {recommendedAmount} g per day
             </div>
