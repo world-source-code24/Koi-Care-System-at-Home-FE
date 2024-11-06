@@ -11,7 +11,6 @@ import {
   Row,
   Col,
   notification,
-  Space,
 } from "antd";
 import Footer from "../../components/footer/footer";
 import { UploadOutlined } from "@ant-design/icons";
@@ -230,7 +229,6 @@ function Environment() {
       <div className="Environment__img">
         <img src={koi} alt="" />
       </div>
-
       <div
         className="Environment__body"
         style={{
@@ -332,7 +330,9 @@ function Environment() {
           </div>
         ))
       ) : (
-        <p>No ponds available.</p>
+        <p style={{ textAlign: "center", margin: "20px 0 20px 0" }}>
+          No ponds available.
+        </p>
       )}
 
       <Modal

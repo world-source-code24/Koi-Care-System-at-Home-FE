@@ -6,7 +6,6 @@ import { Form, Input, Button } from "antd";
 import { useState } from "react";
 import api from "../../config/axios";
 import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
-import axiosInstance from "../../api/axiosInstance";
 
 function Login() {
   const navigate = useNavigate();
@@ -18,17 +17,15 @@ function Login() {
     const { email, password } = values;
 
     try {
-      localStorage.clear();
       const response = await api.post("User/Login", { email, password });
       console.log(response); // Kiểm tra dữ liệu trả về từ API
 
       if (response.data.success) {
-        localStorage.setItem("accessToken", response.data.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.data.refreshToken);
-        const token = localStorage.getItem("accessToken");
+        localStorage.setItem("token", response.data.data.accessToken);
+        const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
         console.log(token);
         if (token) {
-          const userResponse = await axiosInstance.get("Account/Profile", {
+          const userResponse = await api.get("Account/Profile", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -43,6 +40,8 @@ function Login() {
 
           if (user.role === "admin") {
             navigate("/admin/dashboard");
+          } else if (user.role === "shop") {
+            navigate("/shop");
           } else {
             navigate("/");
           }
@@ -56,7 +55,6 @@ function Login() {
         );
       } else {
         setError("An error occurred. Please try again.");
-        localStorage.clear();
       }
     }
   };

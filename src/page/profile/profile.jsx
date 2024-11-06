@@ -10,20 +10,15 @@ import {
   Menu,
   message,
   Modal,
-  Radio,
-  Upload,
   Form,
   List,
-  Space,
 } from "antd";
-import { useAsyncError, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
-import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
-import axiosInstance from "../../api/axiosInstance";
-import { DiamondOutlined } from "@mui/icons-material";
+
+import axiosInstance from "../../components/api/axiosInstance";
 
 function Profile() {
   const { Sider, Content } = Layout;
@@ -37,7 +32,6 @@ function Profile() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [orders, setOrders] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
-  const { setUser } = useUser(); // Lấy hàm setUser từ context để cập nhật người dùng
   const formatCurrency = (value) => {
     if (typeof value !== "number" || isNaN(value)) {
       return "0 VND";
@@ -79,7 +73,6 @@ function Profile() {
     phone: "",
     address: "",
     image: "",
-    role: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -88,16 +81,7 @@ function Profile() {
   // Lấy thông tin để show ra ở profile
   const fetchUserInfo = async () => {
     try {
-      const token = localStorage.getItem("accessToken");
-      const response = await axiosInstance.get("Account/Profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const user = response.data;
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("userId", user.accId);
-      setUser(user);
+      const response = await axiosInstance.get("/api/Account/Profile");
       setImageUrl(response.data.image || "");
       setUserInfo({
         fullName: response.data.name || "",
@@ -105,7 +89,6 @@ function Profile() {
         phone: response.data.phone || "",
         address: response.data.address || "",
         image: response.data.image || "",
-        role: response.data.role || "",
       });
     } catch (error) {
       console.error("Error fetching user info:", error);
@@ -144,7 +127,6 @@ function Profile() {
       } else {
         formData.append("image", ""); // Nếu không có hình ảnh
       }
-
       const response = await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/Account/Profile?accId=${accId}`,
         formData,
@@ -153,8 +135,8 @@ function Profile() {
 
       if (response.status === 200) {
         message.success("Update successfully!");
-
         setIsEditing(false);
+        // Gọi lại fetchUserInfo để cập nhật thông tin người dùng bao gồm hình ảnh
         fetchUserInfo();
       }
     } catch (error) {
@@ -193,8 +175,8 @@ function Profile() {
         throw new Error("Payment URL not found in response");
       }
     } catch (error) {
-      message.error("Failed to initiate payment");
-      console.error("Error initiating payment:", error);
+      message.error("Failed to update membership");
+      console.error("Error updating membership:", error);
     }
     setIsModalOpen(false);
   };
@@ -250,39 +232,29 @@ function Profile() {
                 <Menu.Item className="accountSetting" key={1}>
                   Account Settings
                 </Menu.Item>
-                <Menu.Item key={2} onClick={fetchOrders}>
+                <Menu.Item
+                  key={2}
+                  onClick={() => {
+                    const user = JSON.parse(localStorage.getItem("user"));
+                    if (user && user.role !== "member") showModal();
+                    else message.info("You are already a member");
+                  }}
+                >
+                  Membership
+                </Menu.Item>
+                <Menu.Item key={3} onClick={fetchOrders}>
                   Your Order
                 </Menu.Item>
-                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
+
+                <Menu.Item key={4} onClick={() => setIsResetModalOpen(true)}>
                   Reset Password
                 </Menu.Item>
               </Menu>
             </Sider>
 
             <Content className="profile_content">
-              <Space direction="horizontal">
-                <h5>Account Settings</h5>
-                <Button
-                  onClick={() => {
-                    if (
-                      userInfo &&
-                      userInfo.role.toLocaleLowerCase() !== "member"
-                    )
-                      showModal();
-                    else message.info("You are already a member");
-                  }}
-                  className={
-                    userInfo?.role.toLocaleLowerCase() === "member"
-                      ? "btn_membership"
-                      : "btn_non_membership"
-                  }
-                >
-                  Membership
-                  {userInfo?.role.toLocaleLowerCase() === "member" && (
-                    <StarOutlined />
-                  )}
-                </Button>
-              </Space>
+              <h5>Account Settings</h5>
+
               {/* Modal Order */}
               <Modal
                 title="Your Orders"

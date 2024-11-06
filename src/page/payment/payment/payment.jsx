@@ -25,16 +25,16 @@ function PaymentSuccess() {
                 shape="round"
                 className="animate-button"
               >
-                View My Member
+                View My Orders
               </Button>
             </Link>,
-            <Link to="/home" key="home">
+            <Link to="/viewproduct" key="home">
               <Button
                 size="large"
                 shape="round"
                 className="animate-button-secondary"
               >
-                Come Home!
+                Continue Shopping
               </Button>
             </Link>,
           ]}
