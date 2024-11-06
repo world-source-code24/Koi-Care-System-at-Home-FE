@@ -1,7 +1,6 @@
 import { Button, Result } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import "./order.scss";
 
 function OrderSuccess() {
   return (

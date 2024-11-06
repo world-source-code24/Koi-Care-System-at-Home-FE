@@ -10,20 +10,15 @@ import {
   Menu,
   message,
   Modal,
-  Radio,
-  Upload,
   Form,
   List,
-  Space,
 } from "antd";
-import { useAsyncError, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
-import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
-import axiosInstance from "../../api/axiosInstance";
-import { DiamondOutlined } from "@mui/icons-material";
+
+import axiosInstance from "../../components/api/axiosInstance";
 
 function Profile() {
   const { Sider, Content } = Layout;
