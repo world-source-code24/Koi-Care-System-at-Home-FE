@@ -64,7 +64,6 @@ function Header() {
               <Link to="/login" className="nav__login">
                 Login
               </Link>
-              {/* <Link to="/login" className='nav__login'>Login</Link> */}
             </>
           )}
 

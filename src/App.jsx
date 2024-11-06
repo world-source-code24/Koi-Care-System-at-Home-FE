@@ -21,7 +21,6 @@ import Koidetail from "./page/koidetail/koidetail";
 import Register from "./page/register/register/register";
 import OrderSuccess from "./page/order/order";
 import PaymentFail from "./page/paymentFail/paymentFail";
-
 function Koi() {
   const router = createBrowserRouter([
     {
