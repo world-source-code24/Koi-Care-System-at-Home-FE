@@ -11,7 +11,7 @@ function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     if (token) {
       setIsLoggedIn(true); // Logged in
     } else {
@@ -28,9 +28,7 @@ function Header() {
   };
 
   const handleLogout = () => {
-    // Remove token and user info from localStorage when logging out
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.clear();
     setIsLoggedIn(false);
     navigate("/login");
   };
@@ -39,7 +37,9 @@ function Header() {
     <>
       <div className="header">
         <div className="header__logo">
-          <img src={koi} alt="Koi" width={80} />
+          <Link to="/">
+            <img className="" src={koi} alt="Koi" width={80} />
+          </Link>
           <h2>Royal Koi</h2>
         </div>
 
@@ -54,13 +54,18 @@ function Header() {
             Cart
           </Link>
           {isLoggedIn ? (
-            <Link to="/profile" className="nav__profile">
-              Profile
-            </Link>
+            <>
+              <Link to="/profile" className="nav__profile">
+                Profile
+              </Link>
+            </>
           ) : (
-            <Link to="/login" className="nav__login">
-              Login
-            </Link>
+            <>
+              <Link to="/login" className="nav__login">
+                Login
+              </Link>
+              {/* <Link to="/login" className='nav__login'>Login</Link> */}
+            </>
           )}
 
           <span className="nav__menu">
@@ -77,6 +82,9 @@ function Header() {
         <a href="#" className="closebtn" onClick={handleClose}>
           ×
         </a>
+        <Link to="/" className="nav__news">
+          Home Page
+        </Link>
         <Link to="/mykoi" className="nav__news">
           My Koi Fish
         </Link>
@@ -92,10 +100,14 @@ function Header() {
         <Link to="/contact" className="nav__news">
           Contact Us
         </Link>
-        {isLoggedIn && (
-          <Link onClick={handleLogout} className="nav__logout">
-            Logout
-          </Link>
+        {isLoggedIn ? (
+          <>
+            <Link onClick={handleLogout} className="nav__logout">
+              Logout
+            </Link>
+          </>
+        ) : (
+          <></>
         )}
       </div>
     </>

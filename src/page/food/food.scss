@@ -29,30 +29,51 @@
 .food_form_wrapper {
   display: flex;
   justify-content: space-between; 
+  align-items: center; 
   gap: 20px;
 }
 
 .food_left_form {
   align-items: center;
   flex: 1;
-  width: 50%; 
+  width: 40%; 
 
   .ant-form-item {
-    margin-bottom: 10px; // Giảm khoảng cách giữa các Form.Item nếu cần
+    width: 100%; 
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    margin-left: 40px;
 
     .ant-form-item-label > label {
-      font-size: 17px;
+      font-size: 20px;
       font-family: Gowun Batang;
       font-weight: bold;
+      text-align: center;
     }
 
     .growth-buttons,
     .temperature-buttons {
       display: flex;
-      gap: 4px; // Khoảng cách giữa các nút bấm nhỏ hơn
-      margin-top: -14px; // Đảm bảo không có khoảng cách phía trên của các nút bấm
-
+      gap: 4px; 
+      margin-top: -14px; 
+      justify-content: center; 
     }
+
+        &:nth-child(2) { 
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px; 
+    
+          p { 
+            font-size: 20px; 
+            font-weight: bold;
+            font-family: gowun batang;
+            color: black; 
+            margin: 0;
+          }
+        }
   }
 
   .ant-btn {
@@ -69,3 +90,29 @@
   border-left: 2px solid black;
 }
 
+.recommend_amount_section {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  background-color: rgb(208, 0, 0); 
+  color: #fff; 
+  padding: 10px 20px;
+  border-radius: 10px;
+  width: 50%;
+  margin: 0 auto;
+  margin-top: 20px;
+
+  .amount-value {
+    font-size: 24px; 
+    font-weight: bold;
+    font-family: gowun batang;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 24px;
+    text-align: center;
+    font-family: gowun batang;
+  }
+}

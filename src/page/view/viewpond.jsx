@@ -1,5 +1,6 @@
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import bg from "../../img/a10.jpg";
 import "./viewpond.scss";
 import { Form, Input, Row, Col, Button, Select, notification } from "antd";
@@ -14,6 +15,11 @@ import {
   CartesianGrid,
   Label,
   Legend,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
 } from "recharts";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -29,6 +35,71 @@ function Viewpond() {
   const [selectedParameter, setSelectedParameter] = useState("temperature");
   const [isMember, setIsMember] = useState(false);
   const [outOfStandard, setOutOfStandard] = useState({});
+  const [radarData, setRadarData] = useState([]);
+
+  useEffect(() => {
+    const fetchPondData = async () => {
+      try {
+        const response = await axios.get(
+          `https://koicaresystemapi.azurewebsites.net/api/WaterParameter/get-all${id}`
+        );
+        if (response.status === 200) {
+          const data = response.data.parameter.$values;
+          setPondData(data);
+          setRadarData(createRadarData(data[data.length - 1])); // Lấy dữ liệu mới nhất để tạo biểu đồ radar
+        }
+      } catch (error) {
+        console.error("Error fetching pond data:", error);
+      }
+    };
+
+    fetchPondData();
+  }, [id]);
+
+  // Hàm chuyển đổi dữ liệu sang dạng radar
+  const createRadarData = (data) => {
+    return [
+      {
+        parameter: "Temperature",
+        value: parseFloat(((data.temperature / 26) * 100).toFixed(2)), // Làm tròn đến 2 chữ số thập phân
+        fullMark: 100,
+      },
+      {
+        parameter: "Salt",
+        value: parseFloat(((data.salt / 0.1) * 100).toFixed(2)),
+        fullMark: 100,
+      },
+      {
+        parameter: "pH Level",
+        value: parseFloat(((data.phLevel / 8) * 100).toFixed(2)),
+        fullMark: 100,
+      },
+      {
+        parameter: "O2 Level",
+        value: parseFloat(((data.o2Level / 18) * 100).toFixed(2)),
+        fullMark: 100,
+      },
+      {
+        parameter: "PO4 Level",
+        value: parseFloat(((data.po4Level / 0.035) * 100).toFixed(2)),
+        fullMark: 100,
+      },
+      {
+        parameter: "NO2 Level",
+        value: parseFloat(((data.no2Level / 0.1) * 100).toFixed(2)),
+        fullMark: 100,
+      },
+      {
+        parameter: "NO3 Level",
+        value: parseFloat(((data.no3Level / 20) * 100).toFixed(2)),
+        fullMark: 100,
+      },
+    ];
+  };
+
+  useEffect(() => {
+    createChartData();
+  }, []);
 
   // Khởi tạo các giá trị ban đầu là null
   const [currentParameter, setCurrentParameter] = useState({
@@ -202,6 +273,7 @@ function Viewpond() {
           no2Level: newData.no2Level || null,
           no3Level: newData.no3Level || null,
         });
+        setRadarData(createRadarData(newData));
         setPondData((prevData) => {
           const updatedPondData = [...prevData, newData];
           setChartData(createChartData(updatedPondData, selectedParameter));
@@ -274,12 +346,20 @@ function Viewpond() {
                   label="Temperature:"
                   name="temperature"
                   tooltip="Please enter a value between 5 and 26 °C."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "Temperature must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.temperature && (
                   <p className="out-of-standard">
-                    Warning: Temperature{outOfStandard.temperature} !
+                    Warning: Temperature {outOfStandard.temperature} !
                   </p>
                 )}
 
@@ -287,12 +367,20 @@ function Viewpond() {
                   label="Salt:"
                   name="salt"
                   tooltip="Please enter a value between 0 and 0.1 %."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "Salt must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.salt && (
                   <p className="out-of-standard">
-                    Warning: Salt{outOfStandard.salt} !
+                    Warning: Salt {outOfStandard.salt} !
                   </p>
                 )}
 
@@ -300,25 +388,41 @@ function Viewpond() {
                   label="PhLevel:"
                   name="phLevel"
                   tooltip="Please enter a value between 6.9 and 8."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "PhLevel must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.phLevel && (
                   <p className="out-of-standard">
-                    Warning: PhLevel{outOfStandard.phLevel} !
+                    Warning: PhLevel {outOfStandard.phLevel} !
                   </p>
                 )}
 
                 <Form.Item
                   label="O2Level:"
                   name="o2Level"
-                  tooltip="Please enter a value greater than 6.5 mg/l."
+                  tooltip="Please enter a value between 6.5 and 18 mg/l."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "O2Level must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.o2Level && (
                   <p className="out-of-standard">
-                    Warning: O2Level{outOfStandard.o2Level} !
+                    Warning: O2Level {outOfStandard.o2Level} !
                   </p>
                 )}
               </Col>
@@ -328,12 +432,20 @@ function Viewpond() {
                   label="Po4Level:"
                   name="po4Level"
                   tooltip="Please enter a value between 0 and 0.035 mg/l."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "Po4Level must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.po4Level && (
                   <p className="out-of-standard">
-                    Warning: Po4Level{outOfStandard.po4Level} !
+                    Warning: Po4Level {outOfStandard.po4Level} !
                   </p>
                 )}
 
@@ -341,12 +453,20 @@ function Viewpond() {
                   label="No2Level:"
                   name="no2Level"
                   tooltip="Please enter a value between 0 and 0.1 mg/l."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "No2Level must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.no2Level ? (
                   <p className="out-of-standard">
-                    Warning: No2Level{outOfStandard.no2Level} !
+                    Warning: No2Level {outOfStandard.no2Level} !
                   </p>
                 ) : (
                   ""
@@ -356,28 +476,44 @@ function Viewpond() {
                   label="No3Level:"
                   name="no3Level"
                   tooltip="Please enter a value between 0 and 20 mg/l."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "No3Level must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
                 {outOfStandard.no3Level && (
                   <p className="out-of-standard">
-                    Warning: No3Level{outOfStandard.no3Level} !
+                    Warning: No3Level {outOfStandard.no3Level} !
                   </p>
                 )}
 
                 <Form.Item
                   label="TotalChlorines:"
                   name="totalChlorines"
+                  hidden={true}
                   tooltip="Please enter a value between 0 and 0.001 mg/l."
+                  rules={[
+                    {
+                      type: "number",
+                      min: 0,
+                      message: "TotalChlorines must be 0 or greater!",
+                      transform: (value) => Number(value),
+                    },
+                  ]}
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
-                {outOfStandard.totalChlorines && (
+                {/* {outOfStandard.totalChlorines && (
                   <p className="out-of-standard">
-                    Warning: TotalChlorines
-                    {outOfStandard.totalChlorines} !
+                    Warning: TotalChlorines {outOfStandard.totalChlorines} !
                   </p>
-                )}
+                )} */}
               </Col>
             </Row>
 
@@ -402,12 +538,11 @@ function Viewpond() {
                 <Option value="salt">Salt</Option>
                 <Option value="phLevel">pH Level</Option>
                 <Option value="o2Level">O2 Level</Option>
-                <Option value="totalChlorines">Total Chlorines</Option>
+                {/* <Option value="totalChlorines">Total Chlorines</Option> */}
                 <Option value="po4Level">PO4 Level</Option>
                 <Option value="no2Level">NO2 Level</Option>
                 <Option value="no3Level">NO3 Level</Option>
               </Select>
-
               <LineChart
                 key={JSON.stringify(chartData)}
                 width={600}
@@ -452,6 +587,26 @@ function Viewpond() {
                 />
                 <Legend />
               </LineChart>
+
+              <RadarChart
+                outerRadius={90}
+                width={650}
+                height={400}
+                data={radarData}
+              >
+                <PolarGrid />
+                <PolarAngleAxis dataKey="parameter" />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                <Tooltip />
+                <Radar
+                  name="Water Parameters"
+                  dataKey="value"
+                  stroke="#8884d8"
+                  fill="#8884d8"
+                  fillOpacity={0.6}
+                />
+              </RadarChart>
+
               <div className="Warning">
                 <h3>Parameter Status</h3>
                 <div className="warning-content">
@@ -529,7 +684,7 @@ function Viewpond() {
                       <span className="in-standard">Within standard range</span>
                     )}
                   </p>
-                  <p>
+                  {/* <p>
                     <strong>Total Chlorines:</strong>
                     {outOfStandard.totalChlorines ? (
                       <span className="out-of-standard">
@@ -539,7 +694,7 @@ function Viewpond() {
                     ) : (
                       <span className="in-standard">Within standard range</span>
                     )}
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>

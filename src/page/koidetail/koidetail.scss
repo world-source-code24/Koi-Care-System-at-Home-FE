@@ -99,14 +99,41 @@
 }
 
 .koide_right {
-    flex: 1;
+    width: 50%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+
+    .report-button-container {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+        width: 700px;
+
+        .report-button {
+            height: 40px;
+            font-size: 20px;
+            font-family: Gowun Batang;
+            font-weight: bold;
+            color: white;
+            background-color: rgb(207, 4, 4);
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+
+            &:hover {
+                background-color: rgb(208, 4, 4);
+            }
+        }
+    }
 }
 
 .koide_buttons {
@@ -133,7 +160,6 @@
     }
 }
 
-// Tùy chỉnh chung cho Modal
 .custom-modal .ant-modal-content {
     background-color: #f9f9f9; 
     border-radius: 10px;
@@ -184,4 +210,3 @@
         background-color: #c9302c;
     }
 }
-
