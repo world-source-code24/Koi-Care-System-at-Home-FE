@@ -21,6 +21,8 @@ import Koidetail from "./page/koidetail/koidetail";
 import Register from "./page/register/register/register";
 import YourOrder from "./page/yourorder/yourOrder";
 import Shop from "./page/shop/shop";
+import OrderSuccess from "./page/order/order";
+
 
 function Koi() {
   const router = createBrowserRouter([
@@ -44,6 +46,7 @@ function Koi() {
       path: "/view/:id",
       element: <Viewpond />,
     },
+
     {
       path: "/viewproduct",
       element: <Viewproduct />,
@@ -60,7 +63,6 @@ function Koi() {
       path: "/news",
       element: <News />,
     },
-
     {
       path: "/profile",
       element: <Profile />,
@@ -74,6 +76,10 @@ function Koi() {
       element: <Detail />,
     },
     {
+      path: "/register",
+      element: <Register />,
+    },
+    {
       path: "/expert",
       element: <Expert />,
     },
@@ -82,8 +88,12 @@ function Koi() {
       element: <ProtectedRoute element={<Salt />} requiredRole="member" />,
     },
     {
-      path: "/payment",
+      path: "/paymentSuccess",
       element: <PaymentSuccess />,
+    },
+    {
+      path: "/order",
+      element: <OrderSuccess />,
     },
     {
       path: "/admin",
