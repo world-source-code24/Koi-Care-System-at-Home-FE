@@ -84,6 +84,7 @@ function Profile() {
   const [successMessage, setSuccessMessage] = useState("");
 
   // Lấy thông tin để show ra ở profile
+<<<<<<< Updated upstream
   const fetchUserInfo = async () => {
     try {
       const response = await axiosInstance.get("/api/Account/Profile");
@@ -100,6 +101,42 @@ function Profile() {
       if (error.response && error.response.status === 401) {
         localStorage.clear();
         navigate("/login");
+=======
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("token"); // Lấy Access Token từ localStorage
+
+      if (token) {
+        try {
+          const response = await axios.get(
+            "https://koicaresystemapi.azurewebsites.net/api/Account/Profile",
+            {
+              // Gọi API để lấy thông tin người dùng
+              headers: {
+                Authorization: `Bearer ${token}`, // Gửi Access Token
+              },
+            }
+          );
+
+          setUserInfo({
+            fullName: response.data.name || "",
+            email: response.data.email || "",
+            phone: response.data.phone || "",
+            address: response.data.address || "",
+          }); // Thiết lập thông tin người dùng vào trạng thái
+          console.log(userInfo);
+        } catch (error) {
+          console.error("Error fetching user info:", error);
+          if (error.response && error.response.status === 401) {
+            // Nếu token không hợp lệ hoặc hết hạn
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            navigate("/login"); // Chuyển hướng về trang đăng nhập
+          }
+        }
+      } else {
+        navigate("/profile"); // Chuyển hướng về trang đăng nhập khi không có token
+>>>>>>> Stashed changes
       }
     }
   };
@@ -133,10 +170,22 @@ function Profile() {
         formData.append("image", ""); // Nếu không có hình ảnh
       }
 
+<<<<<<< Updated upstream
       const response = await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/Account/Profile?accId=${accId}`,
         formData,
         { headers: { "Content-Type": "application/json" } }
+=======
+      await axios.put(
+        "https://koicaresystemapi.azurewebsites.net/api/Account/Profile",
+        formData,
+        {
+          //API
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+>>>>>>> Stashed changes
       );
 
       if (response.status === 200) {
