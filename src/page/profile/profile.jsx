@@ -10,14 +10,18 @@ import {
   Menu,
   message,
   Modal,
+  Radio,
+  Upload,
   Form,
   List,
+  Space,
 } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useAsyncError, useNavigate } from "react-router-dom";
 
+import { StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
-
+import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
 import axiosInstance from "../../components/api/axiosInstance";
 
 function Profile() {
@@ -32,6 +36,8 @@ function Profile() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [orders, setOrders] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
+  const { setUser } = useUser(); // Lấy hàm setUser từ context để cập nhật người dùng
+
   const formatCurrency = (value) => {
     if (typeof value !== "number" || isNaN(value)) {
       return "0 VND";
@@ -73,6 +79,7 @@ function Profile() {
     phone: "",
     address: "",
     image: "",
+    role: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -81,7 +88,16 @@ function Profile() {
   // Lấy thông tin để show ra ở profile
   const fetchUserInfo = async () => {
     try {
-      const response = await axiosInstance.get("/api/Account/Profile");
+      const token = localStorage.getItem("accessToken");
+      const response = await axiosInstance.get("Account/Profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const user = response.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userId", user.accId);
+      setUser(user);
       setImageUrl(response.data.image || "");
       setUserInfo({
         fullName: response.data.name || "",
@@ -89,6 +105,7 @@ function Profile() {
         phone: response.data.phone || "",
         address: response.data.address || "",
         image: response.data.image || "",
+        role: response.data.role || "",
       });
     } catch (error) {
       console.error("Error fetching user info:", error);
@@ -121,12 +138,13 @@ function Profile() {
 
       // Kiểm tra và thêm hình ảnh vào formData
       if (image) {
-        formData.append("image", "string"); // Sử dụng hình ảnh đã tải lên
+        formData.append("image", image); // Sử dụng hình ảnh đã tải lên
       } else if (imageUrl) {
-        formData.append("image", "string"); // Sử dụng URL hình ảnh hiện có
+        formData.append("image", imageUrl); // Sử dụng URL hình ảnh hiện có
       } else {
         formData.append("image", ""); // Nếu không có hình ảnh
       }
+
       const response = await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/Account/Profile?accId=${accId}`,
         formData,
@@ -135,8 +153,8 @@ function Profile() {
 
       if (response.status === 200) {
         message.success("Update successfully!");
+
         setIsEditing(false);
-        // Gọi lại fetchUserInfo để cập nhật thông tin người dùng bao gồm hình ảnh
         fetchUserInfo();
       }
     } catch (error) {
@@ -159,7 +177,7 @@ function Profile() {
   const handleOk = async () => {
     try {
       const response = await axios.post(
-        `https://koicaresystemapi.azurewebsites.net/api/Payment/checkout?accId=${accId}`
+        `https://localhost:5001/api/Payment/checkout?accId=${accId}`
       );
       // Check if paymentUrl is returned correctlyx
       if (response.data && response.data.paymentUrl) {
@@ -167,6 +185,7 @@ function Profile() {
         const checkWindow = setInterval(() => {
           if (paymentWindow.closed) {
             clearInterval(checkWindow);
+            // Gọi lại API lấy thông tin user mới
             fetchUserInfo();
             message.success("Payment completed, profile updated!");
           }
@@ -175,8 +194,8 @@ function Profile() {
         throw new Error("Payment URL not found in response");
       }
     } catch (error) {
-      message.error("Failed to update membership");
-      console.error("Error updating membership:", error);
+      message.error("Failed to initiate payment");
+      console.error("Error initiating payment:", error);
     }
     setIsModalOpen(false);
   };
@@ -184,6 +203,14 @@ function Profile() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const handleImageUpload = (file) => {
+    const blobUrl = URL.createObjectURL(file); // Tạo URL blob
+    setImage(file); // Lưu tệp hình ảnh
+    setPreviewImage(blobUrl); // Lưu URL blob để xem trước
+    return false; // Ngăn không cho tự động tải lên
+  };
+
   useEffect(() => {
     return () => {
       if (previewImage) {
@@ -191,6 +218,18 @@ function Profile() {
       }
     };
   }, [previewImage]);
+
+  // Log out và xóa all thông tin qua localStorage
+  const handleLogout = async () => {
+    try {
+      // Dùng để xóa thông tin đăng nhập
+      localStorage.clear();
+      message.success("Logged out successfully");
+      navigate("/login");
+    } catch (error) {
+      message.error("Failed to log out. Please try again.");
+    }
+  };
 
   // Reset password
   const handleResetPassword = async () => {
@@ -228,33 +267,48 @@ function Profile() {
                 mode="vertical"
                 defaultSelectedKeys={[1]}
                 className="profile_menu"
+                onClick={({ key }) => {
+                  if (key === "4") handleLogout();
+                }}
               >
                 <Menu.Item className="accountSetting" key={1}>
                   Account Settings
                 </Menu.Item>
-                <Menu.Item
-                  key={2}
-                  onClick={() => {
-                    const user = JSON.parse(localStorage.getItem("user"));
-                    if (user && user.role !== "member") showModal();
-                    else message.info("You are already a member");
-                  }}
-                >
-                  Membership
-                </Menu.Item>
-                <Menu.Item key={3} onClick={fetchOrders}>
+                <Menu.Item key={2} onClick={fetchOrders}>
                   Your Order
                 </Menu.Item>
 
-                <Menu.Item key={4} onClick={() => setIsResetModalOpen(true)}>
+                <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
                   Reset Password
                 </Menu.Item>
+                <Menu.Item key={4}>Log out</Menu.Item>
               </Menu>
             </Sider>
 
             <Content className="profile_content">
-              <h5>Account Settings</h5>
-
+              <Space direction="horizontal">
+                <h5>Account Settings</h5>
+                <Button
+                  onClick={() => {
+                    if (
+                      userInfo &&
+                      userInfo.role.toLocaleLowerCase() !== "member"
+                    )
+                      showModal();
+                    else message.info("You are already a member");
+                  }}
+                  className={
+                    userInfo?.role.toLocaleLowerCase() === "member"
+                      ? "btn_membership"
+                      : "btn_non_membership"
+                  }
+                >
+                  Membership
+                  {userInfo?.role.toLocaleLowerCase() === "member" && (
+                    <StarOutlined />
+                  )}
+                </Button>
+              </Space>
               {/* Modal Order */}
               <Modal
                 title="Your Orders"
@@ -300,14 +354,12 @@ function Profile() {
 
               {/*Modal Membership*/}
               <Modal
-                title="Membership"
+                title="Membership Packages"
                 visible={isModalOpen}
                 onOk={handleOk}
                 okText="Buy Now"
                 onCancel={handleCancel}
-              >
-                <p>99.000 (VND) / 6 months </p>
-              </Modal>
+              ></Modal>
 
               {/*Modal reset password */}
               <Modal
@@ -389,6 +441,23 @@ function Profile() {
               </Modal>
 
               <div className="profile_body_form">
+                <Form className="avatar">
+                  <div className="title">Avatar Profile: </div>
+                  <Upload beforeUpload={handleImageUpload}>
+                    <Button icon={<UploadOutlined />}>Upload Image</Button>
+                  </Upload>
+
+                  {(imageUrl || previewImage) && (
+                    <div>
+                      <img
+                        src={previewImage || imageUrl}
+                        alt="Uploaded"
+                        width="20%"
+                      />
+                    </div>
+                  )}
+                </Form>
+
                 <Form name="fullName">
                   <div className="title">Full Name: </div>
                   <Input
