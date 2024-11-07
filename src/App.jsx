@@ -22,6 +22,7 @@ import Register from "./page/register/register/register";
 import OrderSuccess from "./page/order/order";
 import PaymentFail from "./page/paymentFail/paymentFail";
 import Shop from "./page/shop/Shop";
+import ShopRoutes from "./components/shop/routes";
 function Koi() {
   const router = createBrowserRouter([
     {
@@ -106,16 +107,24 @@ function Koi() {
       ],
     },
     {
+      path: "/shop",
+      element: <ProtectedRoute element={<Shop />} requiredRole="shop" />,
+      children: [
+        {
+          path: "/shop/*",
+          element: (
+            <ProtectedRoute element={<ShopRoutes />} requiredRole="shop" />
+          ),
+        },
+      ],
+    },
+    {
       path: "/koidetail/:koiId",
       element: <Koidetail />,
     },
     {
       path: "/register",
       element: <Register />,
-    },
-    {
-      path: "/shop",
-      element: <ProtectedRoute element={<Shop />} requiredRole="shop" />,
     },
   ]);
 
