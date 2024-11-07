@@ -4,6 +4,7 @@ import koi from "../../img/logo.png.jpg";
 import { useState, useEffect } from "react";
 import { Button } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
+import axiosInstance from "../api/axiosInstance";
 
 function Header() {
   const [visible, setVisible] = useState(false);
@@ -11,12 +12,35 @@ function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true); // Logged in
-    } else {
-      setIsLoggedIn(false); // Not logged in
-    }
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+          const response = await axiosInstance.get("Account/Profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const user = response.data;
+
+          if (user && user.accId) {
+            localStorage.setItem("user", JSON.stringify(user));
+            localStorage.setItem("userId", user.accId);
+            setIsLoggedIn(true);
+          } else {
+            console.warn("User data or accId is missing");
+            setIsLoggedIn(false);
+          }
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   const handleMenu = () => {
@@ -28,9 +52,7 @@ function Header() {
   };
 
   const handleLogout = () => {
-    // Remove token and user info from localStorage when logging out
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.clear();
     setIsLoggedIn(false);
     navigate("/login");
   };
@@ -39,7 +61,9 @@ function Header() {
     <>
       <div className="header">
         <div className="header__logo">
-          <img src={koi} alt="Koi" width={80} />
+          <Link to="/">
+            <img src={koi} alt="Koi" width={80} />
+          </Link>
           <h2>Royal Koi</h2>
         </div>
 
@@ -53,21 +77,15 @@ function Header() {
           <Link to="/cart" className="nav__news">
             Cart
           </Link>
-          <Link to="/yourorder" className="nav__news">
-            Your orders
-          </Link>
           {isLoggedIn ? (
             <Link to="/profile" className="nav__profile">
               Profile
             </Link>
           ) : (
-            <>
-              <Link to="/login" className="nav__login">
-                Login
-              </Link>
-            </>
+            <Link to="/login" className="nav__login">
+              Login
+            </Link>
           )}
-
           <span className="nav__menu">
             <Button onClick={handleMenu}>
               <MenuOutlined />
@@ -82,6 +100,9 @@ function Header() {
         <a href="#" className="closebtn" onClick={handleClose}>
           ×
         </a>
+        <Link to="/" className="nav__news">
+          Home Page
+        </Link>
         <Link to="/mykoi" className="nav__news">
           My Koi Fish
         </Link>
