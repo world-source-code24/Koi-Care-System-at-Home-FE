@@ -230,7 +230,6 @@ function Environment() {
       <div className="Environment__img">
         <img src={koi} alt="" />
       </div>
-
       <div
         className="Environment__body"
         style={{
@@ -332,7 +331,9 @@ function Environment() {
           </div>
         ))
       ) : (
-        <p>No ponds available.</p>
+        <p style={{ textAlign: "center", margin: "20px 0 20px 0" }}>
+          No ponds available.
+        </p>
       )}
 
       <Modal
@@ -361,6 +362,7 @@ function Environment() {
             name="pumpCapacity"
             rules={[
               {
+                required: true,
                 type: "number",
                 min: 0,
                 message: "Pump Capacity must be 0 or greater!",
@@ -376,6 +378,7 @@ function Environment() {
             name="depth"
             rules={[
               {
+                required: true,
                 type: "number",
                 min: 0,
                 message: "Depth must be 0 or greater!",
@@ -391,6 +394,7 @@ function Environment() {
             name="volume"
             rules={[
               {
+                required: true,
                 type: "number",
                 min: 0,
                 message: "Volume must be 0 or greater!",
@@ -406,6 +410,7 @@ function Environment() {
             name="drainCount"
             rules={[
               {
+                required: true,
                 type: "number",
                 min: 0,
                 message: "Drain Count must be 0 or greater!",
@@ -416,14 +421,24 @@ function Environment() {
             <Input type="number" />
           </Form.Item>
 
-          <Upload beforeUpload={handleImageUpload}>
-            <Button icon={<UploadOutlined />}>Upload Image</Button>
-          </Upload>
-          {image && (
-            <div>
-              <img src={image} alt="Uploaded" width="100%" />
-            </div>
-          )}
+          {/* <Form.Item
+            label="Image"
+            rules={[
+              {
+                required: true,
+                message: "Please upload an image!",
+              },
+            ]}
+          >
+            <Upload beforeUpload={handleImageUpload} showUploadList={false}>
+              <Button icon={<UploadOutlined />}>Upload Image</Button>
+            </Upload>
+            {image && (
+              <div>
+                <img src={image} alt="Uploaded" width="100%" />
+              </div>
+            )}
+          </Form.Item> */}
 
           <Form.Item>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -449,3 +464,4 @@ function Environment() {
 }
 
 export default Environment;
+

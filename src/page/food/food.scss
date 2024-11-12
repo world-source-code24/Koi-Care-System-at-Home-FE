@@ -59,12 +59,11 @@
       text-align: center;
     }
 
-    .growth-buttons,
     .temperature-buttons {
       display: flex;
-      gap: 4px; 
-      margin-top: -14px; 
-      justify-content: center; 
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
     }
     
     p { 
@@ -184,4 +183,82 @@
     background-color: red;
     color: white;
   }
+}
+
+.recommend_amount_section {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  background-color: rgb(208, 0, 0); 
+  color: #fff; 
+  padding: 10px 20px;
+  border-radius: 10px;
+  width: 50%;
+  margin: 0 auto;
+  margin-top: 20px;
+
+  .amount-value, .advice-section {
+    font-size: 24px; 
+    font-weight: bold;
+    font-family: gowun batang;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 24px;
+    text-align: center;
+    font-family: gowun batang;
+    
+  }
+
+  .advice-section {
+    margin-top: 10px;
+    padding-top: 5px;
+    border-top: 1px solid white;
+    width: 100%;
+    text-align: center;
+
+    p {
+      margin-top: -5px;
+    }
+  }
+}
+
+.growth-buttons button,
+.temperature-buttons button {
+  background-color: #f0f0f0;
+  color: black;
+  border: none;
+  width: 200px;
+
+  &:hover {
+    background-color:rgb(207, 4, 4);
+  }
+  
+  &.ant-btn-primary {
+    background-color: red; 
+  }
+
+  &.selected {
+    background-color: red;
+    color: white;
+  }
+}
+
+.button_set {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -20px;
+
+  .ant-btn {
+    width: 70px;
+  }
+}
+
+.btn_cancel {
+  height: 34px;
+  margin-top: 19px;
+  margin-left: 8px;
+  border-radius: 8px;
 }

@@ -1,13 +1,10 @@
 import {
   DollarOutlined,
-  EyeInvisibleOutlined,
-  MoneyCollectOutlined,
   ProductOutlined,
   ShopOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import {
-  Avatar,
   Card,
   Space,
   Statistic,
@@ -20,6 +17,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Column, Pie } from "@ant-design/plots";
 import "./dashboard.scss";
+
 function Dashboard() {
   const [totalAccounts, setTotalAccounts] = useState(0);
   const [totalShops, setTotalShops] = useState(0);
@@ -119,7 +117,7 @@ function Dashboard() {
               />
             }
             title={"Membership Revenue (VND)"}
-            value={totalMemberRevenue}
+            value={totalMemberRevenue * 1000}
           />
         </Space>
         <Space direction="horizontal">
@@ -143,7 +141,7 @@ function DashboardCard({ title, value, icon }) {
     <Card>
       <Space direction="horizontal">
         {icon}
-        <Statistic title={title} value={value} valueStyle={{ fontSize: 24 }} />
+        <Statistic title={title} value={value} />
       </Space>
     </Card>
   );
@@ -405,5 +403,4 @@ function BarChart() {
     </Card>
   );
 }
-
 export default Dashboard;

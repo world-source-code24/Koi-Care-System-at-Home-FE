@@ -4,9 +4,9 @@ import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
 import bg from "../../img/news.jpg";
 import { Button, Input, Modal } from "antd";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import { Listproduct } from "../../share/listproduct";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 function Viewproduct() {
   const [visible, setVisible] = useState(false);
   const [pro, setPro] = useState({});
@@ -171,6 +171,7 @@ function Viewproduct() {
           Search
         </Button>
       </div>
+      <ArrowBackIcon />
       <div className="row Viewproduct__product">
         {filteredStore.map((product) => (
           <div className="col-md-3 product" key={product.productId}>
@@ -191,7 +192,7 @@ function Viewproduct() {
             <h3>{pro.name}</h3>
             <span className="modal-sku">Product code: {pro.productId}</span>
             <p>{pro.productInfo}</p>
-            <p>Stock :{pro.stock} products</p>
+            <p>Status: Available</p>
             <div className="modal-promotions">
               <li>
                 <i className="confirm bi bi-check-circle-fill"></i> Genuine

@@ -174,7 +174,7 @@ function Register() {
                     {
                       type: "email",
                       required: true,
-                      message: "Please enter your email",
+                      message: "Please enter a valid email ! For example: abc@gmail.com",
                     },
                   ]}
                 >

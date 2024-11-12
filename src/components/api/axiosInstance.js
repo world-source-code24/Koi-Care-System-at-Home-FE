@@ -1,8 +1,7 @@
 // src/axiosInstance.js
 import axios from 'axios';
 
-// URL của API
-const API_BASE_URL = 'https://koicaresystemapi.azurewebsites.net';
+const API_BASE_URL = 'https://koicaresystemapi.azurewebsites.net/api';
 
 // Tạo một instance của Axios
 const axiosInstance = axios.create({
@@ -12,7 +11,7 @@ const axiosInstance = axios.create({
   },
 });
 
-// Hàm refreshToken gọi đến API `/api/User/RefreshToken` để lấy token mới
+// Hàm refreshToken gọi đến API để lấy token mới
 async function refreshToken() {
   try {
     const storedAccessToken = localStorage.getItem('accessToken');
@@ -20,7 +19,7 @@ async function refreshToken() {
     if (!storedRefreshToken) throw new Error('Không tìm thấy refreshToken');
 
     // Gọi API refresh token
-    const response = await axios.post(`${API_BASE_URL}/api/User/RefeshToken`, {
+    const response = await axios.post(`${API_BASE_URL}/User/RefreshToken`, {
       accessToken: storedAccessToken,
       refreshToken: storedRefreshToken,
     });
@@ -40,10 +39,10 @@ async function refreshToken() {
 
 // Thêm interceptor để tự động refresh token khi gặp lỗi 401
 axiosInstance.interceptors.response.use(
-  response => response,
-  async error => {
+  (response) => response,
+  async (error) => {
     const originalRequest = error.config;
-    
+
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
@@ -59,6 +58,8 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.error('Lỗi khi gửi lại yêu cầu sau khi refresh token:', refreshError);
+        window.location.href = "/login";
+        localStorage.clear();
         return Promise.reject(refreshError);
       }
     }
@@ -68,9 +69,9 @@ axiosInstance.interceptors.response.use(
 );
 
 // Thiết lập token ban đầu từ localStorage
-const token = localStorage.getItem('accessToken');
-if (token) {
-  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+const initialToken = localStorage.getItem('accessToken');
+if (initialToken) {
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${initialToken}`;
 }
 
 export default axiosInstance;

@@ -32,6 +32,8 @@ function Mykoi() {
   const [sortOption, setSortOption] = useState("newest");
   const [filterPond, setFilterPond] = useState("All");
   const [filterSex, setFilterSex] = useState("All");
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [selectedKoi, setSelectedKoi] = useState(null);
   const navigate = useNavigate();
 
   const fetchKoiData = async () => {
@@ -56,17 +58,13 @@ function Mykoi() {
         breed: koi.breed,
         image: koi.image,
         length: koi.length,
-        pondId: koi.pondId, 
+        weight: koi.weight,
+        pondId: koi.pondId,
+        physique: koi.physique || "normal",
         sex: koi.sex ? "male" : "female",
       }));
-      const koiCountByPond = koiList.reduce((count, koi) => {
-        count[koi.pondId] = (count[koi.pondId] || 0) + 1;
-        return count;
-      }, {});
-
       setKoiData(koiList);
-      localStorage.setItem("koiCountByPond", JSON.stringify(koiCountByPond));
-      setFilteredKoiData(koiList); // Cập nhật dữ liệu đã lọc ban đầu
+      setFilteredKoiData(koiList);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách cá Koi:", error);
     }
@@ -78,7 +76,7 @@ function Mykoi() {
       const response = await axios.get(
         `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accId}`
       );
-      const pondList = response.data.listPond["$values"]; // Lưu danh sách hồ từ API
+      const pondList = response.data.listPond["$values"]; 
       setPonds(pondList);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách hồ", error);
@@ -86,9 +84,24 @@ function Mykoi() {
   };
 
   useEffect(() => {
-    fetchKoiData(); // Gọi API để lấy danh sách Koi khi component render
-    fetchPonds(); // Gọi API để lấy danh sách hồ
+    fetchKoiData(); 
+    fetchPonds(); 
   }, [navigate]);
+
+  const handleEditClick = (koi) => {
+    setSelectedKoi(koi);
+    form.setFieldsValue({
+      name: koi.name,
+      pond: koi.pondId,
+      physique: koi.physique,
+      age: koi.age,
+      length: koi.length,
+      weight: koi.weight,
+      sex: koi.sex,
+      breed: koi.breed,
+    });
+    setIsEditModalVisible(true);
+  };
 
   const applyFilters = () => {
     let filteredData = [...koiData];
@@ -225,6 +238,41 @@ function Mykoi() {
     }
   };
 
+  const handleEditSubmit = async () => {
+    try {
+      const updatedKoiData = form.getFieldsValue();
+      const updatedKoi = {
+        ...selectedKoi,
+        ...updatedKoiData,
+        koiId: selectedKoi.koiId,
+        pondId: selectedKoi.pondId,
+        sex: updatedKoiData.sex === "male",
+      };
+
+      const response = await fetch(
+        `https://koicaresystemapi.azurewebsites.net/api/edit/pond/${updatedKoi.pondId}/Koi/${updatedKoi.koiId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedKoi),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Cập nhật cá koi thành công!");
+        setIsEditModalVisible(false);
+        fetchKoiData();
+      } else {
+        const errorData = await response.json();
+        console.error("Lỗi khi cập nhật cá koi:", errorData);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gửi yêu cầu cập nhật:", error);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -252,14 +300,10 @@ function Mykoi() {
         </Tooltip>
       </div>
 
-      {/* Hiển thị danh sách cá koi đã lọc */}
       <div className="koi_list">
         {filteredKoiData.length === 0 ? (
           <div className="empty_message">
-            <p>
-              Oops :(( You don't add any koi yet. Press "Add new koi" button to
-              add the new one !!!
-            </p>
+            <p>Oops :(( You don't add any koi yet. Press "Add new koi" button to add the new one !!!</p>
           </div>
         ) : (
           filteredKoiData.map((koi, index) => (
@@ -271,23 +315,200 @@ function Mykoi() {
             >
               <img src={ca} style={{ width: 200, height: 100 }} />
               <div className="koi_info">
-                <p>
-                  <strong>Name:</strong> {koi.name}
-                </p>
-                <p>
-                  <strong>Age:</strong> {koi.age || "-"}
-                </p>
-                <p>
-                  <strong>Variety:</strong> {koi.breed || "-"}
-                </p>
-                <p>
-                  <strong>Length:</strong> {koi.length} cm
-                </p>
+                <p><strong>Name:</strong> {koi.name}</p>
+                <p><strong>Age:</strong> {koi.age || "-"}</p>
+                <p><strong>Variety:</strong> {koi.breed || "-"}</p>
+                <p><strong>Length:</strong> {koi.length} cm</p>
+                <Button className="button_ed" onClick={(e) => { e.stopPropagation(); handleEditClick(koi); }}>Edit</Button>
               </div>
             </div>
           ))
         )}
       </div>
+
+      {/* Modal Edit */}
+      <Modal
+        title="Edit Koi Information"
+        visible={isEditModalVisible}
+        onOk={handleEditSubmit}
+        onCancel={() => setIsEditModalVisible(false)}
+        className="mykoi_modal"
+      >
+        <Divider />
+
+        <Form form={form} layout="vertical">
+          <div className="add_image">
+            <img src={ca} style={{ width: 200, height: 100 }} />
+          </div>
+          <Row gutter={16}>
+            <Col span={12}>
+            <Form.Item
+                label="Name:"
+                name="name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter your Koi fish name!",
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || !checkDuplicateName(value)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("The name of the fish already exists, please change the name !")
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Pond:"
+                name="pond"
+                rules={[
+                  { required: true, message: "Please choose your pond !" },
+                ]}
+              >
+                <Select onChange={handlePondChange}>
+                  {ponds.map((pond) => (
+                    <Option key={pond.pondId} value={pond.pondId}>
+                      {pond.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <span>
+                    Physique:{" "}
+                    <Tooltip title="Suggested options: slim, normal, corpulent">
+                      <InfoCircleOutlined style={{ color: "black" }} />
+                    </Tooltip>
+                  </span>
+                }
+                name="physique"
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <span>
+                    Age:{" "}
+                    <Tooltip title="Please enter a positive integer (1 or greater)">
+                      <InfoCircleOutlined style={{ color: "black" }} />
+                    </Tooltip>
+                  </span>
+                }
+                name="age"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the age of the Koi fish!",
+                  },
+                  {
+                    validator(_, value) {
+                      const ageValue = Number(value);
+                      if (!value || (Number.isInteger(ageValue) && ageValue > 0)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("Please enter a valid age (positive integers only)!")
+                      );
+                    },
+                  },
+                ]}
+              >
+                <Input type="number" min={1} step={1} />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <span>
+                    Length (cm):{" "}
+                    <Tooltip title="Length must be a positive number !">
+                      <InfoCircleOutlined
+                        style={{ color: "black" }}
+                      />
+                    </Tooltip>
+                  </span>
+                }
+                name="length"
+                rules={[
+                  { required: true, message: "Please enter the length !" },
+                  {
+                    type: "number",
+                    min: 0.01,
+                    transform: (value) => Number(value),
+                  },
+                ]}
+              >
+                <Input type="number" min={0.01} step={0.01} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <span>
+                    Weight (g):{" "}
+                    <Tooltip title="Weight must be a positive number !">
+                      <InfoCircleOutlined
+                        style={{ color: "black" }}
+                      />
+                    </Tooltip>
+                  </span>
+                }
+                name="weight"
+                rules={[
+                  { required: true, message: "Please enter the weight !" },
+                  {
+                    type: "number",
+                    min: 0.01,
+                    transform: (value) => Number(value),
+                  },
+                ]}
+              >
+                <Input type="number" min={0.01} step={0.01} />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item 
+                label="Sex:" 
+                name="sex" 
+                rules={[{ required: true, message: "Please select the sex of the Koi fish!" }]}
+              >
+                <Select>
+                  <Option value="male">Male</Option>
+                  <Option value="female">Female</Option>
+                  <Option value="not_specified">Not specified</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Breed:" name="breed">
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
 
       {/* Filter Modal */}
       <Modal
@@ -336,7 +557,7 @@ function Mykoi() {
         </div>
       </Modal>
 
-      {/* Modal */}
+      {/* Modal add */}
       <Modal
         title="Add new koi"
         open={isModalVisible}

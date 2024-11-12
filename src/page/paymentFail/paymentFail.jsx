@@ -1,8 +1,9 @@
 import { Button, Result } from "antd";
-import { CheckCircleOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import "./paymentFail";
 
-function OrderSuccess() {
+function PaymentFail() {
   return (
     <div className="payment-success-container">
       <div className="sparkling-background"></div>
@@ -10,13 +11,9 @@ function OrderSuccess() {
       <div className="payment-success-card">
         <Result
           icon={
-            <CheckCircleOutlined
-              style={{ color: "#28a745", fontSize: "80px" }}
-            />
+            <CloseCircleOutlined style={{ color: "red", fontSize: "80px" }} />
           }
-          title={
-            <span className="gradient-text">Your order is proccessing!</span>
-          }
+          title={<span className="gradient-text">Payment Successful!</span>}
           subTitle="Thank you for your order! We have received your payment and sent a confirmation email."
           extra={[
             <Link to="/profile" key="orders">
@@ -26,16 +23,16 @@ function OrderSuccess() {
                 shape="round"
                 className="animate-button"
               >
-                View My Orders
+                Back my profile
               </Button>
             </Link>,
-            <Link to="/viewproduct" key="home">
+            <Link to="/home" key="home">
               <Button
                 size="large"
                 shape="round"
                 className="animate-button-secondary"
               >
-                Continue Shopping
+                Come Home!
               </Button>
             </Link>,
           ]}
@@ -53,4 +50,4 @@ function OrderSuccess() {
   );
 }
 
-export default OrderSuccess;
+export default PaymentFail;

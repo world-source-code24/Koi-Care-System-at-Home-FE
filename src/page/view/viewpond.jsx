@@ -1,5 +1,6 @@
 import Header from "../../components/header/header";
 import Footer from "../../components/footer/footer";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import bg from "../../img/a10.jpg";
 import "./viewpond.scss";
 import { Form, Input, Row, Col, Button, Select, notification } from "antd";
@@ -344,7 +345,7 @@ function Viewpond() {
                 <Form.Item
                   label="Temperature:"
                   name="temperature"
-                  tooltip="Please enter a value between 5 and 26 °C."
+                  tooltip="The ideal range of value is between 5 and 26 °C."
                   rules={[
                     {
                       type: "number",
@@ -365,7 +366,7 @@ function Viewpond() {
                 <Form.Item
                   label="Salt:"
                   name="salt"
-                  tooltip="Please enter a value between 0 and 0.1 %."
+                  tooltip="The ideal range of value is between 0 and 0.1 %."
                   rules={[
                     {
                       type: "number",
@@ -386,7 +387,7 @@ function Viewpond() {
                 <Form.Item
                   label="PhLevel:"
                   name="phLevel"
-                  tooltip="Please enter a value between 6.9 and 8."
+                  tooltip="The ideal range of value is between 6.9 and 8."
                   rules={[
                     {
                       type: "number",
@@ -407,7 +408,7 @@ function Viewpond() {
                 <Form.Item
                   label="O2Level:"
                   name="o2Level"
-                  tooltip="Please enter a value between 6.5 and 18 mg/l."
+                  tooltip="The ideal range of value is between 6.5 and 18 mg/l."
                   rules={[
                     {
                       type: "number",
@@ -430,7 +431,7 @@ function Viewpond() {
                 <Form.Item
                   label="Po4Level:"
                   name="po4Level"
-                  tooltip="Please enter a value between 0 and 0.035 mg/l."
+                  tooltip="The ideal range of value is between 0 and 0.035 mg/l."
                   rules={[
                     {
                       type: "number",
@@ -451,7 +452,7 @@ function Viewpond() {
                 <Form.Item
                   label="No2Level:"
                   name="no2Level"
-                  tooltip="Please enter a value between 0 and 0.1 mg/l."
+                  tooltip="The ideal range of value is between 0 and 0.1 mg/l."
                   rules={[
                     {
                       type: "number",
@@ -474,7 +475,7 @@ function Viewpond() {
                 <Form.Item
                   label="No3Level:"
                   name="no3Level"
-                  tooltip="Please enter a value between 0 and 20 mg/l."
+                  tooltip="The ideal range of value is between 0 and 20 mg/l."
                   rules={[
                     {
                       type: "number",
@@ -496,7 +497,7 @@ function Viewpond() {
                   label="TotalChlorines:"
                   name="totalChlorines"
                   hidden={true}
-                  tooltip="Please enter a value between 0 and 0.001 mg/l."
+                  tooltip="The ideal range of value is between 0 and 0.001 mg/l."
                   rules={[
                     {
                       type: "number",
@@ -710,3 +711,4 @@ function Viewpond() {
 }
 
 export default Viewpond;
+

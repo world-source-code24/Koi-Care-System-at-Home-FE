@@ -208,7 +208,7 @@ function HomePage() {
             <div className="modal-details">
               <h3>{pro.name}</h3>
               <span className="modal-sku">Product code: {pro.productId}</span>
-              <span className="modal-stock">Status: In stock {pro.stock}</span>
+              <span className="modal-stock">Status: Available </span>
               <h5 className="modal-price">Price: {pro.price}.000 VND</h5>
               <div className="modal-promotions">
                 <li>

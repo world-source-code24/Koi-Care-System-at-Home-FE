@@ -15,26 +15,26 @@ function PaymentSuccess() {
               style={{ color: "#28a745", fontSize: "80px" }}
             />
           }
-          title={<span className="gradient-text">Payment Successful!</span>}
-          subTitle="Thank you for your order! We have received your payment and sent a confirmation email."
+          title={<span className="gradient-text">Order has been sent!</span>}
+          subTitle="Thank you for your order!"
           extra={[
-            <Link to="/profile" key="orders">
+            <Link to="/yourorder" key="orders">
               <Button
                 type="primary"
                 size="large"
                 shape="round"
                 className="animate-button"
               >
-                View My Member
+                View My Orders
               </Button>
             </Link>,
-            <Link to="/home" key="home">
+            <Link to="/viewproduct" key="home">
               <Button
                 size="large"
                 shape="round"
                 className="animate-button-secondary"
               >
-                Come Home!
+                Continue Shopping
               </Button>
             </Link>,
           ]}

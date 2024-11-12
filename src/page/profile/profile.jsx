@@ -22,7 +22,7 @@ import { StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
 import { useUser } from "../../components/UserProvider/UserProvider/UserProvider";
-import axiosInstance from "../../api/axiosInstance";
+import axiosInstance from "../../components/api/axiosInstance";
 
 function Profile() {
   const { Sider, Content } = Layout;
@@ -32,12 +32,12 @@ function Profile() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState(null);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [orders, setOrders] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
   const { setUser } = useUser(); // Lấy hàm setUser từ context để cập nhật người dùng
+
   const formatCurrency = (value) => {
     if (typeof value !== "number" || isNaN(value)) {
       return "0 VND";
@@ -177,7 +177,7 @@ function Profile() {
   const handleOk = async () => {
     try {
       const response = await axios.post(
-        `https://localhost:5001/api/Payment/checkout?accId=${accId}`
+        `https://koicaresystemapi.azurewebsites.net/api/Payment/checkout?accId=${accId}`
       );
       // Check if paymentUrl is returned correctlyx
       if (response.data && response.data.paymentUrl) {
@@ -268,19 +268,20 @@ function Profile() {
                 defaultSelectedKeys={[1]}
                 className="profile_menu"
                 onClick={({ key }) => {
-                  if (key === "5") handleLogout();
+                  if (key === "4") handleLogout();
                 }}
               >
                 <Menu.Item className="accountSetting" key={1}>
                   Account Settings
                 </Menu.Item>
-                <Menu.Item key={2} onClick={fetchOrders}>
+                {/* <Menu.Item key={2} onClick={fetchOrders}>
                   Your Order
-                </Menu.Item>
+                </Menu.Item> */}
+
                 <Menu.Item key={3} onClick={() => setIsResetModalOpen(true)}>
                   Reset Password
                 </Menu.Item>
-                <Menu.Item key={5}>Log out</Menu.Item>
+                <Menu.Item key={4}>Log out</Menu.Item>
               </Menu>
             </Sider>
 
@@ -440,23 +441,6 @@ function Profile() {
               </Modal>
 
               <div className="profile_body_form">
-                <Form className="avatar">
-                  <div className="title">Avatar Profile: </div>
-                  <Upload beforeUpload={handleImageUpload}>
-                    <Button icon={<UploadOutlined />}>Upload Image</Button>
-                  </Upload>
-
-                  {(imageUrl || previewImage) && (
-                    <div>
-                      <img
-                        src={previewImage || imageUrl}
-                        alt="Uploaded"
-                        width="20%"
-                      />
-                    </div>
-                  )}
-                </Form>
-
                 <Form name="fullName">
                   <div className="title">Full Name: </div>
                   <Input

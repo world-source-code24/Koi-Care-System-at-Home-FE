@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import "./admin.scss";
 import {
+  CalculatorOutlined,
   DashboardOutlined,
   LogoutOutlined,
   ProductOutlined,
@@ -12,7 +13,8 @@ import {
 } from "@ant-design/icons";
 
 import AdminRoutes from "../../../components/admin/admin/routes";
-import axiosInstance from "../../../api/axiosInstance";
+import axiosInstance from "../../../components/api/axiosInstance";
+
 function Admin() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -101,6 +103,16 @@ function Admin() {
                 label: "Product Management",
                 key: "/admin/productManagement",
                 icon: <ProductOutlined />,
+              },
+              {
+                label: "Order List",
+                key: "/admin/orderList",
+                icon: <ProductOutlined />,
+              },
+              {
+                label: "Calculate Parameter",
+                key: "/admin/calculate",
+                icon: <CalculatorOutlined />
               },
               {
                 label: "Logout",
