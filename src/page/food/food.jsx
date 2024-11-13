@@ -271,7 +271,7 @@ function Food() {
               <>
                 <p>Recommended food amount:</p>
                 <p className="amount-value">
-                  {recommendFood} g
+                {parseFloat(recommendFood).toFixed(2)} g
                 </p>
                 {advice && (
                   <div className="advice-section">
