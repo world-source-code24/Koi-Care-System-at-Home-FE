@@ -3,7 +3,19 @@ import Footer from "../../components/footer/footer";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import bg from "../../img/a10.jpg";
 import "./viewpond.scss";
-import { Form, Input, Row, Col, Button, Select, notification } from "antd";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { Pagination } from "antd";
+import {
+  Form,
+  Input,
+  Row,
+  Col,
+  Button,
+  Select,
+  notification,
+  Table,
+  Modal,
+} from "antd";
 import { useEffect, useState } from "react";
 
 import {
@@ -15,15 +27,10 @@ import {
   CartesianGrid,
   Label,
   Legend,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
 } from "recharts";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
 const { Option } = Select;
 
 function Viewpond() {
@@ -35,8 +42,33 @@ function Viewpond() {
   const [selectedParameter, setSelectedParameter] = useState("temperature");
   const [isMember, setIsMember] = useState(false);
   const [outOfStandard, setOutOfStandard] = useState({});
-  const [radarData, setRadarData] = useState([]);
+  const location = useLocation();
+  const pondName = location.state?.name || "Unknown Pond";
+  const pondImage = location.state?.image ? `${location.state.image}` : bg;
+  const [parameterHistory, setParameterHistory] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 4;
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  const [koiList, setKoiList] = useState([]);
+  const [reportData, setReportData] = useState([]);
+  const [isReportVisible, setIsReportVisible] = useState(false);
+  const [selectedKoi, setSelectedKoi] = useState(null);
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
 
+  const calculateAge = (birthDate) => {
+    if (!birthDate) return "Unknown"; // Kiểm tra nếu không có giá trị
+    const now = new Date();
+    const birth = new Date(birthDate);
+    const ageInYears = Math.floor(
+      (now - birth) / (365.25 * 24 * 60 * 60 * 1000)
+    );
+    return ageInYears;
+  };
+
+  // render lấy thông số hồ từ api
   useEffect(() => {
     const fetchPondData = async () => {
       try {
@@ -46,7 +78,6 @@ function Viewpond() {
         if (response.status === 200) {
           const data = response.data.parameter.$values;
           setPondData(data);
-          setRadarData(createRadarData(data[data.length - 1])); // Lấy dữ liệu mới nhất để tạo biểu đồ radar
         }
       } catch (error) {
         console.error("Error fetching pond data:", error);
@@ -56,50 +87,165 @@ function Viewpond() {
     fetchPondData();
   }, [id]);
 
-  // Hàm chuyển đổi dữ liệu sang dạng radar
-  const createRadarData = (data) => {
-    return [
-      {
-        parameter: "Temperature",
-        value: parseFloat(((data.temperature / 26) * 100).toFixed(2)), // Làm tròn đến 2 chữ số thập phân
-        fullMark: 100,
-      },
-      {
-        parameter: "Salt",
-        value: parseFloat(((data.salt / 0.1) * 100).toFixed(2)),
-        fullMark: 100,
-      },
-      {
-        parameter: "pH Level",
-        value: parseFloat(((data.phLevel / 8) * 100).toFixed(2)),
-        fullMark: 100,
-      },
-      {
-        parameter: "O2 Level",
-        value: parseFloat(((data.o2Level / 18) * 100).toFixed(2)),
-        fullMark: 100,
-      },
-      {
-        parameter: "PO4 Level",
-        value: parseFloat(((data.po4Level / 0.035) * 100).toFixed(2)),
-        fullMark: 100,
-      },
-      {
-        parameter: "NO2 Level",
-        value: parseFloat(((data.no2Level / 0.1) * 100).toFixed(2)),
-        fullMark: 100,
-      },
-      {
-        parameter: "NO3 Level",
-        value: parseFloat(((data.no3Level / 20) * 100).toFixed(2)),
-        fullMark: 100,
-      },
-    ];
+  //render thông số hồ
+  useEffect(() => {
+    const fetchParameterHistory = async () => {
+      try {
+        const response = await axios.get(
+          `https://koicaresystemapi.azurewebsites.net/api/WaterParameter/get-all${id}`
+        );
+        if (response.status === 200) {
+          const sortedData = response.data.parameter.$values.sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
+
+          // Chuyển đổi thời gian sang GMT+7
+          const adjustedData = sortedData.map((item) => ({
+            ...item,
+            date: convertToGMT7(item.date),
+          }));
+
+          setParameterHistory(adjustedData);
+        }
+      } catch (error) {
+        console.error("Error fetching parameter history:", error);
+      }
+    };
+
+    // Hàm chuyển đổi thời gian sang GMT+7
+    const convertToGMT7 = (gmtDateString) => {
+      const gmtDate = new Date(gmtDateString); // Chuyển chuỗi GMT thành đối tượng Date
+      const gmt7Date = new Date(gmtDate.getTime() + 7 * 60 * 60 * 1000); // Cộng thêm 7 giờ
+      return gmt7Date.toLocaleString(); // Trả về chuỗi thời gian theo múi giờ GMT+7
+    };
+
+    fetchParameterHistory();
+  }, [id]);
+
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setIsImageModalVisible(true);
   };
 
+  // render cá Koi
   useEffect(() => {
-    createChartData();
-  }, []);
+    const fetchKoiList = async () => {
+      try {
+        const response = await axios.get(
+          `https://koicaresystemapi.azurewebsites.net/api/pond/${id}/Koi`
+        );
+
+        // Tính tuổi và cập nhật danh sách cá Koi
+        const koiListWithAge = response.data.$values.map((koi) => ({
+          ...koi,
+          age: calculateAge(koi.age), // Tính số tuổi từ ngày sinh
+        }));
+
+        setKoiList(koiListWithAge); // Lưu danh sách cá Koi vào state
+      } catch (error) {
+        console.error("Error fetching koi list:", error);
+      }
+    };
+
+    fetchKoiList();
+  }, [id]);
+
+  const fetchKoiReport = async (koiId) => {
+    try {
+      const response = await axios.get(
+        `https://koicaresystemapi.azurewebsites.net/api/KoiChart/${koiId}`
+      );
+      const chartData = response.data["$values"];
+  
+      // Chuyển đổi giờ chính xác theo GMT+7 và định dạng 12 giờ (AM/PM)
+      const report = chartData.map((data) => {
+        const gmtDate = new Date(data.date); // Dữ liệu gốc
+        const gmt7Date = new Date(gmtDate.getTime() + 7 * 60 * 60 * 1000); // Cộng thêm 7 giờ
+  
+        return {
+          date: gmt7Date.toLocaleString("en-US", {
+            hour12: true, // Sử dụng định dạng 12 giờ
+            timeZone: "Asia/Bangkok", // Đảm bảo múi giờ GMT+7
+          }),
+          length: data.length,
+          weight: data.weight,
+          healthStatus:
+            Math.abs(data.weight - (chartData[0]?.weight || 0)) >
+            0.15 * (chartData[0]?.weight || 1)
+              ? "Warning"
+              : "Good",
+        };
+      });
+      setReportData(report);
+    } catch (error) {
+      console.error("Error fetching Koi report:", error);
+    }
+  };  
+
+  const handleShowReport = async (koi) => {
+    setSelectedKoi(koi);
+    await fetchKoiReport(koi.koiId);
+    setIsReportVisible(true);
+  };
+
+  const columns = [
+    {
+      title: "No.",
+      dataIndex: "index",
+      key: "index",
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      render: (text) => (
+        <img
+          src={text}
+          alt="Koi"
+          style={{ width: "50px", borderRadius: "5px", cursor: "pointer" }}
+          onClick={() => handleImageClick(text)}
+        />
+      ),
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Age",
+      dataIndex: "age",
+      key: "age",
+      render: (text) => (text !== "Unknown" ? `${text} years` : text),
+    },
+    {
+      title: "Length (cm)",
+      dataIndex: "length",
+      key: "length",
+    },
+    {
+      title: "Weight (g)",
+      dataIndex: "weight",
+      key: "weight",
+    },
+    {
+      title: "Report",
+      key: "action",
+      render: (_, record) => (
+        <RemoveRedEyeIcon
+          style={{ cursor: "pointer" }}
+          type="primary"
+          onClick={() => handleShowReport(record)}
+        />
+      ),
+    },
+  ];
+
+  const closeReport = () => {
+    setIsReportVisible(false);
+    setReportData([]);
+  };
 
   // Khởi tạo các giá trị ban đầu là null
   const [currentParameter, setCurrentParameter] = useState({
@@ -252,6 +398,7 @@ function Viewpond() {
       po4Level: values.po4Level,
       no2Level: values.no2Level,
       no3Level: values.no3Level,
+      date: new Date(),
     };
 
     try {
@@ -263,6 +410,7 @@ function Viewpond() {
 
       if (response.status === 200 || response.status === 201) {
         const newData = response.data;
+        setParameterHistory((prevHistory) => [...prevHistory, newData]);
         setCurrentParameter({
           temperature: newData.temperature || null,
           salt: newData.salt || null,
@@ -273,7 +421,6 @@ function Viewpond() {
           no2Level: newData.no2Level || null,
           no3Level: newData.no3Level || null,
         });
-        setRadarData(createRadarData(newData));
         setPondData((prevData) => {
           const updatedPondData = [...prevData, newData];
           setChartData(createChartData(updatedPondData, selectedParameter));
@@ -299,7 +446,6 @@ function Viewpond() {
     }
   };
 
-  // Chuyển đổi giữa view và edit
   const toggleEditMode = () => {
     setIsEditing(!isEditing);
   };
@@ -314,6 +460,7 @@ function Viewpond() {
         </div>
 
         <h1>Water Parameters</h1>
+
         <i
           className="bi bi-arrow-left-circle"
           style={{
@@ -323,6 +470,12 @@ function Viewpond() {
           }}
           onClick={() => navigate("/environment")}
         ></i>
+
+        <div className="PondImage">
+          <h3>Pond {pondName}</h3>
+          <img src={pondImage} style={{ borderRadius: "15px" }} />
+        </div>
+
         <div className="ViewPage__Water">
           <Form
             form={waterParamsForm}
@@ -343,7 +496,7 @@ function Viewpond() {
                 </Form.Item>
 
                 <Form.Item
-                  label="Temperature:"
+                  label="Temperature (°C)"
                   name="temperature"
                   tooltip="The ideal range of value is between 5 and 26 °C."
                   rules={[
@@ -364,7 +517,7 @@ function Viewpond() {
                 )}
 
                 <Form.Item
-                  label="Salt:"
+                  label="Salt (%)"
                   name="salt"
                   tooltip="The ideal range of value is between 0 and 0.1 %."
                   rules={[
@@ -385,7 +538,7 @@ function Viewpond() {
                 )}
 
                 <Form.Item
-                  label="PhLevel:"
+                  label="pH (pH)"
                   name="phLevel"
                   tooltip="The ideal range of value is between 6.9 and 8."
                   rules={[
@@ -406,7 +559,7 @@ function Viewpond() {
                 )}
 
                 <Form.Item
-                  label="O2Level:"
+                  label="Oxygen (mg/L)"
                   name="o2Level"
                   tooltip="The ideal range of value is between 6.5 and 18 mg/l."
                   rules={[
@@ -429,7 +582,7 @@ function Viewpond() {
 
               <Col xs={24} sm={12}>
                 <Form.Item
-                  label="Po4Level:"
+                  label="PO₄ (mg/L)"
                   name="po4Level"
                   tooltip="The ideal range of value is between 0 and 0.035 mg/l."
                   rules={[
@@ -450,7 +603,7 @@ function Viewpond() {
                 )}
 
                 <Form.Item
-                  label="No2Level:"
+                  label="NO₂ (mg/L)"
                   name="no2Level"
                   tooltip="The ideal range of value is between 0 and 0.1 mg/l."
                   rules={[
@@ -473,7 +626,7 @@ function Viewpond() {
                 )}
 
                 <Form.Item
-                  label="No3Level:"
+                  label="NO₃ (mg/L)"
                   name="no3Level"
                   tooltip="The ideal range of value is between 0 and 20 mg/l."
                   rules={[
@@ -509,11 +662,6 @@ function Viewpond() {
                 >
                   <Input type="number" disabled={!isEditing} />
                 </Form.Item>
-                {/* {outOfStandard.totalChlorines && (
-                  <p className="out-of-standard">
-                    Warning: TotalChlorines {outOfStandard.totalChlorines} !
-                  </p>
-                )} */}
               </Col>
             </Row>
 
@@ -538,7 +686,7 @@ function Viewpond() {
                 <Option value="salt">Salt</Option>
                 <Option value="phLevel">pH Level</Option>
                 <Option value="o2Level">O2 Level</Option>
-                {/* <Option value="totalChlorines">Total Chlorines</Option> */}
+
                 <Option value="po4Level">PO4 Level</Option>
                 <Option value="no2Level">NO2 Level</Option>
                 <Option value="no3Level">NO3 Level</Option>
@@ -587,116 +735,6 @@ function Viewpond() {
                 />
                 <Legend />
               </LineChart>
-
-              <RadarChart
-                outerRadius={90}
-                width={650}
-                height={400}
-                data={radarData}
-              >
-                <PolarGrid />
-                <PolarAngleAxis dataKey="parameter" />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                <Tooltip />
-                <Radar
-                  name="Water Parameters"
-                  dataKey="value"
-                  stroke="#8884d8"
-                  fill="#8884d8"
-                  fillOpacity={0.6}
-                />
-              </RadarChart>
-
-              <div className="Warning">
-                <h3>Parameter Status</h3>
-                <div className="warning-content">
-                  <p>
-                    <strong>Temperature:</strong>
-                    {outOfStandard.temperature ? (
-                      <span className="out-of-standard">
-                        <i className="icon-warning"></i>{" "}
-                        {outOfStandard.temperature}
-                      </span>
-                    ) : (
-                      <span className="in-standard">Within standard range</span>
-                    )}
-                  </p>
-                  <p>
-                    <strong>Salt:</strong>
-                    {outOfStandard.salt ? (
-                      <span className="out-of-standard">
-                        <i className="icon-warning"></i> {outOfStandard.salt}
-                      </span>
-                    ) : (
-                      <span className="in-standard">Within standard range</span>
-                    )}
-                  </p>
-                  <p>
-                    <strong>pH Level:</strong>
-                    {outOfStandard.phLevel ? (
-                      <span className="out-of-standard">
-                        <i className="icon-warning"></i> {outOfStandard.phLevel}
-                      </span>
-                    ) : (
-                      <span className="in-standard">Within standard range</span>
-                    )}
-                  </p>
-                  <p>
-                    <strong>O2 Level:</strong>
-                    {outOfStandard.o2Level ? (
-                      <span className="out-of-standard">
-                        <i className="icon-warning"></i> {outOfStandard.o2Level}
-                      </span>
-                    ) : (
-                      <span className="in-standard">Within standard range</span>
-                    )}
-                  </p>
-                  <p>
-                    <strong>PO4 Level:</strong>
-                    {outOfStandard.po4Level ? (
-                      <span className="out-of-standard">
-                        <i className="icon-warning"></i>{" "}
-                        {outOfStandard.po4Level}
-                      </span>
-                    ) : (
-                      <span className="in-standard">Within standard range</span>
-                    )}
-                  </p>
-                  <p>
-                    <strong>NO2 Level:</strong>
-                    {outOfStandard.no2Level ? (
-                      <span className="out-of-standard">
-                        <i className="icon-warning"></i>{" "}
-                        {outOfStandard.no2Level}
-                      </span>
-                    ) : (
-                      <span className="in-standard">Within standard range</span>
-                    )}
-                  </p>
-                  <p>
-                    <strong>NO3 Level:</strong>
-                    {outOfStandard.no3Level ? (
-                      <span className="out-of-standard">
-                        <i className="icon-warning"></i>{" "}
-                        {outOfStandard.no3Level}
-                      </span>
-                    ) : (
-                      <span className="in-standard">Within standard range</span>
-                    )}
-                  </p>
-                  {/* <p>
-                    <strong>Total Chlorines:</strong>
-                    {outOfStandard.totalChlorines ? (
-                      <span className="out-of-standard">
-                        <i className="icon-warning"></i>{" "}
-                        {outOfStandard.totalChlorines}
-                      </span>
-                    ) : (
-                      <span className="in-standard">Within standard range</span>
-                    )}
-                  </p> */}
-                </div>
-              </div>
             </div>
           ) : (
             <b className="buymembership">
@@ -705,10 +743,197 @@ function Viewpond() {
           )}
         </div>
       </div>
+
+      {isMember ? (
+        <>
+          <div className="parameter__history" style={{ textAlign: "center" }}>
+            <Row gutter={[16, 16]} justify="center">
+              {parameterHistory
+                .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+                .map((record, index) => (
+                  <Col
+                    key={index}
+                    xs={24}
+                    sm={12}
+                    md={6}
+                    style={{ textAlign: "center" }}
+                  >
+                    <div
+                      className="parameter-table"
+                      style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "10px",
+                        padding: "10px",
+                        backgroundColor: "#f9f9f9",
+                      }}
+                    >
+                      <h3>Pond Name: {pondName}</h3>
+                      <p>Date: {new Date(record.date).toLocaleString()}</p>
+                      <Table
+                        dataSource={[
+                          {
+                            name: "Temperature",
+                            value: record.temperature,
+                            reference: "5 - 26",
+                            unit: "°C",
+                          },
+                          {
+                            name: "Salt",
+                            value: record.salt,
+                            reference: "0 - 0.1",
+                            unit: "%",
+                          },
+                          {
+                            name: "pH Level",
+                            value: record.phLevel,
+                            reference: "6.9 - 8",
+                            unit: "pH",
+                          },
+                          {
+                            name: "Oxygen",
+                            value: record.o2Level,
+                            reference: "> 6.5",
+                            unit: "mg/L",
+                          },
+                          {
+                            name: "PO₄ Level",
+                            value: record.po4Level,
+                            reference: "0 - 0.035",
+                            unit: "mg/L",
+                          },
+                          {
+                            name: "NO₂ Level",
+                            value: record.no2Level,
+                            reference: "0 - 0.1",
+                            unit: "mg/L",
+                          },
+                          {
+                            name: "NO₃ Level",
+                            value: record.no3Level,
+                            reference: "0 - 20",
+                            unit: "mg/L",
+                          },
+                        ]}
+                        columns={[
+                          { title: "Name", dataIndex: "name", key: "name" },
+                          { title: "Value", dataIndex: "value", key: "value" },
+                          {
+                            title: "Standard Value",
+                            dataIndex: "reference",
+                            key: "reference",
+                          },
+                          { title: "Unit", dataIndex: "unit", key: "unit" },
+                        ]}
+                        pagination={false}
+                        rowKey="name"
+                      />
+                    </div>
+                  </Col>
+                ))}
+            </Row>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "20px",
+              }}
+            >
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={parameterHistory.length}
+                onChange={handlePageChange}
+              />
+            </div>
+          </div>
+
+          <br />
+          <div className="koiList">
+            <h2>Koi Fish List</h2>
+            <Table columns={columns} dataSource={koiList} rowKey="koiId" />
+          </div>
+
+          <Modal
+            title={`Koi Growth Report for ${selectedKoi?.name}`}
+            open={isReportVisible}
+            onCancel={closeReport}
+            footer={<Button onClick={closeReport}>Close</Button>}
+          >
+            <div style={{ marginBottom: "20px" }}>
+              <p style={{ color: "green", fontWeight: "bold" }}>
+                Good: Your fish are growing very well. Please continue to take
+                care of your fish at all times!
+              </p>
+              <p style={{ color: "red", fontWeight: "bold" }}>
+                Warning: Your Koi fish weight is increasing or decreasing by
+                more than 15%. Review your fish feeding process or check your
+                pond water quality!
+              </p>
+              <p>
+                <strong>Suggestion:</strong>
+                <ul>
+                  <li>
+                    You can use the Food Calculator or Salt Calculator function
+                    to calculate the amount of food or salt for your pond.
+                  </li>
+                  <li>
+                    Visit the product store at Home page to buy accessories to
+                    care for your fish!
+                  </li>
+                </ul>
+              </p>
+            </div>
+
+            <Table
+              className="TableKoi"
+              dataSource={reportData}
+              columns={[
+                {
+                  title: "Date",
+                  dataIndex: "date",
+                  key: "date",
+                  render: (text) => <span>{text}</span>, // Đảm bảo hiển thị đúng dữ liệu
+                },
+                { title: "Length (cm)", dataIndex: "length", key: "length" },
+                { title: "Weight (g)", dataIndex: "weight", key: "weight" },
+                {
+                  title: "Health Status",
+                  dataIndex: "healthStatus",
+                  key: "healthStatus",
+                  render: (text) => (
+                    <span
+                      style={{ color: text === "Warning" ? "red" : "green" }}
+                    >
+                      {text}
+                    </span>
+                  ),
+                },
+              ]}
+              rowKey="date"
+              pagination={false}
+              style={{ width: "80%" }}
+            />
+          </Modal>
+        </>
+      ) : (
+        <></>
+      )}
+      <Modal
+        visible={isImageModalVisible}
+        footer={null}
+        onCancel={() => setIsImageModalVisible(false)}
+        centered
+      >
+        <img
+          src={selectedImage}
+          alt="Koi"
+          style={{ width: "100%", borderRadius: "10px" }}
+        />
+      </Modal>
+
       <Footer />
     </>
   );
 }
 
 export default Viewpond;
-

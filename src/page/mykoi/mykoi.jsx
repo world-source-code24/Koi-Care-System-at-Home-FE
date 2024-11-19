@@ -1,22 +1,30 @@
 import "./mykoi.scss";
+import dayjs from "dayjs"; // Import dayjs at the top
 import Header from "../../components/header/header";
 import {
   Button,
   Col,
+  DatePicker,
   Divider,
   Form,
   Input,
   Modal,
+  notification,
   Row,
   Select,
   Tooltip,
+  Upload,
 } from "antd";
-import { FilterOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import {
+  FilterOutlined,
+  InfoCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import ca from "../../img/a1.jpg";
 import Footer from "../../components/footer/footer";
+import { handleImageUpload } from "../../config/upload";
 const { Option } = Select;
 
 function Mykoi() {
@@ -41,7 +49,6 @@ function Mykoi() {
     const accId = localStorage.getItem("userId");
 
     if (!user || !accId) {
-      console.error("Thiếu user hoặc accId trong localStorage");
       alert("Vui lòng đăng nhập trước khi truy cập trang này.");
       navigate("/login");
       return;
@@ -51,10 +58,16 @@ function Mykoi() {
       const response = await axios.get(
         `https://koicaresystemapi.azurewebsites.net/api/user/${accId}/Koi?accId=${accId}`
       );
+
       const koiList = response.data.$values.map((koi) => ({
         koiId: koi.koiId,
         name: koi.name,
-        age: koi.age,
+        // Tính toán tuổi từ ngày sinh (koi.age là datetime)
+        age: koi.age
+          ? Math.floor(
+              (new Date() - new Date(koi.age)) / (365.25 * 24 * 60 * 60 * 1000) // Số ngày trong một năm
+            )
+          : "-", // Trường hợp không có giá trị age
         breed: koi.breed,
         image: koi.image,
         length: koi.length,
@@ -76,7 +89,7 @@ function Mykoi() {
       const response = await axios.get(
         `https://koicaresystemapi.azurewebsites.net/api/Show-All-Ponds-UserID/${accId}`
       );
-      const pondList = response.data.listPond["$values"]; 
+      const pondList = response.data.listPond["$values"];
       setPonds(pondList);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách hồ", error);
@@ -84,36 +97,42 @@ function Mykoi() {
   };
 
   useEffect(() => {
-    fetchKoiData(); 
-    fetchPonds(); 
+    fetchKoiData();
+    fetchPonds();
   }, [navigate]);
 
   const handleEditClick = (koi) => {
     setSelectedKoi(koi);
+  
+    // Chuyển đổi age thành đối tượng dayjs (nếu age tồn tại)
+    const ageAsDate = koi.age ? dayjs(koi.age) : null;
+  
     form.setFieldsValue({
       name: koi.name,
       pond: koi.pondId,
       physique: koi.physique,
-      age: koi.age,
+      age: ageAsDate, // Gán age dưới dạng đối tượng dayjs
       length: koi.length,
       weight: koi.weight,
       sex: koi.sex,
       breed: koi.breed,
     });
+  
     setIsEditModalVisible(true);
   };
+  
 
   const applyFilters = () => {
     let filteredData = [...koiData];
 
     // Filter by pond
     if (filterPond !== "All") {
-      filteredData = filteredData.filter(koi => koi.pondId === filterPond);
+      filteredData = filteredData.filter((koi) => koi.pondId === filterPond);
     }
 
     // Filter by sex
     if (filterSex !== "All") {
-      filteredData = filteredData.filter(koi => koi.sex === filterSex);
+      filteredData = filteredData.filter((koi) => koi.sex === filterSex);
     }
 
     // Sort data
@@ -171,21 +190,33 @@ function Mykoi() {
       const values = await form.validateFields();
 
       if (!selectedPond) {
-        console.error("Vui lòng chọn hồ trước khi thêm cá koi.");
+        notification.error({
+          message: "Error",
+          description: "Please select a pond before adding Koi.",
+        });
+        return;
+      }
+
+      let downloadURL = image;
+      if (!image || typeof image !== "string") {
+        notification.error({
+          message: "Error",
+          description: "Please upload an image before submitting.",
+        });
         return;
       }
 
       const newKoi = {
         koiId: 0,
         name: values.name,
-        image: image,
-        physique: values.physique || "string",
-        age: values.age || 0,
+        image: downloadURL,
+        physique: values.physique || "normal",
+        age: values.age ? values.age.toISOString() : null,
         length: values.length || 0,
         weight: values.weight || 0,
         sex: values.sex === "male",
         breed: values.breed || "string",
-        pondId: selectedPond, 
+        pondId: selectedPond,
       };
 
       const response = await fetch(
@@ -200,24 +231,32 @@ function Mykoi() {
       );
 
       if (response.ok) {
-        console.log("Cá koi đã được thêm thành công vào hồ.");
-        fetchKoiData(); // Gọi lại hàm fetchKoiData để cập nhật danh sách Koi
-
+        fetchKoiData();
         form.resetFields();
         setIsModalVisible(false);
-        setFileList([]);
         setImage(null);
+        notification.success({
+          message: "Success",
+          description: "The Koi fish has been added successfully!",
+        });
       } else {
         const errorData = await response.json();
-        console.error("Lỗi khi thêm cá vào hồ:", errorData);
+        notification.error({
+          message: "Error",
+          description: errorData.message || "Failed to add the Koi fish.",
+        });
       }
     } catch (error) {
-      console.log("Validation failed or API error:", error);
+      console.error("Error adding Koi:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to add the Koi fish. Please try again.",
+      });
     }
   };
 
   const handlePondChange = (value) => {
-    setSelectedPond(value); // Lưu giá trị pondId khi chọn hồ
+    setSelectedPond(value);
     console.log(value);
   };
 
@@ -229,47 +268,82 @@ function Mykoi() {
 
   const handleNavigateToKoiDetail = (koi) => {
     if (koi.koiId) {
-      console.log("Navigating to KoiDetail with pondId:", koi.pondId);
       navigate(`/koidetail/${koi.koiId}`, {
-        state: { pondId: koi.pondId },
+        state: {
+          pondId: koi.pondId,
+          image: koi.image,
+          age: koi.age, // Truyền ngày sinh của cá Koi
+        },
       });
     } else {
       console.error("Pond ID is undefined for this koi.");
     }
   };
+  
 
   const handleEditSubmit = async () => {
     try {
-      const updatedKoiData = form.getFieldsValue();
+      const values = await form.validateFields();
+
+      // Sử dụng URL từ ảnh đã upload hoặc giữ lại ảnh gốc
+      let downloadURL = image || selectedKoi.image;
+
+      // Nếu ảnh mới được chọn (image là File), tải ảnh lên
+      if (fileList.length > 0) {
+        const file = fileList[0].originFileObj || fileList[0];
+        try {
+          downloadURL = await handleImageUpload(file); // Hàm tải ảnh lên
+        } catch (error) {
+          notification.error({
+            message: "Error Uploading Image",
+            description:
+              "There was an issue uploading the image. Please try again.",
+          });
+          return;
+        }
+      }
+
       const updatedKoi = {
         ...selectedKoi,
-        ...updatedKoiData,
-        koiId: selectedKoi.koiId,
-        pondId: selectedKoi.pondId,
-        sex: updatedKoiData.sex === "male",
+        name: values.name,
+        pondId: values.pond,
+        physique: values.physique,
+        age: values.age ? values.age.toISOString() : null, // Chuyển đổi dayjs thành ISO string
+        length: values.length,
+        weight: values.weight,
+        sex: values.sex === "male",
+        breed: values.breed,
+        image: downloadURL, // Cập nhật ảnh
       };
 
-      const response = await fetch(
+      const response = await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/edit/pond/${updatedKoi.pondId}/Koi/${updatedKoi.koiId}`,
+        updatedKoi,
         {
-          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(updatedKoi),
         }
       );
 
-      if (response.ok) {
-        console.log("Cập nhật cá koi thành công!");
+      if (response.status === 200) {
+        fetchKoiData(); // Tải lại danh sách cá Koi
+        setFileList([]); // Reset fileList
+        setImage(null); // Reset image
         setIsEditModalVisible(false);
-        fetchKoiData();
+        notification.success({
+          message: "Success",
+          description: "The Koi fish has been updated successfully!",
+        });
       } else {
-        const errorData = await response.json();
-        console.error("Lỗi khi cập nhật cá koi:", errorData);
+        throw new Error("Failed to update the Koi fish");
       }
     } catch (error) {
-      console.error("Lỗi khi gửi yêu cầu cập nhật:", error);
+      console.error("Error updating Koi:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to update the Koi fish. Please try again.",
+      });
     }
   };
 
@@ -303,23 +377,47 @@ function Mykoi() {
       <div className="koi_list">
         {filteredKoiData.length === 0 ? (
           <div className="empty_message">
-            <p>Oops :(( You don't add any koi yet. Press "Add new koi" button to add the new one !!!</p>
+            <p>
+              Oops :(( You don't add any koi yet. Press "Add new koi" button to
+              add the new one !!!
+            </p>
           </div>
         ) : (
           filteredKoiData.map((koi, index) => (
             <div
-              key={index}
+              key={koi.koiId}
               className="koi_item"
               onClick={() => handleNavigateToKoiDetail(koi)}
               style={{ cursor: "pointer" }}
             >
-              <img src={ca} style={{ width: 200, height: 100 }} />
+              <img
+                src={koi.image || "https://via.placeholder.com/200"} // Hiển thị ảnh mặc định nếu thiếu
+                alt={koi.name || "Koi Fish"}
+                style={{ width: 200, height: 100, objectFit: "cover" }}
+              />
               <div className="koi_info">
-                <p><strong>Name:</strong> {koi.name}</p>
-                <p><strong>Age:</strong> {koi.age || "-"}</p>
-                <p><strong>Variety:</strong> {koi.breed || "-"}</p>
-                <p><strong>Length:</strong> {koi.length} cm</p>
-                <Button className="button_ed" onClick={(e) => { e.stopPropagation(); handleEditClick(koi); }}>Edit</Button>
+                <p>
+                  <strong>Name:</strong> {koi.name}
+                </p>
+                <p>
+                  <strong>Age:</strong>{" "}
+                  {koi.age !== "-" ? `${koi.age} years` : "Unknown"}
+                </p>
+                <p>
+                  <strong>Variety:</strong> {koi.breed || "-"}
+                </p>
+                <p>
+                  <strong>Length:</strong> {koi.length} cm
+                </p>
+                <Button
+                  className="button_ed"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditClick(koi);
+                  }}
+                >
+                  Edit
+                </Button>
               </div>
             </div>
           ))
@@ -338,11 +436,47 @@ function Mykoi() {
 
         <Form form={form} layout="vertical">
           <div className="add_image">
-            <img src={ca} style={{ width: 200, height: 100 }} />
+            {/* <img src={ca} style={{ width: 200, height: 100 }} /> */}
           </div>
           <Row gutter={16}>
             <Col span={12}>
-            <Form.Item
+              <Form.Item label="Upload Image">
+                <Upload
+                  listType="picture-card"
+                  showUploadList={false}
+                  beforeUpload={() => false} // Không upload trực tiếp
+                  onChange={async ({ file }) => {
+                    const fileObj = file.originFileObj || file; // Lấy file gốc
+                    try {
+                      const downloadURL = await handleImageUpload(fileObj); // Upload ảnh và lấy URL
+                      setImage(downloadURL); // Lưu URL vào state
+                      notification.success({
+                        message: "Image Uploaded",
+                        description:
+                          "The image has been uploaded successfully!",
+                      });
+                    } catch (error) {
+                      console.error("Error uploading image:", error);
+                      notification.error({
+                        message: "Error Uploading Image",
+                        description:
+                          "There was an issue uploading the image. Please try again.",
+                      });
+                    }
+                  }}
+                >
+                  {image ? (
+                    <img src={image} alt="Koi Fish" style={{ width: "100%" }} />
+                  ) : (
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>Upload</div>
+                    </div>
+                  )}
+                </Upload>
+              </Form.Item>
+
+              <Form.Item
                 label="Name:"
                 name="name"
                 rules={[
@@ -350,16 +484,18 @@ function Mykoi() {
                     required: true,
                     message: "Please enter your Koi fish name!",
                   },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || !checkDuplicateName(value)) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error("The name of the fish already exists, please change the name !")
-                      );
-                    },
-                  }),
+                  // ({ getFieldValue }) => ({
+                  //   validator(_, value) {
+                  //     if (!value || !checkDuplicateName(value)) {
+                  //       return Promise.resolve();
+                  //     }
+                  //     return Promise.reject(
+                  //       new Error(
+                  //         "The name of the fish already exists, please change the name !"
+                  //       )
+                  //     );
+                  //   },
+                  // }),
                 ]}
               >
                 <Input />
@@ -402,34 +538,17 @@ function Mykoi() {
             </Col>
             <Col span={12}>
               <Form.Item
-                label={
-                  <span>
-                    Age:{" "}
-                    <Tooltip title="Please enter a positive integer (1 or greater)">
-                      <InfoCircleOutlined style={{ color: "black" }} />
-                    </Tooltip>
-                  </span>
-                }
+                label="Date of Birth:"
                 name="age"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter the age of the Koi fish!",
-                  },
-                  {
-                    validator(_, value) {
-                      const ageValue = Number(value);
-                      if (!value || (Number.isInteger(ageValue) && ageValue > 0)) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error("Please enter a valid age (positive integers only)!")
-                      );
-                    },
+                    message:
+                      "Please select the date of birth for the Koi fish!",
                   },
                 ]}
               >
-                <Input type="number" min={1} step={1} />
+                <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
           </Row>
@@ -441,9 +560,7 @@ function Mykoi() {
                   <span>
                     Length (cm):{" "}
                     <Tooltip title="Length must be a positive number !">
-                      <InfoCircleOutlined
-                        style={{ color: "black" }}
-                      />
+                      <InfoCircleOutlined style={{ color: "black" }} />
                     </Tooltip>
                   </span>
                 }
@@ -466,9 +583,7 @@ function Mykoi() {
                   <span>
                     Weight (g):{" "}
                     <Tooltip title="Weight must be a positive number !">
-                      <InfoCircleOutlined
-                        style={{ color: "black" }}
-                      />
+                      <InfoCircleOutlined style={{ color: "black" }} />
                     </Tooltip>
                   </span>
                 }
@@ -489,10 +604,15 @@ function Mykoi() {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item 
-                label="Sex:" 
-                name="sex" 
-                rules={[{ required: true, message: "Please select the sex of the Koi fish!" }]}
+              <Form.Item
+                label="Sex:"
+                name="sex"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the sex of the Koi fish!",
+                  },
+                ]}
               >
                 <Select>
                   <Option value="male">Male</Option>
@@ -520,8 +640,21 @@ function Mykoi() {
       >
         {/* Sort Option */}
         <div>
-          <label style={{ fontSize: "19px", fontWeight: "bold", fontFamily: "'Gowun Batang", color: "#333" }}>Sort by:</label>
-          <Select value={sortOption} onChange={setSortOption} style={{ width: "100%" }}>
+          <label
+            style={{
+              fontSize: "19px",
+              fontWeight: "bold",
+              fontFamily: "'Gowun Batang",
+              color: "#333",
+            }}
+          >
+            Sort by:
+          </label>
+          <Select
+            value={sortOption}
+            onChange={setSortOption}
+            style={{ width: "100%" }}
+          >
             <Option value="newest">In pond since (newest first)</Option>
             <Option value="oldest">In pond since (oldest first)</Option>
             <Option value="name-asc">Name (A-Z)</Option>
@@ -535,8 +668,21 @@ function Mykoi() {
 
         {/* Pond Filter */}
         <div style={{ marginTop: "16px" }}>
-          <label style={{ fontSize: "19px", fontWeight: "bold", fontFamily: "'Gowun Batang'", color: "#333" }}>Pond:</label>
-          <Select value={filterPond} onChange={setFilterPond} style={{ width: "100%" }}>
+          <label
+            style={{
+              fontSize: "19px",
+              fontWeight: "bold",
+              fontFamily: "'Gowun Batang'",
+              color: "#333",
+            }}
+          >
+            Pond:
+          </label>
+          <Select
+            value={filterPond}
+            onChange={setFilterPond}
+            style={{ width: "100%" }}
+          >
             <Option value="All">All</Option>
             {ponds.map((pond) => (
               <Option key={pond.pondId} value={pond.pondId}>
@@ -548,8 +694,21 @@ function Mykoi() {
 
         {/* Sex Filter */}
         <div style={{ marginTop: "16px" }}>
-          <label style={{ fontSize: "19px", fontWeight: "bold", fontFamily: "'Gowun Batang'", color: "#333" }}>Sex:</label>
-          <Select value={filterSex} onChange={setFilterSex} style={{ width: "100%" }}>
+          <label
+            style={{
+              fontSize: "19px",
+              fontWeight: "bold",
+              fontFamily: "'Gowun Batang'",
+              color: "#333",
+            }}
+          >
+            Sex:
+          </label>
+          <Select
+            value={filterSex}
+            onChange={setFilterSex}
+            style={{ width: "100%" }}
+          >
             <Option value="All">All</Option>
             <Option value="male">Male</Option>
             <Option value="female">Female</Option>
@@ -569,11 +728,45 @@ function Mykoi() {
 
         <Form form={form} layout="vertical">
           <div className="add_image">
-            <img src={ca} style={{ width: 200, height: 100 }} />
+            {/* <img src={ca} style={{ width: 200, height: 100 }} /> */}
           </div>
+          <Form.Item label="Upload Image">
+            <Upload
+              listType="picture-card"
+              showUploadList={false}
+              beforeUpload={() => false} // Không upload trực tiếp
+              onChange={async ({ file }) => {
+                const fileObj = file.originFileObj || file; // Lấy `originFileObj` nếu có
+                try {
+                  const downloadURL = await handleImageUpload(fileObj); // Upload ảnh và lấy URL
+                  setImage(downloadURL); // Lưu URL đã upload vào state
+                  notification.success({
+                    message: "Image Uploaded",
+                    description: "The image has been uploaded successfully!",
+                  });
+                } catch (error) {
+                  console.error("Error uploading image:", error);
+                  notification.error({
+                    message: "Error Uploading Image",
+                    description:
+                      "There was an issue uploading the image. Please try again.",
+                  });
+                }
+              }}
+            >
+              {image ? (
+                <img src={image} alt="Koi" style={{ width: "100%" }} />
+              ) : (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              )}
+            </Upload>
+          </Form.Item>
           <Row gutter={16}>
             <Col span={12}>
-            <Form.Item
+              <Form.Item
                 label="Name:"
                 name="name"
                 rules={[
@@ -587,7 +780,9 @@ function Mykoi() {
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        new Error("The name of the fish already exists, please change the name !")
+                        new Error(
+                          "The name of the fish already exists, please change the name !"
+                        )
                       );
                     },
                   }),
@@ -633,34 +828,17 @@ function Mykoi() {
             </Col>
             <Col span={12}>
               <Form.Item
-                label={
-                  <span>
-                    Age:{" "}
-                    <Tooltip title="Please enter a positive integer (1 or greater)">
-                      <InfoCircleOutlined style={{ color: "black" }} />
-                    </Tooltip>
-                  </span>
-                }
+                label="Date of Birth:"
                 name="age"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter the age of the Koi fish!",
-                  },
-                  {
-                    validator(_, value) {
-                      const ageValue = Number(value);
-                      if (!value || (Number.isInteger(ageValue) && ageValue > 0)) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error("Please enter a valid age (positive integers only)!")
-                      );
-                    },
+                    message:
+                      "Please select the date of birth for the Koi fish!",
                   },
                 ]}
               >
-                <Input type="number" min={1} step={1} />
+                <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
           </Row>
@@ -672,9 +850,7 @@ function Mykoi() {
                   <span>
                     Length (cm):{" "}
                     <Tooltip title="Length must be a positive number !">
-                      <InfoCircleOutlined
-                        style={{ color: "black" }}
-                      />
+                      <InfoCircleOutlined style={{ color: "black" }} />
                     </Tooltip>
                   </span>
                 }
@@ -697,9 +873,7 @@ function Mykoi() {
                   <span>
                     Weight (g):{" "}
                     <Tooltip title="Weight must be a positive number !">
-                      <InfoCircleOutlined
-                        style={{ color: "black" }}
-                      />
+                      <InfoCircleOutlined style={{ color: "black" }} />
                     </Tooltip>
                   </span>
                 }
@@ -720,10 +894,15 @@ function Mykoi() {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item 
-                label="Sex:" 
-                name="sex" 
-                rules={[{ required: true, message: "Please select the sex of the Koi fish!" }]}
+              <Form.Item
+                label="Sex:"
+                name="sex"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the sex of the Koi fish!",
+                  },
+                ]}
               >
                 <Select>
                   <Option value="male">Male</Option>

@@ -1,23 +1,24 @@
 import { useState, useEffect } from "react";
 import Header from "../../components/header/header";
 import "./environment.scss";
+import { Upload } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import koi from "../../img/news.jpg";
+
 import {
   Form,
   Input,
   Button,
   Modal,
-  Upload,
   Row,
   Col,
   notification,
   Space,
 } from "antd";
 import Footer from "../../components/footer/footer";
-import { UploadOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import debounce from "lodash/debounce";
-import ca from "../../img/hoca.jpg";
+import { handleImageUpload } from "../../config/upload";
 function Environment() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
@@ -31,6 +32,19 @@ function Environment() {
   // const [editingIndex, setEditingIndex] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("user"));
+
+  const fetchTotalKoiCount = async (pondId) => {
+    try {
+      const response = await fetch(
+        `https://koicaresystemapi.azurewebsites.net/api/pond/${pondId}/Koi`
+      );
+      const koiList = await response.json();
+      return koiList?.$values?.length || 0; // Trả về số lượng cá Koi
+    } catch (error) {
+      console.error("Error fetching koi count:", error);
+      return 0; // Trả về 0 nếu lỗi
+    }
+  };
 
   const fetchPondData = async () => {
     try {
@@ -51,14 +65,13 @@ function Environment() {
       }
 
       const data = await response.json();
-      const koiCountByPond =
-        JSON.parse(localStorage.getItem("koiCountByPond")) || {};
-
-      // Gắn số lượng koi vào từng hồ cá
-      const updatedPondDataList = data.listPond.$values.map((pond) => ({
-        ...pond,
-        koiCount: koiCountByPond[pond.pondId] || 0,
-      }));
+      const updatedPondDataList = await Promise.all(
+        data.listPond.$values.map(async (pond) => {
+          const koiCount = await fetchTotalKoiCount(pond.pondId); // Gọi hàm đếm số lượng cá
+          return { ...pond, koiCount }; // Gắn số lượng cá vào từng hồ
+        })
+      );
+      setPondDataList(updatedPondDataList);
 
       setPondDataList(updatedPondDataList);
       setOriginalPondDataList(updatedPondDataList);
@@ -68,6 +81,19 @@ function Environment() {
       setOriginalPondDataList([]);
     }
   };
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      fetchPondData(); // Gọi lại fetchPondData để cập nhật số lượng Koi
+    };
+
+    // Lắng nghe sự kiện thay đổi localStorage
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   useEffect(() => {
     fetchPondData();
@@ -128,11 +154,34 @@ function Environment() {
     setIsModalUpdateVisible(true);
   };
 
+  useEffect(() => {
+    // Đặt lại hoặc cập nhật URL hình ảnh
+    setImage(koi); // thay bằng đường dẫn hình ảnh thực tế nếu cần
+  }, []);
+
   const handleOk = async () => {
     const formData = environmentForm.getFieldsValue();
     const userId = user.accId;
     const pondId = isEditing ? updatePond?.pondId : 0;
-    const newPondData = { ...formData, image, userId, pondId };
+    let downloadURL = image; // Nếu ảnh chưa được upload, dùng URL hiện có
+
+    // Kiểm tra nếu có file ảnh mới được chọn để upload
+    if (image && image instanceof File) {
+      try {
+        downloadURL = await handleImageUpload(image); // Upload ảnh và lấy URL
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        notification.error({
+          message: "Error Uploading Image",
+          description:
+            "There was an issue uploading the image. Please try again.",
+          placement: "topRight",
+        });
+        return; // Dừng hàm nếu có lỗi
+      }
+    }
+
+    const newPondData = { ...formData, image: downloadURL, userId, pondId };
 
     try {
       let response;
@@ -203,9 +252,20 @@ function Environment() {
     setIsEditing(false);
   };
 
-  const handleImageUpload = (file) => {
-    setImage(URL.createObjectURL(file));
-    return false;
+  const handleImageUploadChange = async ({ file }) => {
+    if (!file) return; // Kiểm tra nếu không có file
+    try {
+      const downloadURL = await handleImageUpload(file.originFileObj); // Chú ý file.originFileObj để lấy File thực tế từ Upload
+      setImage(downloadURL); // Cập nhật URL đã upload vào state để lưu vào DB
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      notification.error({
+        message: "Error Uploading Image",
+        description:
+          "There was an issue uploading the image. Please try again.",
+        placement: "topRight",
+      });
+    }
   };
 
   const handleSearch = debounce(() => {
@@ -274,15 +334,11 @@ function Environment() {
       {pondDataList.length > 0 ? (
         pondDataList.map((pondData, index) => (
           <div key={index} className="uploaded__pond__info">
-            <h3>
-              {pondData.name
-                ? pondData.name.toUpperCase()
-                : "No Name Available"}
-            </h3>
+            <h3>{pondData.name ? pondData.name : "No Name Available"}</h3>
             <Row gutter={16}>
               <Col md={12} xs={24} className="uploaded__pond__info__left">
                 <img
-                  src={pondData.image ? pondData.image : ca}
+                  src={pondData.image}
                   alt={`Pond ${pondData.name}`}
                   style={{ width: "90%" }}
                 />
@@ -311,7 +367,13 @@ function Environment() {
                   </Col>
                 </Row>
                 <div className="action">
-                  <Link to={`/view/${pondData.pondId}`}>View</Link>
+                  <Link
+                    to={`/view/${pondData.pondId}`}
+                    state={{ name: pondData.name, image: pondData.image }}
+                  >
+                    View
+                  </Link>
+
                   <Button
                     type="secondary"
                     onClick={() => handleEditPond(index)}
@@ -421,24 +483,22 @@ function Environment() {
             <Input type="number" />
           </Form.Item>
 
-          {/* <Form.Item
-            label="Image"
-            rules={[
-              {
-                required: true,
-                message: "Please upload an image!",
-              },
-            ]}
-          >
-            <Upload beforeUpload={handleImageUpload} showUploadList={false}>
-              <Button icon={<UploadOutlined />}>Upload Image</Button>
+          <Form.Item label="Upload Image">
+            <Upload
+              listType="picture-card"
+              showUploadList={false}
+              onChange={handleImageUploadChange}
+            >
+              {image ? (
+                <img src={image} alt="Pond" style={{ width: "100%" }} />
+              ) : (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              )}
             </Upload>
-            {image && (
-              <div>
-                <img src={image} alt="Uploaded" width="100%" />
-              </div>
-            )}
-          </Form.Item> */}
+          </Form.Item>
 
           <Form.Item>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -464,4 +524,3 @@ function Environment() {
 }
 
 export default Environment;
-

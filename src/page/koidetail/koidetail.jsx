@@ -13,7 +13,6 @@ import {
   Select,
   Table,
 } from "antd";
-
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -53,7 +52,47 @@ function KoiDetail() {
   const [isReportVisible, setIsReportVisible] = useState(false);
   const [isMember, setIsMember] = useState(false);
 
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [],
+  });
+
   const user = JSON.parse(localStorage.getItem("user"));
+
+  const convertToCurrentTime = (gmtDateString) => {
+    const gmtDate = new Date(gmtDateString); // Chuyển chuỗi GMT thành đối tượng Date
+    const gmt7Date = new Date(gmtDate.getTime() + 7 * 60 * 60 * 1000); // Chuyển sang GMT+7
+  
+    // Đặt giờ hiện tại
+    const currentDate = new Date();
+    gmt7Date.setHours(currentDate.getHours());
+    gmt7Date.setMinutes(currentDate.getMinutes());
+  
+    return gmt7Date.toLocaleString(); // Trả về chuỗi thời gian với giờ hiện tại
+  };
+  
+  
+  // Cập nhật chartData mỗi khi originalChartData thay đổi
+  useEffect(() => {
+    setChartData({
+      labels: originalChartData.map((data) => data.date), // Sử dụng dữ liệu đã chỉnh sửa giờ
+      datasets: [
+        {
+          label: "Length (cm)",
+          data: originalChartData.map((data) => data.length),
+          borderColor: "orange",
+          yAxisID: "y1",
+        },
+        {
+          label: "Weight (g)",
+          data: originalChartData.map((data) => data.weight),
+          borderColor: "blue",
+          yAxisID: "y2",
+        },
+      ],
+    });
+  }, [originalChartData]);
+  
 
   const handleReport = () => {
     setIsReportVisible(true);
@@ -62,6 +101,26 @@ function KoiDetail() {
   const closeReport = () => {
     setIsReportVisible(false);
   };
+
+  const calculateAge = (birthDate) => {
+    if (!birthDate) return "Unknown"; // Kiểm tra nếu không có giá trị
+    const now = new Date();
+    const birth = new Date(birthDate);
+    const ageInYears = Math.floor(
+      (now - birth) / (365.25 * 24 * 60 * 60 * 1000)
+    );
+    return ageInYears;
+  };
+
+  useEffect(() => {
+    if (location.state?.age) {
+      const ageInYears = calculateAge(location.state.age);
+      form.setFieldsValue({
+        ...form.getFieldsValue(),
+        age: ageInYears, // Đặt giá trị tuổi
+      });
+    }
+  }, [location.state, form]);
 
   // Tính Health Status
   const dataWithHealthStatus = originalChartData.map((data, index, arr) => {
@@ -73,7 +132,7 @@ function KoiDetail() {
     const weightChange =
       ((data.weight - prevData.weight) / prevData.weight) * 100;
 
-    let healthStatus = "Good";
+    let healthStatus = "Good"; // Mặc định là "Good"
     if (weightChange > 15 || weightChange < -15) {
       healthStatus = "Warning";
     }
@@ -132,32 +191,43 @@ function KoiDetail() {
       console.error("Koi ID is invalid.");
       return;
     }
-
+  
     try {
       const response = await axios.get(
         `https://koicaresystemapi.azurewebsites.net/api/Koi/${koiId}`
       );
-      setKoiDetails(response.data);
+      const koi = response.data;
+      setKoiDetails(koi); // Lưu dữ liệu đầy đủ vào koiDetails
       form.setFieldsValue({
-        ...response.data,
-        pond: response.data.pondId,
+        ...koi,
+        age: calculateAge(koi.age), // Hiển thị tuổi từ dữ liệu
+        pond: koi.pondId,
       });
-      setImage(response.data.image);
+      setImage(koi.image);
     } catch (error) {
       console.error("Error fetching Koi details:", error);
     }
   };
+  
+
+  useEffect(() => {
+    console.log("Location state:", location.state); // Kiểm tra dữ liệu
+  }, [location.state]);
 
   const fetchChartData = async () => {
     try {
       const response = await axios.get(
         `https://koicaresystemapi.azurewebsites.net/api/KoiChart/${koiId}`
       );
-      setOriginalChartData(response.data["$values"]);
+      const data = response.data["$values"].map((item) => ({
+        ...item,
+        date: convertToCurrentTime(item.date), // Chuyển đổi ngày sang giờ hiện tại
+      }));
+      setOriginalChartData(data);
     } catch (error) {
       console.error("Error fetching chart data:", error);
     }
-  };
+  };  
 
   useEffect(() => {
     if (user.role.toLocaleLowerCase() === "member") {
@@ -165,33 +235,45 @@ function KoiDetail() {
     } else {
       setIsMember(false);
     }
+
     fetchPonds();
     fetchKoiDetails();
     fetchChartData();
-    if (pondId) {
-      setSelectedPond(pondId); 
+
+    if (location.state?.age) {
+      const ageInYears = calculateAge(location.state.age);
+      form.setFieldsValue({
+        ...form.getFieldsValue(),
+        age: ageInYears, // Hiển thị tuổi đã tính toán
+      });
     }
-  }, [koiId, form, navigate, pondId]);
+
+    if (pondId) {
+      setSelectedPond(pondId);
+    }
+    if (pondId) {
+      setSelectedPond(pondId); // Set selectedPond only once
+    }
+
+    // Lấy image từ location.state nếu có
+    if (location.state?.image) {
+      setImage(location.state.image);
+    }
+  }, [koiId, form, navigate, pondId, location.state]);
 
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
-
+  
+      // Lấy dữ liệu hiện tại từ koiDetails và chỉ cập nhật length, weight
       const updatedData = {
-        koiId: koiDetails.koiId || 0,
-        name: values.name || "string",
-        image: image || "string",
-        physique: values.physique || "string",
-        age: values.age || 0,
-        length: values.length || 0,
-        weight: values.weight || 0,
-        sex: values.sex === "male",
-        breed: values.breed || "string",
-        pondId: pondId,
+        ...koiDetails, // Giữ nguyên các trường hiện có
+        length: Number(values.length), // Cập nhật length
+        weight: Number(values.weight), // Cập nhật weight
       };
-
-      console.log("Dữ liệu gửi đến API:", updatedData);
-
+  
+      console.log("Payload being sent:", updatedData);
+  
       const response = await axios.put(
         `https://koicaresystemapi.azurewebsites.net/api/pond/${selectedPond}/Koi/${koiId}`,
         updatedData,
@@ -201,30 +283,30 @@ function KoiDetail() {
           },
         }
       );
-
+  
       if (response.status === 200) {
         console.log("Cập nhật thành công");
         setIsEditing(false);
-        setKoiDetails(updatedData);
-        console.log(koiDetails);
-        setOriginalChartData((prev) => [
-          ...prev,
+  
+        // Cập nhật originalChartData ngay lập tức
+        const newChartData = [
+          ...originalChartData,
           {
-            date: new Date().toLocaleDateString(),
-            length: values.length,
-            weight: values.weight,
+            date: new Date().toLocaleString(), // Thời gian hiện tại
+            length: Number(values.length),
+            weight: Number(values.weight),
           },
-        ]);
+        ];
+        setOriginalChartData(newChartData); // Cập nhật state của chart
       }
     } catch (error) {
       if (error.response) {
         console.error("Lỗi khi lưu dữ liệu:", error.response.data);
-        console.error("Trạng thái lỗi:", error.response.status);
       } else {
         console.error("Lỗi khác:", error.message);
       }
     }
-  };
+  };  
 
   const onDelete = async () => {
     try {
@@ -243,23 +325,23 @@ function KoiDetail() {
     }
   };
 
-  const chartData = {
-    labels: originalChartData.map((data) => data.date),
-    datasets: [
-      {
-        label: "Length (cm)",
-        data: originalChartData.map((data) => data.length),
-        borderColor: "orange",
-        yAxisID: "y1",
-      },
-      {
-        label: "Weight (g)",
-        data: originalChartData.map((data) => data.weight),
-        borderColor: "blue",
-        yAxisID: "y2",
-      },
-    ],
-  };
+  // const chartData = {
+  //   labels: originalChartData.map((data) => data.date),
+  //   datasets: [
+  //     {
+  //       label: "Length (cm)",
+  //       data: originalChartData.map((data) => data.length),
+  //       borderColor: "orange",
+  //       yAxisID: "y1",
+  //     },
+  //     {
+  //       label: "Weight (g)",
+  //       data: originalChartData.map((data) => data.weight),
+  //       borderColor: "blue",
+  //       yAxisID: "y2",
+  //     },
+  //   ],
+  // };
 
   const chartOptions = {
     responsive: true,
@@ -419,13 +501,39 @@ function KoiDetail() {
 
       <div className="koide_form_wrapper">
         <div className="koide_left">
+          <div className="koide_image">
+            {image ? (
+              <img
+                src={image}
+                alt="Koi Fish"
+                style={{
+                  width: "100%",
+                  height: "300px",
+                  borderRadius: "8px",
+                  border: "1px solid #ccc",
+                }}
+              />
+            ) : (
+              <img
+                src="https://via.placeholder.com/200"
+                alt="No Image"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "8px",
+                  border: "1px solid #ccc",
+                }}
+              />
+            )}
+          </div>
+
           <Form form={form} layout="vertical">
             <Form.Item label="Name:" name="name">
-              <Input disabled={!isEditing} />
+              <Input disabled />
             </Form.Item>
 
-            <Form.Item label="Age: " name="age">
-              <Input type="number" disabled={!isEditing} />
+            <Form.Item label="Age:" name="age">
+              <Input disabled placeholder="No age available" />
             </Form.Item>
 
             <Form.Item label="Length (cm): " name="length">
@@ -433,14 +541,14 @@ function KoiDetail() {
             </Form.Item>
 
             <Form.Item label="Physique: " name="physique">
-              <Input disabled={!isEditing} />
+              <Input disabled />
             </Form.Item>
 
             <Form.Item label="Weight (g): " name="weight">
               <Input type="number" disabled={!isEditing} />
             </Form.Item>
             <Form.Item label="Pond: " name="pond">
-              <Select onChange={handlePondChange} disabled={!isEditing}>
+              <Select onChange={handlePondChange} disabled>
                 {ponds.map((pond) => (
                   <Option key={pond.pondId} value={pond.pondId}>
                     {pond.name}
@@ -449,7 +557,6 @@ function KoiDetail() {
               </Select>
             </Form.Item>
 
-            {/* Các nút Edit và Delete */}
             <div className="koide_button_1">
               {isEditing ? (
                 <>
@@ -463,7 +570,7 @@ function KoiDetail() {
               ) : (
                 <>
                   <Button type="primary" onClick={() => setIsEditing(true)}>
-                    Update
+                    Edit
                   </Button>
                   <Button type="primary" onClick={() => setIsDelete(true)}>
                     Delete
@@ -472,14 +579,8 @@ function KoiDetail() {
               )}
             </div>
           </Form>
-          {isMember ? (
-            <></>
-          ) : (
-            <b className="buymembership">
-              You must buy membership to view chart information!
-            </b>
-          )}
         </div>
+
         {isMember ? (
           <div className="koide_right">
             <Line data={chartData} options={chartOptions} />
