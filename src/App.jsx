@@ -23,6 +23,7 @@ import OrderSuccess from "./page/order/order";
 import PaymentFail from "./page/paymentFail/paymentFail";
 import Shop from "./page/shop/Shop";
 import YourOrder from "./page/yourorder/yourOrder";
+import VerifyEmail from "./page/verify_email/verify_email";
 function Koi() {
   const router = createBrowserRouter([
     {
@@ -121,6 +122,10 @@ function Koi() {
     {
       path: "/shop",
       element: <ProtectedRoute element={<Shop />} requiredRole="shop" />,
+    },
+    {
+      path: "/verify/:email/:timestamp",
+      element: <VerifyEmail />,
     },
   ]);
 

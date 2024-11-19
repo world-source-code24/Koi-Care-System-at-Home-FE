@@ -354,12 +354,82 @@ function Profile() {
 
               {/*Modal Membership*/}
               <Modal
-                title="Membership Packages"
                 visible={isModalOpen}
                 onOk={handleOk}
                 okText="Buy Now"
                 onCancel={handleCancel}
-              ></Modal>
+                centered
+              >
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "20px",
+                    backgroundColor: "#f9f9f9",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "24px",
+                      color: "#ff7300",
+                      fontWeight: "bold",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Premium Membership - Only 99k
+                  </h2>
+                  <p
+                    style={{
+                      fontSize: "16px",
+                      color: "#555",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    Unlock exclusive features and take your experience to the
+                    next level!
+                  </p>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        textAlign: "left",
+                        fontSize: "14px",
+                        lineHeight: "1.6",
+                        color: "#333",
+                      }}
+                    >
+                      <ul style={{ paddingLeft: "20px",     listStyle: "none" }}>
+                        <li>
+                          ✅ Access to detailed growth reports for your Koi fish
+                        </li>
+                        <li>✅ Exclusive tips for better pond maintenance</li>
+                        <li>✅ Full chart insights and analytics</li>
+                        <li>✅ Personalized notifications</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      background: "linear-gradient(135deg, #ff7300, #ff9800)",
+                      color: "white",
+                      padding: "10px 20px",
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      borderRadius: "5px",
+                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                      display: "inline-block",
+                    }}
+                  >
+                    ONLY 99k VND
+                  </div>
+                </div>
+              </Modal>
 
               {/*Modal reset password */}
               <Modal

@@ -118,21 +118,11 @@ function Login() {
                 </Button>
               </Form.Item>
             </Form>
-            <b>Forgot password?</b>
             <div className="signup">
               <h3>New member?</h3>
               <Link to={"/register"}>Sign Up Now!</Link>
             </div>
             <div className="divider"></div>
-            <button className="login__google" onClick={handleLoginGoogle}>
-              <img
-                className="google"
-                src="https://tse2.mm.bing.net/th?id=OIP.DdVPhTob_7Dpl5-BRiaK8wHaHa&pid=Api&P=0&h=220"
-                width={20}
-                alt="Google Logo"
-              />
-              <span>Sign in with Google</span>
-            </button>
           </div>
         </div>
       </div>
