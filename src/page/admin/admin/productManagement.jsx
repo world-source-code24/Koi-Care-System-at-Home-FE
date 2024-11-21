@@ -44,38 +44,89 @@ function ProductManagement() {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [editingKey, setEditingKey] = useState("");
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "https://koicaresystemapi.azurewebsites.net/api/Product/get-all"
-        );
-        const products = response.data.product.$values;
-
-        if (Array.isArray(products)) {
-          const formattedData = products.map((product) => ({
-            key: product.productId.toString(),
-            image: product.image,
-            name: product.name,
-            price: product.price,
-            stock: product.stock,
-            category: product.category,
-            productInfo: product.productInfo,
-            status: product.status,
-          }));
-          setData(formattedData);
-          setFilteredData(formattedData);
-        } else {
-          console.error("Unexpected data format:", products);
-        }
-      } catch (error) {
-        console.error("Failed to fetch product data:", error);
-      }
-    };
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        "https://koicaresystemapi.azurewebsites.net/api/Product/get-all"
+      );
+      const products = response.data.product.$values;
+      const formattedData = products.map((product) => ({
+        key: product.productId.toString(),
+        image: product.image,
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+        category: product.category,
+        description: product.productInfo,
+        status: product.status,
+      }));
+      setData(formattedData);
+      setFilteredData(formattedData);
+    } catch (error) {
+      console.error("Failed to fetch product data:", error);
+    }
+  };
+
+  const isEditing = (record) => record.key === editingKey;
+
+  const edit = (record) => {
+    form.setFieldsValue({
+      name: "",
+      price: "",
+      stock: "",
+      category: "",
+      description: "",
+      ...record,
+    });
+    setEditingKey(record.key);
+  };
+
+  const cancel = () => {
+    setEditingKey("");
+  };
+
+  const save = async (key) => {
+    try {
+      const row = await form.validateFields();
+      const newData = [...data];
+      const index = newData.findIndex((item) => key === item.key);
+      const updatedShop = {
+        productId: key,
+        name: row.name,
+        price: row.price,
+        quantity: row.stock,
+        description: row.description,
+        category: row.category,
+        status: row.status,
+      };
+
+      const apiUrl = `https://koicaresystemapi.azurewebsites.net/api/Product/update${key}`;
+      await axios.put(apiUrl, updatedShop, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (index > -1) {
+        const item = newData[index];
+        newData.slice(index, 1, { ...item, ...row });
+        setData(newData);
+        setFilteredData(newData);
+        setEditingKey("");
+        fetchData();
+        message.success("Update successful");
+      }
+    } catch (errInfo) {
+      message.error("Update failed: " + errInfo.message);
+    }
+  };
 
   const handleSearch = () => {
     const filtered = data.filter((item) =>
@@ -83,26 +134,6 @@ function ProductManagement() {
     );
     setFilteredData(filtered);
     setSearchText(""); // Reset searchText after search
-  };
-
-  const handleStatusChange = async (key, newStatus) => {
-    try {
-      await axios.put(
-        `https://koicaresystemapi.azurewebsites.net/api/Product/edit-status${key}?status=${newStatus}`
-      );
-
-      const updatedData = data.map((item) =>
-        item.key === key ? { ...item, status: newStatus } : item
-      );
-      setData(updatedData);
-      setFilteredData(updatedData);
-
-      message.success(
-        `Product ${newStatus ? "unbanned" : "banned"} successfully`
-      );
-    } catch (error) {
-      message.error("Failed to update product status: " + error.message);
-    }
   };
 
   const columns = [
@@ -119,6 +150,12 @@ function ProductManagement() {
       editable: true,
     },
     {
+      title: "Stock",
+      dataIndex: "stock",
+      width: 200,
+      editable: true,
+    },
+    {
       title: "Category",
       dataIndex: "category",
       width: 200,
@@ -126,7 +163,7 @@ function ProductManagement() {
     },
     {
       title: "Information",
-      dataIndex: "productInfo",
+      dataIndex: "description",
       width: 200,
       editable: true,
     },
@@ -134,15 +171,45 @@ function ProductManagement() {
       title: "Status",
       dataIndex: "status",
       width: 150,
-      render: (_, record) => (
-        <Radio.Group
-          value={record.status}
-          onChange={(e) => handleStatusChange(record.key, e.target.value)}
-        >
-          <Radio value={true}>Unbanned</Radio>
-          <Radio value={false}>Banned</Radio>
-        </Radio.Group>
-      ),
+      render: (_, record) => {
+        const editable = isEditing(record);
+        return editable ? (
+          <Form.Item name="status" style={{ margin: 0 }}>
+            <Radio.Group>
+              <Radio value={true}>Unbanned</Radio>
+              <Radio value={false}>Banned</Radio>
+            </Radio.Group>
+          </Form.Item>
+        ) : (
+          <span>{record.status ? "Unbanned" : "Banned"}</span>
+        );
+      },
+    },
+    {
+      title: "Operation",
+      dataIndex: "operation",
+      with: 150,
+      render: (_, record) => {
+        const editable = isEditing(record);
+        return editable ? (
+          <span>
+            <a onClick={() => save(record.key)} style={{ marginRight: 8 }}>
+              Save
+            </a>
+            <a onClick={cancel}>Cancel</a>
+          </span>
+        ) : (
+          <span>
+            <Typography.Link
+              disabled={editingKey !== ""}
+              onClick={() => edit(record)}
+              style={{ marginRight: 8 }}
+            >
+              Edit
+            </Typography.Link>
+          </span>
+        );
+      },
     },
   ];
 
@@ -157,7 +224,7 @@ function ProductManagement() {
         inputType: "text",
         dataIndex: col.dataIndex,
         title: col.title,
-        editing: false,
+        editing: isEditing(record),
       }),
     };
   });
@@ -172,7 +239,11 @@ function ProductManagement() {
           onChange={(e) => setSearchText(e.target.value)}
           style={{ width: 200 }}
         />
-        <Button type="primary" className="search__product" onClick={handleSearch}>
+        <Button
+          type="primary"
+          className="search__product"
+          onClick={handleSearch}
+        >
           Search
         </Button>
       </Space>
