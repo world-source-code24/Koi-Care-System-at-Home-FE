@@ -23,6 +23,7 @@ function Dashboard() {
   const [totalShops, setTotalShops] = useState(0);
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalMemberRevenue, setTotalMemberRevenue] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +47,17 @@ function Dashboard() {
           "https://koicaresystemapi.azurewebsites.net/api/MemberRevenue"
         );
         setTotalMemberRevenue(memberRevenue.data.total);
+
+        const orderAmount = await axios.get(
+          "https://koicaresystemapi.azurewebsites.net/GetOrders"
+        );
+
+        const orderList = orderAmount.data.orders.$values;
+        const total = orderList.reduce(
+          (acc, order) => acc + order.totalAmount,
+          0
+        );
+        setTotalAmount(total);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -119,11 +131,27 @@ function Dashboard() {
             title={"Membership Revenue (VND)"}
             value={totalMemberRevenue * 1000}
           />
+          <DashboardCard
+            icon={
+              <DollarOutlined
+                style={{
+                  color: "blue",
+                  backgroundColor: "lightblue",
+                  borderRadius: 20,
+                  fontSize: 24,
+                  padding: 8,
+                }}
+              />
+            }
+            title={"Order Revenue (VND)"}
+            value={totalAmount * 1000}
+          />
         </Space>
         <Space direction="horizontal">
           <Space direction="horizontal">
             <Space direction="vertical">
               <TableList />
+              <OrderBarChart />
             </Space>
             <Space direction="vertical">
               <PieChart />
@@ -149,7 +177,7 @@ function DashboardCard({ title, value, icon }) {
 
 function TableList() {
   const [admins, setAdmins] = useState([]);
-  const [shops, setShops] = useState([]);
+  // const [shops, setShops] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -166,44 +194,44 @@ function TableList() {
         setLoading(false);
       });
 
-    axios
-      .get("https://koicaresystemapi.azurewebsites.net/api/Shop/get-all")
-      .then((res) => {
-        setShops(res.data.shops.$values);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching shops:", error);
-        setLoading(false);
-      });
+    // axios
+    //   .get("https://koicaresystemapi.azurewebsites.net/api/Shop/get-all")
+    //   .then((res) => {
+    //     setShops(res.data.shops.$values);
+    //     setLoading(false);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error fetching shops:", error);
+    //     setLoading(false);
+    //   });
   }, []);
 
   return (
     <Space direction="vertical">
-      <>
-        <Typography.Text level={4}>Admins</Typography.Text>
-        <Table
-          columns={[
-            { title: "Account ID", dataIndex: "accId", width: 120 },
-            {
-              title: "Name",
-              dataIndex: "name",
-            },
-            {
-              title: "Email",
-              dataIndex: "email",
-            },
-            {
-              title: "Phone",
-              dataIndex: "phone",
-            },
-          ]}
-          loading={loading}
-          dataSource={admins.map((admin) => ({ ...admin, key: admin.accId }))}
-          pagination={{ pageSize: 4 }}
-        />
-      </>
-      <>
+      {/* <> */}
+      <Typography.Text level={4}>Admins</Typography.Text>
+      <Table
+        columns={[
+          { title: "Account ID", dataIndex: "accId", width: 120 },
+          {
+            title: "Name",
+            dataIndex: "name",
+          },
+          {
+            title: "Email",
+            dataIndex: "email",
+          },
+          {
+            title: "Phone",
+            dataIndex: "phone",
+          },
+        ]}
+        loading={loading}
+        dataSource={admins.map((admin) => ({ ...admin, key: admin.accId }))}
+        pagination={{ pageSize: 4 }}
+      />
+      {/* </> */}
+      {/* <>
         <Typography.Text level={4}>Shops</Typography.Text>
         <Table
           columns={[
@@ -225,7 +253,7 @@ function TableList() {
           dataSource={shops.map((shop) => ({ ...shop, key: shop.shopId }))}
           pagination={{ pageSize: 4 }}
         />
-      </>
+      </> */}
     </Space>
   );
 }
@@ -403,4 +431,109 @@ function BarChart() {
     </Card>
   );
 }
+
+function OrderBarChart() {
+  const [data, setData] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [allData, setAllData] = useState([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get(
+          "https://koicaresystemapi.azurewebsites.net/GetOrders"
+        );
+
+        const formattedData = response.data.orders.$values.map((order) => {
+          const orderDate = new Date(order.date);
+          return {
+            year: orderDate.getFullYear(),
+            month: orderDate.getMonth(), // 0-based index (0 for January, 11 for December)
+            totalAmount: order.totalAmount,
+          };
+        });
+
+        setAllData(formattedData);
+
+        // Determine the latest year and set it as the default
+        const availableYears = Array.from(
+          new Set(formattedData.map((item) => item.year))
+        ).sort((a, b) => b - a);
+
+        const latestYear = availableYears[0]; // Most recent year
+        setSelectedYear(latestYear);
+        setData(groupDataByMonth(formattedData, latestYear));
+      } catch (error) {
+        console.error("Error fetching order data:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  // Group data by month for a specific year
+  const groupDataByMonth = (data, year) => {
+    const monthlyData = Array(12).fill(0); // Initialize 12 months with 0
+
+    data.forEach((item) => {
+      if (item.year === year) {
+        monthlyData[item.month] += item.totalAmount; // Sum totalAmount for the respective month
+      }
+    });
+
+    // Format the data for the chart
+    return monthlyData.map((total, month) => ({
+      month: `Month ${month + 1}`, // Month 1-12
+      totalAmount: total,
+    }));
+  };
+
+  // Handle year change
+  const handleYearChange = (year) => {
+    setSelectedYear(year);
+    setData(groupDataByMonth(allData, year));
+  };
+
+  // Chart configuration
+  const config = {
+    title: {
+      visible: true,
+      text: `Monthly Order Totals - ${selectedYear}`,
+    },
+    data,
+    xField: "month",
+    yField: "totalAmount",
+    label: {
+      visible: true,
+      position: "middle",
+    },
+    meta: {
+      month: { alias: "Month" },
+      totalAmount: { alias: "Total Amount (VND)" },
+    },
+  };
+
+  // Extract available years
+  const availableYears = Array.from(
+    new Set(allData.map((item) => item.year))
+  ).sort((a, b) => b - a);
+
+  return (
+    <Card title={"Monthly Order Totals"}>
+      <Select
+        value={selectedYear}
+        onChange={handleYearChange}
+        style={{ marginBottom: 20, width: 120 }}
+      >
+        {availableYears.map((year) => (
+          <Select.Option key={year} value={year}>
+            {year}
+          </Select.Option>
+        ))}
+      </Select>
+      <Column width={550} height={300} {...config} />
+    </Card>
+  );
+}
+
 export default Dashboard;
